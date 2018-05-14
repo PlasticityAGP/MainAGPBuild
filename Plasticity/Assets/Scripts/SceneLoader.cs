@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour {
 
@@ -29,7 +30,7 @@ public class SceneLoader : MonoBehaviour {
         //additive and asynchronous manner to the current level 
         for (int i = 0; i < LevelArray.Length; ++i)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(LevelArray[i], UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync(LevelArray[i], LoadSceneMode.Additive);
         }
         
     }
