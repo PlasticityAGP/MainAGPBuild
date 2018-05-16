@@ -183,26 +183,26 @@ public class CharacterController : MonoBehaviour {
         //or not the character is on an object.
         Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.25f);
         Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.25f);
-        bool RightHit = false;
-        bool LeftHit = false;
         RaycastHit Result;
-        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
+        //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
+        //because we want our velocity to match the slope of the surface slightly before we return true.
+        //This prevents a weird bouncing effect that can happen after a player lands. 
+        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance + 0.1f, GroundLayer))
         {
-            RightHit = true;
             if (MoveDir)
             {
                 HitInfo = Result;
             }
         }
-        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
+        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance + 0.1f, GroundLayer))
         {
-            LeftHit = true;
             if (!MoveDir)
             {
                 HitInfo = Result;
             }
         }
-        return RightHit||LeftHit;
+        return (Physics.Raycast(LeftPosition, Vector3.down, GroundTraceDistance, GroundLayer)) || 
+            (Physics.Raycast(RightPosition, Vector3.down, GroundTraceDistance, GroundLayer));
 
     }
 
@@ -214,6 +214,8 @@ public class CharacterController : MonoBehaviour {
 
     private void CalculateMoveVec()
     {
+        //If we are on a slope, we need our velocity to be parallel to the slope. We find this through 
+        //a cross product of the normal of that slope, and our right and left vectors.
         if (IsGrounded())
         {
             if (MoveDir)
@@ -225,6 +227,7 @@ public class CharacterController : MonoBehaviour {
                 MoveVec = Vector3.Cross(HitInfo.normal, transform.right);
             }
         }
+        //If we are flying and MoveWhileJumping is active, we need to change just the X and Z components of our velocity.
         else if (MoveWhileJumping)
         {
             float R = (MoveVec.x / InitialDir.x) + (MoveVec.z / InitialDir.z);
@@ -249,10 +252,12 @@ public class CharacterController : MonoBehaviour {
     {
         if (!IsGrounded())
         {
+            //If we are in the air, act like the ground is flat
             GroundAngle = 90.0f;
         }
         else
         {
+            //Else, find angle of ground from HitInfo calculated by IsGrounded();
             if (MoveDir)
             {
                 GroundAngle = Vector3.Angle(HitInfo.normal, InitialDir);
@@ -274,7 +279,7 @@ public class CharacterController : MonoBehaviour {
             if (DidAJump) OnEndJump();
             if (Up)
             {
-                if ((GroundAngle - 90) > 0) MoveVec.y = JumpForce + ((GroundAngle - 90)/6.0f);
+                if ((GroundAngle - 90) > 0) MoveVec.y = JumpForce + ((GroundAngle - 90)/15.0f);
                 else MoveVec.y = JumpForce; 
             }
             
@@ -311,79 +316,33 @@ public class CharacterController : MonoBehaviour {
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
         if(!JumpWhileHeld) Up = false;
-
-        //The following section is used to set the direction of the velocity of the player when they land and MoveWhileJumping isn't enabled
-        //if (!MoveWhileJumping)
-        //{
-        //    //R is used to determine if the player's velocity vector is in the same direction as the InitialDir vector
-        //    float R = (MoveVec.x / InitialDir.x) + (MoveVec.z / InitialDir.z);
-        //    //If the player should be moving in the direction they started towards, but their velocity is in the opposite of the start direction,
-        //    //flip the direction of their velocity.
-        //    if (MoveDir && (R < 0))
-        //    {
-        //        MoveVec.x = -MoveVec.x;
-        //        MoveVec.y = -MoveVec.y;
-        //        MoveVec.z = -MoveVec.z;
-
-        //    }
-        //    //If the player should be moving away from the direction they started towards, but their velocity is the same direction as InitialDir,
-        //    //flip the direction of their velocity. 
-        //    else if(!MoveDir && (R > 0))
-        //    {
-        //        MoveVec.x = -MoveVec.x;
-        //        MoveVec.y = -MoveVec.y;
-        //        MoveVec.z = -MoveVec.z;
-
-        //    }
-
-        //}
     }
 
     private void MoveCharacter(float DeltaTime)
     {
-        //Accelerate the player if a direction key is pressed and NOT when the player is in the air and MoveWhileJumping is disabled.
-        //if (((Left && !MoveDir) || (Right && MoveDir)) && !(!MoveWhileJumping && !IsGrounded()))
-        //{
-        //    if (LerpValue < 1.0f)
-        //    {
-        //        //Increase LerpValue to 1.0f at the rate determined by Acceleration so that the player ramps up to max velocity.
-        //        LerpValue += Acceleration * DeltaTime;
-        //    }
-        //    else
-        //    {
-        //        LerpValue = 1.0f;
-        //    }
-        //}
-        ////Decellerate the player.
-        //else
-        //{
-        //    if (LerpValue > 0.0f)
-        //    {
-        //        //Decrease LerpValue to 0.0f at the rate determined by Acclereation so that the player ramps down to zero velocity.
-        //        if (!MoveWhileJumping && !IsGrounded()) LerpValue -= (Acceleration / 10.0f) * DeltaTime;
-        //        else LerpValue -= Acceleration * DeltaTime;
 
-        //    }
-        //    else
-        //    {
-        //        LerpValue = 0.0f;
-        //    }
-        //}
+        //If our LEFT button is held, and we are supposed to be moving left, and if move while jumping is on or we are grounded, Accelerate
         if ((Left && !MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
         {
-            SpeedModifier = 1.0f;
+            SpeedModifier += Acceleration * DeltaTime;
+            if (SpeedModifier >= 1.0f) SpeedModifier = 1.0f;
         }
+        //If our Right button is held, and we are supposed to be moving Right, and if move while jumping is on or we are grounded, Accelerate
         else if ((Right && MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
         {
-            SpeedModifier = 1.0f;
+            SpeedModifier += Acceleration * DeltaTime;
+            if (SpeedModifier >= 1.0f) SpeedModifier = 1.0f;
         }
+        //In all other cases we want to decelerate, but by how much is dependent on if we are grounded or not.
         else
         {
+            //If we are grounded, decelerate quickly
             if (IsGrounded())
             {
                 SpeedModifier -= Acceleration * DeltaTime;
                 if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
             }
+            //If we aren't decelerate more quickly
             else
             {
                 SpeedModifier -= (Acceleration/10.0f) * DeltaTime;
@@ -392,14 +351,16 @@ public class CharacterController : MonoBehaviour {
         }
 
         //Set velocity of player
-        Debug.DrawRay(transform.position, MoveVec, Color.red);
         Vector3 FinalVel;
+        //If we are grounded and we didn't just jump move along slope of surface we are on.
         if (IsGrounded() && !DidAJump)
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
+            //If the slope is too high, don't move
             if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
 
         }
+        //Otherwise move, but with a y component of velocity that is determined by jumping/falling, and not the slope of the surface we are on.
         else
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y, MoveVec.z * MoveSpeed * SpeedModifier);
