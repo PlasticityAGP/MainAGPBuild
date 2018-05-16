@@ -62,7 +62,10 @@ public class CharacterController : MonoBehaviour {
     //The current angle of the ground the player is walking on. Will be checked against MaxGroundAngle to
     //determine if a surface is walkable.
     private float GroundAngle = 90;
+    //Hit info will store the hit result of the raycast that is shot from the player towards the ground
     private RaycastHit HitInfo;
+    //CharacterAnimator will store a reference to the Animator of our Character.
+    private Animator CharacterAnimator;
 
     //Reference to the character's rigidbody
     private Rigidbody RBody;
@@ -154,21 +157,24 @@ public class CharacterController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        if(RefToModel == null) Debug.LogError("You need to pass in a reference to the model you wish the character controller to use");
+
         //Make sure the current character has a Rigidbody component
-        if (GetComponent<Rigidbody>())
-        {
-            RBody = GetComponent<Rigidbody>();
-        }
-        else
-        {
-            Debug.LogError("There is currently not a rigidbody attached to this character");
-        }
+        if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
+        else Debug.LogError("There is currently not a rigidbody attached to this character");
+
+        //Make sure the model has an animator component
+        if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
+        else Debug.LogError("There is currently not an animator attached to this character's model");
+
         //Our first move direction will just be the forward vector of the player
         InitialDir = transform.forward;
         SpeedModifier = 0.0f;
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
-        //Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
+        Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
+
+
     }
 
     private void FixedUpdate()
@@ -178,6 +184,7 @@ public class CharacterController : MonoBehaviour {
         CalculateGroundAngle();
         Jump(Time.deltaTime);
         MoveCharacter(Time.deltaTime);
+        ManageAnimations();
     }
 
     private bool IsGrounded()
@@ -281,6 +288,7 @@ public class CharacterController : MonoBehaviour {
 
     private void Jump(float DeltaTime)
     {
+        CalculateMoveVec();
         //If the player has pressed an UP key and the player is currently standing on the ground
         if (Up && IsGrounded())
         {
@@ -316,6 +324,7 @@ public class CharacterController : MonoBehaviour {
     private void OnBeginJump()
     {
         DidAJump = true;
+        if (!JumpWhileHeld) Up = false;
     }
 
     //This function gets called whenever a player lands after falling or jumping.
@@ -375,6 +384,18 @@ public class CharacterController : MonoBehaviour {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y, MoveVec.z * MoveSpeed * SpeedModifier);
         }
         RBody.velocity = FinalVel;
+    }
+
+    private void ManageAnimations()
+    {
+        if((Left || Right) && IsGrounded())
+        {
+            CharacterAnimator.Play("Running (1)");
+        }
+        else
+        {
+            CharacterAnimator.Play("Idle");
+        }
     }
 
 }
