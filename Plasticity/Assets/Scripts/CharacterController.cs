@@ -21,6 +21,9 @@ public class CharacterController : MonoBehaviour {
     private bool Interact = false;
 
     [SerializeField]
+    [Tooltip("Pass in a reference to the model for this character")]
+    private GameObject RefToModel;
+    [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
     private float MoveSpeed = 6;
     [SerializeField]
@@ -181,20 +184,20 @@ public class CharacterController : MonoBehaviour {
     {
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.25f);
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.25f);
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f);
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f);
         RaycastHit Result;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
         //because we want our velocity to match the slope of the surface slightly before we return true.
         //This prevents a weird bouncing effect that can happen after a player lands. 
-        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance + 0.1f, GroundLayer))
+        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance + 0.3f, GroundLayer))
         {
             if (MoveDir)
             {
                 HitInfo = Result;
             }
         }
-        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance + 0.1f, GroundLayer))
+        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance + 0.3f, GroundLayer))
         {
             if (!MoveDir)
             {
@@ -210,6 +213,12 @@ public class CharacterController : MonoBehaviour {
     {
         //If we turn, we flip the boolean the signifies player direction
         MoveDir = !MoveDir;
+        Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+        RefToModel.transform.Rotate(TurnAround);
+        if (IsGrounded())
+        {
+            SpeedModifier = 0.0f;
+        }
     }
 
     private void CalculateMoveVec()
@@ -279,7 +288,7 @@ public class CharacterController : MonoBehaviour {
             if (DidAJump) OnEndJump();
             if (Up)
             {
-                if ((GroundAngle - 90) > 0) MoveVec.y = JumpForce + ((GroundAngle - 90)/15.0f);
+                if ((GroundAngle - 90 ) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90)/100.0f);
                 else MoveVec.y = JumpForce; 
             }
             
