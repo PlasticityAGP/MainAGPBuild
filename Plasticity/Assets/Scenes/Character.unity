@@ -444,9 +444,10 @@ MonoBehaviour:
   MoveSpeed: 6
   Acceleration: 4
   MoveWhileJumping: 0
+  JumpWhileHeld: 0
   JumpForce: 5
   GravityOnPlayer: 9
-  GroundTraceDistance: 1.1
+  GroundTraceDistance: 1.05
   GroundLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -466,7 +467,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1327974483
 Transform:
@@ -638,7 +639,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1459618515
 Transform:
@@ -763,7 +764,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1973728756
 Transform:

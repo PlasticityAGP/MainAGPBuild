@@ -29,7 +29,10 @@ public class CharacterController : MonoBehaviour {
     private float Acceleration;
     [SerializeField]
     [Tooltip("Determines if you want the player to be able to ajust their velocity mid air")]
-    private bool MoveWhileJumping; 
+    private bool MoveWhileJumping;
+    [SerializeField]
+    [Tooltip("If true, allows the player to continuously jump while UP is held down")]
+    private bool JumpWhileHeld;
     [SerializeField]
     [Tooltip("How much force you want the player to jump with.")]
     private float JumpForce;
@@ -47,12 +50,15 @@ public class CharacterController : MonoBehaviour {
     private bool MoveDir = true;
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
+    //InitialDir vector is used for determining what direction player velocity should be in if they turn
+    //mid jump while MoveWhileJumping is set to false
     private Vector3 InitialDir;
 
     //Reference to the character's rigidbody
     private Rigidbody RBody;
     //Value used in accelerating player
     private float LerpValue = 0.0f;
+    //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
     private bool DidAJump = false;
 
     private void Awake()
@@ -168,10 +174,8 @@ public class CharacterController : MonoBehaviour {
     {
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
-        Vector3 RightPosition = transform.position;
-        Vector3 LeftPosition = transform.position;
-        RightPosition.x += 0.25f;
-        LeftPosition.x -= 0.25f;
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.25f);
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.25f);
         //Return the results of the two traces.
         return (Physics.Raycast(RightPosition, Vector3.down, GroundTraceDistance, GroundLayer) ||
             (Physics.Raycast(LeftPosition, Vector3.down, GroundTraceDistance, GroundLayer)));
@@ -179,11 +183,14 @@ public class CharacterController : MonoBehaviour {
 
     private void TurnCharacter()
     {
+        //If we turn, we flip the boolean the signifies player direction
         MoveDir = !MoveDir;
+        //If we are not moving while jumping, we need to not flip the MoveVec direction unless the player is grounded
         if (!MoveWhileJumping)
         {
             if (IsGrounded())
             {
+                //Flip the direction of vector that determines velocity of the player.
                 MoveVec.x = -MoveVec.x;
                 MoveVec.z = -MoveVec.z;
                 //Reset LerpValue so the player has to accelerate up to speed again when they turn. 
@@ -192,6 +199,7 @@ public class CharacterController : MonoBehaviour {
         }
         else
         {
+            //Flip the direction of vector that determines velocity of the player.
             MoveVec.x = -MoveVec.x;
             MoveVec.z = -MoveVec.z;
             //Reset LerpValue so the player has to accelerate up to speed again when they turn. 
@@ -202,13 +210,15 @@ public class CharacterController : MonoBehaviour {
 
     private void Jump(float DeltaTime)
     {
+        //If the player has pressed an UP key and the player is currently standing on the ground
         if (Up && IsGrounded())
         {
             //Jump
             if (DidAJump) OnEndJump();
-            MoveVec.y = JumpForce;
+            if(Up) MoveVec.y = JumpForce;
             OnBeginJump();
         }
+        //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
         else if (!Up && IsGrounded())
         {
 
@@ -217,6 +227,7 @@ public class CharacterController : MonoBehaviour {
             MoveVec.y = 0.0f;
             
         }
+        //In all other cases the player is falling. Here we calculate the y component of velocity while falling.
         else
         {
             //Falling
@@ -235,18 +246,26 @@ public class CharacterController : MonoBehaviour {
     //This function gets called whenever a player lands after falling or jumping.
     private void OnEndJump()
     {
-        //Debug.Log("Landed");
         DidAJump = false;
+        //If we aren't continuously jumping, we need to reset the Up boolean so that the player
+        //only jumps once per press of an UP key.
+        if(!JumpWhileHeld) Up = false;
 
+        //The following section is used to set the direction of the velocity of the player when they land and MoveWhileJumping isn't enabled
         if (!MoveWhileJumping)
         {
+            //R is used to determine if the player's velocity vector is in the same direction as the InitialDir vector
             float R = (MoveVec.x / InitialDir.x) + (MoveVec.z / InitialDir.z);
+            //If the player should be moving in the direction they started towards, but their velocity is in the opposite of the start direction,
+            //flip the direction of their velocity.
             if (MoveDir && (R < 0))
             {
                 MoveVec.x = -MoveVec.x;
                 MoveVec.z = -MoveVec.z;
                 LerpValue = 0.0f;
             }
+            //If the player should be moving away from the direction they started towards, but their velocity is the same direction as InitialDir,
+            //flip the direction of their velocity. 
             else if(!MoveDir && (R > 0))
             {
                 MoveVec.x = -MoveVec.x;
@@ -259,7 +278,7 @@ public class CharacterController : MonoBehaviour {
 
     private void MoveCharacter(float DeltaTime)
     {
-        
+        //Accelerate the player if a direction key is pressed and NOT when the player is in the air and MoveWhileJumping is disabled.
         if (((Left && !MoveDir) || (Right && MoveDir)) && !(!MoveWhileJumping && !IsGrounded()))
         {
             if(LerpValue < 1.0f)
@@ -272,6 +291,7 @@ public class CharacterController : MonoBehaviour {
                 LerpValue = 1.0f;
             }
         }
+        //Decellerate the player.
         else
         {
             if (LerpValue > 0.0f)
@@ -286,7 +306,7 @@ public class CharacterController : MonoBehaviour {
                 LerpValue = 0.0f;
             }
         }
-        //Calculate velocity of player
+        //Set velocity of player
         Vector3 FinalVel = new Vector3(MoveVec.x * MoveSpeed * LerpValue, MoveVec.y, MoveVec.z * MoveSpeed * LerpValue);
         RBody.velocity = FinalVel;
     }
