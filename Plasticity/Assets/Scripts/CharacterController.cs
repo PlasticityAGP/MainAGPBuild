@@ -5,7 +5,6 @@ using UnityEngine.Events;
 
 public class CharacterController : MonoBehaviour {
 
-
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
     private UnityAction<int> DownListener;
@@ -23,25 +22,28 @@ public class CharacterController : MonoBehaviour {
 
     [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
-    private float MoveSpeed;
+    private float MoveSpeed = 6;
     [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
-    private float Acceleration;
+    private float Acceleration = 4;
     [SerializeField]
     [Tooltip("Determines if you want the player to be able to ajust their velocity mid air")]
-    private bool MoveWhileJumping;
+    private bool MoveWhileJumping = false;
     [SerializeField]
     [Tooltip("If true, allows the player to continuously jump while UP is held down")]
-    private bool JumpWhileHeld;
+    private bool JumpWhileHeld = false;
     [SerializeField]
     [Tooltip("How much force you want the player to jump with.")]
-    private float JumpForce;
+    private float JumpForce = 5;
     [SerializeField]
     [Tooltip("How quickly do you want the player to fall after jumping.")]
-    private float GravityOnPlayer;
+    private float GravityOnPlayer = 9;
     [SerializeField]
     [Tooltip("Trace distance for determining if the player has landed.")]
-    private float GroundTraceDistance;
+    private float GroundTraceDistance = 1.05f;
+    [SerializeField]
+    [Tooltip("The maximum angle between player and ground that is walkable by player")]
+    private float MaxGroundAngle = 120;
     [SerializeField]
     [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
     private LayerMask GroundLayer;
@@ -53,11 +55,14 @@ public class CharacterController : MonoBehaviour {
     //InitialDir vector is used for determining what direction player velocity should be in if they turn
     //mid jump while MoveWhileJumping is set to false
     private Vector3 InitialDir;
+    private float SpeedModifier;
+    //The current angle of the ground the player is walking on. Will be checked against MaxGroundAngle to
+    //determine if a surface is walkable.
+    private float GroundAngle = 90;
+    private RaycastHit HitInfo;
 
     //Reference to the character's rigidbody
     private Rigidbody RBody;
-    //Value used in accelerating player
-    private float LerpValue = 0.0f;
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
     private bool DidAJump = false;
 
@@ -156,16 +161,18 @@ public class CharacterController : MonoBehaviour {
             Debug.LogError("There is currently not a rigidbody attached to this character");
         }
         //Our first move direction will just be the forward vector of the player
-        MoveVec = transform.forward;
-        InitialDir = MoveVec;
+        InitialDir = transform.forward;
+        SpeedModifier = 0.0f;
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
-        Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
-	}
+        //Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
+    }
 
     private void FixedUpdate()
     {
         //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
+        CalculateMoveVec();
+        CalculateGroundAngle();
         Jump(Time.deltaTime);
         MoveCharacter(Time.deltaTime);
     }
@@ -176,36 +183,86 @@ public class CharacterController : MonoBehaviour {
         //or not the character is on an object.
         Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.25f);
         Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.25f);
-        //Return the results of the two traces.
-        return (Physics.Raycast(RightPosition, Vector3.down, GroundTraceDistance, GroundLayer) ||
-            (Physics.Raycast(LeftPosition, Vector3.down, GroundTraceDistance, GroundLayer)));
+        bool RightHit = false;
+        bool LeftHit = false;
+        RaycastHit Result;
+        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
+        {
+            RightHit = true;
+            if (MoveDir)
+            {
+                HitInfo = Result;
+            }
+        }
+        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
+        {
+            LeftHit = true;
+            if (!MoveDir)
+            {
+                HitInfo = Result;
+            }
+        }
+        return RightHit||LeftHit;
+
     }
 
     private void TurnCharacter()
     {
         //If we turn, we flip the boolean the signifies player direction
         MoveDir = !MoveDir;
-        //If we are not moving while jumping, we need to not flip the MoveVec direction unless the player is grounded
-        if (!MoveWhileJumping)
+    }
+
+    private void CalculateMoveVec()
+    {
+        if (IsGrounded())
         {
-            if (IsGrounded())
+            if (MoveDir)
             {
-                //Flip the direction of vector that determines velocity of the player.
+                MoveVec = Vector3.Cross(HitInfo.normal, -transform.right);
+            }
+            else
+            {
+                MoveVec = Vector3.Cross(HitInfo.normal, transform.right);
+            }
+        }
+        else if (MoveWhileJumping)
+        {
+            float R = (MoveVec.x / InitialDir.x) + (MoveVec.z / InitialDir.z);
+            //If the player should be moving in the direction they started towards, but their velocity is in the opposite of the start direction,
+            //flip the direction of their velocity.
+            if (MoveDir && (R < 0))
+            {
                 MoveVec.x = -MoveVec.x;
                 MoveVec.z = -MoveVec.z;
-                //Reset LerpValue so the player has to accelerate up to speed again when they turn. 
-                LerpValue = 0.0f;
             }
+            //If the player should be moving away from the direction they started towards, but their velocity is the same direction as InitialDir,
+            //flip the direction of their velocity. 
+            else if (!MoveDir && (R > 0))
+            {
+                MoveVec.x = -MoveVec.x;
+                MoveVec.z = -MoveVec.z;
+            }
+        }
+    }
+
+    private void CalculateGroundAngle()
+    {
+        if (!IsGrounded())
+        {
+            GroundAngle = 90.0f;
         }
         else
         {
-            //Flip the direction of vector that determines velocity of the player.
-            MoveVec.x = -MoveVec.x;
-            MoveVec.z = -MoveVec.z;
-            //Reset LerpValue so the player has to accelerate up to speed again when they turn. 
-            LerpValue = 0.0f;
+            if (MoveDir)
+            {
+                GroundAngle = Vector3.Angle(HitInfo.normal, InitialDir);
+            }
+            else
+            {
+                GroundAngle = Vector3.Angle(HitInfo.normal, -InitialDir);
+            }
+            
         }
-
     }
 
     private void Jump(float DeltaTime)
@@ -215,7 +272,12 @@ public class CharacterController : MonoBehaviour {
         {
             //Jump
             if (DidAJump) OnEndJump();
-            if(Up) MoveVec.y = JumpForce;
+            if (Up)
+            {
+                if ((GroundAngle - 90) > 0) MoveVec.y = JumpForce + ((GroundAngle - 90)/6.0f);
+                else MoveVec.y = JumpForce; 
+            }
+            
             OnBeginJump();
         }
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
@@ -224,7 +286,6 @@ public class CharacterController : MonoBehaviour {
 
             //Zero out velocity
             if (DidAJump) OnEndJump();
-            MoveVec.y = 0.0f;
             
         }
         //In all other cases the player is falling. Here we calculate the y component of velocity while falling.
@@ -252,62 +313,97 @@ public class CharacterController : MonoBehaviour {
         if(!JumpWhileHeld) Up = false;
 
         //The following section is used to set the direction of the velocity of the player when they land and MoveWhileJumping isn't enabled
-        if (!MoveWhileJumping)
-        {
-            //R is used to determine if the player's velocity vector is in the same direction as the InitialDir vector
-            float R = (MoveVec.x / InitialDir.x) + (MoveVec.z / InitialDir.z);
-            //If the player should be moving in the direction they started towards, but their velocity is in the opposite of the start direction,
-            //flip the direction of their velocity.
-            if (MoveDir && (R < 0))
-            {
-                MoveVec.x = -MoveVec.x;
-                MoveVec.z = -MoveVec.z;
-                LerpValue = 0.0f;
-            }
-            //If the player should be moving away from the direction they started towards, but their velocity is the same direction as InitialDir,
-            //flip the direction of their velocity. 
-            else if(!MoveDir && (R > 0))
-            {
-                MoveVec.x = -MoveVec.x;
-                MoveVec.z = -MoveVec.z;
-                LerpValue = 0.0f;
-            }
+        //if (!MoveWhileJumping)
+        //{
+        //    //R is used to determine if the player's velocity vector is in the same direction as the InitialDir vector
+        //    float R = (MoveVec.x / InitialDir.x) + (MoveVec.z / InitialDir.z);
+        //    //If the player should be moving in the direction they started towards, but their velocity is in the opposite of the start direction,
+        //    //flip the direction of their velocity.
+        //    if (MoveDir && (R < 0))
+        //    {
+        //        MoveVec.x = -MoveVec.x;
+        //        MoveVec.y = -MoveVec.y;
+        //        MoveVec.z = -MoveVec.z;
 
-        }
+        //    }
+        //    //If the player should be moving away from the direction they started towards, but their velocity is the same direction as InitialDir,
+        //    //flip the direction of their velocity. 
+        //    else if(!MoveDir && (R > 0))
+        //    {
+        //        MoveVec.x = -MoveVec.x;
+        //        MoveVec.y = -MoveVec.y;
+        //        MoveVec.z = -MoveVec.z;
+
+        //    }
+
+        //}
     }
 
     private void MoveCharacter(float DeltaTime)
     {
         //Accelerate the player if a direction key is pressed and NOT when the player is in the air and MoveWhileJumping is disabled.
-        if (((Left && !MoveDir) || (Right && MoveDir)) && !(!MoveWhileJumping && !IsGrounded()))
+        //if (((Left && !MoveDir) || (Right && MoveDir)) && !(!MoveWhileJumping && !IsGrounded()))
+        //{
+        //    if (LerpValue < 1.0f)
+        //    {
+        //        //Increase LerpValue to 1.0f at the rate determined by Acceleration so that the player ramps up to max velocity.
+        //        LerpValue += Acceleration * DeltaTime;
+        //    }
+        //    else
+        //    {
+        //        LerpValue = 1.0f;
+        //    }
+        //}
+        ////Decellerate the player.
+        //else
+        //{
+        //    if (LerpValue > 0.0f)
+        //    {
+        //        //Decrease LerpValue to 0.0f at the rate determined by Acclereation so that the player ramps down to zero velocity.
+        //        if (!MoveWhileJumping && !IsGrounded()) LerpValue -= (Acceleration / 10.0f) * DeltaTime;
+        //        else LerpValue -= Acceleration * DeltaTime;
+
+        //    }
+        //    else
+        //    {
+        //        LerpValue = 0.0f;
+        //    }
+        //}
+        if ((Left && !MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
         {
-            if(LerpValue < 1.0f)
-            {
-                //Increase LerpValue to 1.0f at the rate determined by Acceleration so that the player ramps up to max velocity.
-                LerpValue += Acceleration * DeltaTime;
-            }
-            else
-            {
-                LerpValue = 1.0f;
-            }
+            SpeedModifier = 1.0f;
         }
-        //Decellerate the player.
+        else if ((Right && MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
+        {
+            SpeedModifier = 1.0f;
+        }
         else
         {
-            if (LerpValue > 0.0f)
+            if (IsGrounded())
             {
-                //Decrease LerpValue to 0.0f at the rate determined by Acclereation so that the player ramps down to zero velocity.
-                if(!MoveWhileJumping && !IsGrounded()) LerpValue -= (Acceleration/10.0f) * DeltaTime;
-                else LerpValue -= Acceleration * DeltaTime;
-
+                SpeedModifier -= Acceleration * DeltaTime;
+                if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
             }
             else
             {
-                LerpValue = 0.0f;
+                SpeedModifier -= (Acceleration/10.0f) * DeltaTime;
+                if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
             }
         }
+
         //Set velocity of player
-        Vector3 FinalVel = new Vector3(MoveVec.x * MoveSpeed * LerpValue, MoveVec.y, MoveVec.z * MoveSpeed * LerpValue);
+        Debug.DrawRay(transform.position, MoveVec, Color.red);
+        Vector3 FinalVel;
+        if (IsGrounded() && !DidAJump)
+        {
+            FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
+            if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
+
+        }
+        else
+        {
+            FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y, MoveVec.z * MoveSpeed * SpeedModifier);
+        }
         RBody.velocity = FinalVel;
     }
 
