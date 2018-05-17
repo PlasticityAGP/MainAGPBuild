@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class CharacterController : MonoBehaviour {
+public class CharacterManager : MonoBehaviour
+{
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -15,14 +16,23 @@ public class CharacterController : MonoBehaviour {
     //Booleans that will signify what input is being held down. For example, Up is true whenever an Up
     //Key is held down, and so on
     private bool Up = false;
-    private bool Down = false;
+    //private bool Down = false;
     private bool Left = false;
     private bool Right = false;
-    private bool Interact = false;
+    //private bool Interact = false;
 
     [SerializeField]
     [Tooltip("Pass in a reference to the model for this character")]
     private GameObject RefToModel;
+    [SerializeField]
+    [Tooltip("An array of string names for running animations for the character")]
+    private string[] IdleAnimations;
+    [SerializeField]
+    [Tooltip("An array of string names for idle animations for the character")]
+    private string[] RunAnimations;
+    [SerializeField]
+    [Tooltip("An array of string names for jumping animations for the character")]
+    private string[] JumpAnimations;
     [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
     private float MoveSpeed = 6;
@@ -66,6 +76,7 @@ public class CharacterController : MonoBehaviour {
     private RaycastHit HitInfo;
     //CharacterAnimator will store a reference to the Animator of our Character.
     private Animator CharacterAnimator;
+    AnimEventManager AnimManager;
 
     //Reference to the character's rigidbody
     private Rigidbody RBody;
@@ -115,10 +126,10 @@ public class CharacterController : MonoBehaviour {
     private void DownPressed(int value)
     {
         //The value passed by the event indicates whether or not the key is pressed down.
-        if (value == 1)
-            Down = true;
-        else
-            Down = false;
+        //if (value == 1)
+        //    Down = true;
+        //else
+        //    Down = false;
     }
     private void LeftPressed(int value)
     {
@@ -129,6 +140,11 @@ public class CharacterController : MonoBehaviour {
             //If we are currently running right when we recieve this left keypress, turn the character.
             if (MoveDir)
                 TurnCharacter();
+            if (IsGrounded())
+            {
+                AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
+            }
+
         }
         else
             Left = false;
@@ -142,6 +158,10 @@ public class CharacterController : MonoBehaviour {
             //If we are currently running right when we recieve this left keypress, turn the character.
             if (!MoveDir)
                 TurnCharacter();
+            if (IsGrounded())
+            {
+                AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
+            }
         }
         else
             Right = false;
@@ -149,23 +169,33 @@ public class CharacterController : MonoBehaviour {
     private void InteractPressed(int value)
     {
         //The value passed by the event indicates whether or not the key is pressed down.
-        if (value == 1)
-            Interact = true;
-        else
-            Interact = false;
+        //if (value == 1)
+        //    Interact = true;
+        //else
+        //    Interact = false;
     }
 
     // Use this for initialization
-    void Start () {
-        if(RefToModel == null) Debug.LogError("You need to pass in a reference to the model you wish the character controller to use");
+    void Start()
+    {
+
+        if (RefToModel == null) Debug.LogError("You need to pass in a reference to the model you wish the character controller to use");
 
         //Make sure the current character has a Rigidbody component
         if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
         else Debug.LogError("There is currently not a rigidbody attached to this character");
 
         //Make sure the model has an animator component
+        if (gameObject.GetComponent<AnimEventManager>()) AnimManager = gameObject.GetComponent<AnimEventManager>();
+        else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
+
         if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
         else Debug.LogError("There is currently not an animator attached to this character's model");
+        AnimManager.CharacterAnimator = CharacterAnimator;
+
+        if (RunAnimations.Length == 0) Debug.LogError("You need at least one run animation specified in the CharacterController");
+        if (IdleAnimations.Length == 0) Debug.LogError("You need at least one idle animation specified in the CharacterController");
+        if (JumpAnimations.Length == 0) Debug.LogError("You need at least one jump animation specified in the CharacterController");
 
         //Our first move direction will just be the forward vector of the player
         InitialDir = transform.forward;
@@ -173,7 +203,7 @@ public class CharacterController : MonoBehaviour {
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
         Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
-
+        AnimManager = gameObject.GetComponent<AnimEventManager>();
 
     }
 
@@ -184,7 +214,7 @@ public class CharacterController : MonoBehaviour {
         CalculateGroundAngle();
         Jump(Time.deltaTime);
         MoveCharacter(Time.deltaTime);
-        ManageAnimations();
+        PerTickAnimations();
     }
 
     private bool IsGrounded()
@@ -211,7 +241,7 @@ public class CharacterController : MonoBehaviour {
                 HitInfo = Result;
             }
         }
-        return (Physics.Raycast(LeftPosition, Vector3.down, GroundTraceDistance, GroundLayer)) || 
+        return (Physics.Raycast(LeftPosition, Vector3.down, GroundTraceDistance, GroundLayer)) ||
             (Physics.Raycast(RightPosition, Vector3.down, GroundTraceDistance, GroundLayer));
 
     }
@@ -282,7 +312,7 @@ public class CharacterController : MonoBehaviour {
             {
                 GroundAngle = Vector3.Angle(HitInfo.normal, -InitialDir);
             }
-            
+
         }
     }
 
@@ -296,10 +326,11 @@ public class CharacterController : MonoBehaviour {
             if (DidAJump) OnEndJump();
             if (Up)
             {
-                if ((GroundAngle - 90 ) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90)/100.0f);
-                else MoveVec.y = JumpForce; 
+                if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
+                else MoveVec.y = JumpForce;
+                AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
             }
-            
+
             OnBeginJump();
         }
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
@@ -308,7 +339,7 @@ public class CharacterController : MonoBehaviour {
 
             //Zero out velocity
             if (DidAJump) OnEndJump();
-            
+
         }
         //In all other cases the player is falling. Here we calculate the y component of velocity while falling.
         else
@@ -316,7 +347,7 @@ public class CharacterController : MonoBehaviour {
             //Falling
             if (!DidAJump) OnBeginJump();
             MoveVec.y -= GravityOnPlayer * DeltaTime;
-            
+
         }
     }
 
@@ -333,7 +364,10 @@ public class CharacterController : MonoBehaviour {
         DidAJump = false;
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
-        if(!JumpWhileHeld) Up = false;
+        if (!JumpWhileHeld) Up = false;
+
+        AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
+        AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -363,7 +397,7 @@ public class CharacterController : MonoBehaviour {
             //If we aren't decelerate more quickly
             else
             {
-                SpeedModifier -= (Acceleration/10.0f) * DeltaTime;
+                SpeedModifier -= (Acceleration / 10.0f) * DeltaTime;
                 if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
             }
         }
@@ -386,16 +420,20 @@ public class CharacterController : MonoBehaviour {
         RBody.velocity = FinalVel;
     }
 
-    private void ManageAnimations()
+    private void PerTickAnimations()
     {
-        if((Left || Right) && IsGrounded())
+        if (!AnimManager.AnimLock)
         {
-            CharacterAnimator.Play("Running (1)");
-        }
-        else
-        {
-            CharacterAnimator.Play("Idle");
+            if (IsGrounded() && !(Left || Right))
+            {
+                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
+                AnimManager.AnimLock = true;
+            }
+            else if (!IsGrounded() && MoveVec.y < 0.0f)
+            {
+                AnimManager.NewAnimEvent("Falling", 0.45f, 0.0f);
+                AnimManager.AnimLock = true;
+            }
         }
     }
-
 }
