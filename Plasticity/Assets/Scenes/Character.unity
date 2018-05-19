@@ -352,7 +352,8 @@ MonoBehaviour:
   MoveWhileJumping: 0
   JumpWhileHeld: 0
   JumpForce: 5
-  GravityOnPlayer: 9
+  UpGravityOnPlayer: 10
+  DownGravityOnPlayer: 16
   GroundTraceDistance: 0.1
   MaxGroundAngle: 120
   GroundLayer:
@@ -398,6 +399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CharacterAnimator: {fileID: 0}
+  AnimLock: 0
 --- !u!1 &675993501
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,7 +523,8 @@ MonoBehaviour:
   MoveWhileJumping: 0
   JumpWhileHeld: 0
   JumpForce: 5
-  GravityOnPlayer: 9
+  UpGravityOnPlayer: 9
+  DownGravityOnPlayer: 14
   GroundTraceDistance: 1.05
   MaxGroundAngle: 120
   GroundLayer:

@@ -49,8 +49,11 @@ public class CharacterManager : MonoBehaviour
     [Tooltip("How much force you want the player to jump with.")]
     private float JumpForce = 5;
     [SerializeField]
-    [Tooltip("How quickly do you want the player to fall after jumping.")]
-    private float GravityOnPlayer = 9;
+    [Tooltip("Impact of gravity as the player rises to zenith of jump.")]
+    private float UpGravityOnPlayer = 9;
+    [SerializeField]
+    [Tooltip("Impact of gravity as the player falls from the zenith of their jump")]
+    private float DownGravityOnPlayer = 14;
     [SerializeField]
     [Tooltip("Trace distance for determining if the player has landed.")]
     private float GroundTraceDistance = 1.05f;
@@ -142,6 +145,7 @@ public class CharacterManager : MonoBehaviour
                 TurnCharacter();
             if (IsGrounded())
             {
+                //Tell the animation manager to play a running animation is left is pressed and player is on ground.
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
             }
 
@@ -160,6 +164,7 @@ public class CharacterManager : MonoBehaviour
                 TurnCharacter();
             if (IsGrounded())
             {
+                //Tell the animation manager to play a running animation is left is pressed and player is on ground.
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
             }
         }
@@ -185,17 +190,21 @@ public class CharacterManager : MonoBehaviour
         if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
         else Debug.LogError("There is currently not a rigidbody attached to this character");
 
-        //Make sure the model has an animator component
+        //Make sure the character has an animation manager
         if (gameObject.GetComponent<AnimEventManager>()) AnimManager = gameObject.GetComponent<AnimEventManager>();
         else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
 
+        //Make sure the model has an animator component
         if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
         else Debug.LogError("There is currently not an animator attached to this character's model");
+        //Pass the instance of the CharacterAnimator obtained in the CharacterManager to the AnimManager.
         AnimManager.CharacterAnimator = CharacterAnimator;
 
+        //Make sure we have at least one of each type of animation specified.
         if (RunAnimations.Length == 0) Debug.LogError("You need at least one run animation specified in the CharacterController");
         if (IdleAnimations.Length == 0) Debug.LogError("You need at least one idle animation specified in the CharacterController");
         if (JumpAnimations.Length == 0) Debug.LogError("You need at least one jump animation specified in the CharacterController");
+
 
         //Our first move direction will just be the forward vector of the player
         InitialDir = transform.forward;
@@ -203,7 +212,6 @@ public class CharacterManager : MonoBehaviour
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
         Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
-        AnimManager = gameObject.GetComponent<AnimEventManager>();
 
     }
 
@@ -326,8 +334,10 @@ public class CharacterManager : MonoBehaviour
             if (DidAJump) OnEndJump();
             if (Up)
             {
+                //Need a different jump force if we are moving uphill while jumping.
                 if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
                 else MoveVec.y = JumpForce;
+                //Tell anim manager to play a jump animation.
                 AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
             }
 
@@ -346,7 +356,12 @@ public class CharacterManager : MonoBehaviour
         {
             //Falling
             if (!DidAJump) OnBeginJump();
-            MoveVec.y -= GravityOnPlayer * DeltaTime;
+
+            //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
+            if(MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
+            else MoveVec.y -= DownGravityOnPlayer * DeltaTime;
+
+
 
         }
     }
@@ -420,15 +435,19 @@ public class CharacterManager : MonoBehaviour
         RBody.velocity = FinalVel;
     }
 
+    //This function makes calls to the AnimManager for animations that need to be updated or calculated per update cycle
     private void PerTickAnimations()
     {
+        //This lock allows crossfadeing of animations to only be called once per transition
         if (!AnimManager.AnimLock)
         {
+            //If the player is on the ground but not moving, play the idle animation.
             if (IsGrounded() && !(Left || Right))
             {
                 AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
                 AnimManager.AnimLock = true;
             }
+            //If the player is falling, play the falling animation
             else if (!IsGrounded() && MoveVec.y < 0.0f)
             {
                 AnimManager.NewAnimEvent("Falling", 0.45f, 0.0f);
