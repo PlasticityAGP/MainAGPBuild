@@ -34,6 +34,11 @@ public class AnimEventManager : MonoBehaviour {
         ManageAnimations(Time.deltaTime);
 	}
 
+    private int GetAnimListLength()
+    {
+        return AnimListLength;
+    }
+
     //NewAnimEvent will be called in the CharacterManager in order to add events to our AnimList.
     [HideInInspector]
     public void NewAnimEvent(string Name, float CrossFade, float TimeBeforePlay)
@@ -44,8 +49,7 @@ public class AnimEventManager : MonoBehaviour {
         Event.TimeToExecution = TimeBeforePlay;
         AnimList[AnimListLength] = Event;
         ++AnimListLength;
-        AnimLock = false;
-        
+        AnimLock = false;        
     }
 
     //Manage animations gets called in update

@@ -218,8 +218,8 @@ public class CharacterManager : MonoBehaviour
     private void FixedUpdate()
     {
         //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
-        CalculateMoveVec();
         CalculateGroundAngle();
+        CalculateMoveVec();
         Jump(Time.deltaTime);
         MoveCharacter(Time.deltaTime);
         PerTickAnimations();
@@ -330,26 +330,19 @@ public class CharacterManager : MonoBehaviour
         //If the player has pressed an UP key and the player is currently standing on the ground
         if (Up && IsGrounded())
         {
-            //Jump
             if (DidAJump) OnEndJump();
-            if (Up)
-            {
-                //Need a different jump force if we are moving uphill while jumping.
-                if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
-                else MoveVec.y = JumpForce;
-                //Tell anim manager to play a jump animation.
-                AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
-            }
+            //Need a different jump force if we are moving uphill while jumping.
+            if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
+            else MoveVec.y = JumpForce;
+            //Tell anim manager to play a jump animation.
+            AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
 
             OnBeginJump();
         }
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
         else if (!Up && IsGrounded())
         {
-
-            //Zero out velocity
             if (DidAJump) OnEndJump();
-
         }
         //In all other cases the player is falling. Here we calculate the y component of velocity while falling.
         else
@@ -382,7 +375,7 @@ public class CharacterManager : MonoBehaviour
         if (!JumpWhileHeld) Up = false;
 
         AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
-        AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
+        if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -442,7 +435,7 @@ public class CharacterManager : MonoBehaviour
         if (!AnimManager.AnimLock)
         {
             //If the player is on the ground but not moving, play the idle animation.
-            if (IsGrounded() && !(Left || Right))
+            if (IsGrounded() && !(Left || Right) && !DidAJump)
             {
                 AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
                 AnimManager.AnimLock = true;
