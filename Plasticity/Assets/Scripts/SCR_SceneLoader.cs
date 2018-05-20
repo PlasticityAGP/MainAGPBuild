@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneLoader : MonoBehaviour {
+public class SCR_SceneLoader : MonoBehaviour {
 
     [SerializeField]
     [Tooltip("What level state data we want the scene loader to operate based on")]
-    private LevelStates LevelData; 
+    private SCR_LevelStates LevelData; 
     private string[] LevelArray;
 
 	void Start () {

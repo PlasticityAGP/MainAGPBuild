@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InputManager : MonoBehaviour {
+public class SCR_InputManager : MonoBehaviour {
 
     /*
      * The Input manager is the first place player input is registered. Key bindings can be adjusted in the editor without 
@@ -63,7 +63,7 @@ public class InputManager : MonoBehaviour {
                 //If no other keys have triggered the up event and an up key is pressed, trigger pressed event
                 if (UpPresses == 0)
                 {
-                    EventManager.TriggerEvent("UpKey", 1);
+                    SCR_EventManager.TriggerEvent("UpKey", 1);
                 }
                 ++UpPresses;
             }
@@ -73,7 +73,7 @@ public class InputManager : MonoBehaviour {
                 //If there aren't any other pressed up keys when we release an up key, trigger released event
                 if (UpPresses == 1)
                 {
-                    EventManager.TriggerEvent("UpKey", 0);
+                    SCR_EventManager.TriggerEvent("UpKey", 0);
                 }
                 --UpPresses;
             }
@@ -89,7 +89,7 @@ public class InputManager : MonoBehaviour {
                 //If no other keys have triggered the left event and a left key is pressed, trigger pressed event
                 if (LeftPresses == 0)
                 {
-                    EventManager.TriggerEvent("LeftKey", 1);
+                    SCR_EventManager.TriggerEvent("LeftKey", 1);
                 }
                 ++LeftPresses;
             }
@@ -99,7 +99,7 @@ public class InputManager : MonoBehaviour {
                 //If there aren't any other pressed left keys when we release a left key, trigger released event
                 if (LeftPresses == 1)
                 {
-                    EventManager.TriggerEvent("LeftKey", 0);
+                    SCR_EventManager.TriggerEvent("LeftKey", 0);
                 }
                 --LeftPresses;
             }
@@ -115,7 +115,7 @@ public class InputManager : MonoBehaviour {
                 //If no other keys have triggered the right event and a right key is pressed, trigger pressed event
                 if (RightPresses == 0)
                 {
-                    EventManager.TriggerEvent("RightKey", 1);
+                    SCR_EventManager.TriggerEvent("RightKey", 1);
                 }
                 ++RightPresses;
             }
@@ -125,7 +125,7 @@ public class InputManager : MonoBehaviour {
                 //If there aren't any other pressed right keys when we release a right key, trigger released event
                 if (RightPresses == 1)
                 {
-                    EventManager.TriggerEvent("RightKey", 0);
+                    SCR_EventManager.TriggerEvent("RightKey", 0);
                 }
                 --RightPresses;
             }
@@ -141,7 +141,7 @@ public class InputManager : MonoBehaviour {
                 //If no other keys have triggered the down event and a down key is pressed, trigger pressed event
                 if (DownPresses == 0)
                 {
-                    EventManager.TriggerEvent("DownKey", 1);
+                    SCR_EventManager.TriggerEvent("DownKey", 1);
                 }
                 ++DownPresses;
             }
@@ -151,7 +151,7 @@ public class InputManager : MonoBehaviour {
                 //If there aren't any other pressed down keys when we release a down key, trigger released event
                 if (DownPresses == 1)
                 {
-                    EventManager.TriggerEvent("DownKey", 0);
+                    SCR_EventManager.TriggerEvent("DownKey", 0);
                 }
                 --DownPresses;
             }
@@ -167,7 +167,7 @@ public class InputManager : MonoBehaviour {
                 //If no other keys have triggered the interact event and an interact key is pressed, trigger pressed event
                 if (InteractPresses == 0)
                 {
-                    EventManager.TriggerEvent("InteractKey", 1);
+                    SCR_EventManager.TriggerEvent("InteractKey", 1);
                 }
                 ++InteractPresses;
             }
@@ -177,7 +177,7 @@ public class InputManager : MonoBehaviour {
                 //If there aren't any other pressed interact keys when we release an interact key, trigger released event
                 if (InteractPresses == 1)
                 {
-                    EventManager.TriggerEvent("InteractKey", 0);
+                    SCR_EventManager.TriggerEvent("InteractKey", 0);
                 }
                 --InteractPresses;
             }

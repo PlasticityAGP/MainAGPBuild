@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class CharacterManager : MonoBehaviour
+public class SCR_CharacterManager : MonoBehaviour
 {
 
     //Event listeners per action for receiving events fired by the Input Manager
@@ -65,7 +65,7 @@ public class CharacterManager : MonoBehaviour
     private LayerMask GroundLayer;
     [SerializeField]
     [Tooltip("Reference to the LevelData asset for the game")]
-    private LevelStates LevelData;
+    private SCR_LevelStates LevelData;
 
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     private bool MoveDir = true;
@@ -82,7 +82,7 @@ public class CharacterManager : MonoBehaviour
     private RaycastHit HitInfo;
     //CharacterAnimator will store a reference to the Animator of our Character.
     private Animator CharacterAnimator;
-    AnimEventManager AnimManager;
+    SCR_AnimEventManager AnimManager;
 
     //Reference to the character's rigidbody
     private Rigidbody RBody;
@@ -105,21 +105,21 @@ public class CharacterManager : MonoBehaviour
     private void OnEnable()
     {
         //Register listeners with their events in the EventManager
-        EventManager.StartListening("UpKey", UpListener);
-        EventManager.StartListening("DownKey", DownListener);
-        EventManager.StartListening("LeftKey", LeftListener);
-        EventManager.StartListening("RightKey", RightListener);
-        EventManager.StartListening("InteractKey", InteractListener);
+        SCR_EventManager.StartListening("UpKey", UpListener);
+        SCR_EventManager.StartListening("DownKey", DownListener);
+        SCR_EventManager.StartListening("LeftKey", LeftListener);
+        SCR_EventManager.StartListening("RightKey", RightListener);
+        SCR_EventManager.StartListening("InteractKey", InteractListener);
     }
 
     private void OnDisable()
     {
         //Tell the EventManager we are no longer listening as the CharacterManager gets disabled.
-        EventManager.StopListening("UpKey", UpListener);
-        EventManager.StopListening("DownKey", DownListener);
-        EventManager.StopListening("LeftKey", LeftListener);
-        EventManager.StopListening("RightKey", RightListener);
-        EventManager.StopListening("InteractKey", InteractListener);
+        SCR_EventManager.StopListening("UpKey", UpListener);
+        SCR_EventManager.StopListening("DownKey", DownListener);
+        SCR_EventManager.StopListening("LeftKey", LeftListener);
+        SCR_EventManager.StopListening("RightKey", RightListener);
+        SCR_EventManager.StopListening("InteractKey", InteractListener);
     }
 
     //The following 5 functions are callbacks that get called by the event listeners
@@ -199,7 +199,7 @@ public class CharacterManager : MonoBehaviour
         else Debug.LogError("There is currently not a rigidbody attached to this character");
 
         //Make sure the character has an animation manager
-        if (gameObject.GetComponent<AnimEventManager>()) AnimManager = gameObject.GetComponent<AnimEventManager>();
+        if (gameObject.GetComponent<SCR_AnimEventManager>()) AnimManager = gameObject.GetComponent<SCR_AnimEventManager>();
         else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
 
         //Make sure the model has an animator component

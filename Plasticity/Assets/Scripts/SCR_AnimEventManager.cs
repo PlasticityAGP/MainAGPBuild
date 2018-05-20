@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimEventManager : MonoBehaviour {
+public class SCR_AnimEventManager : MonoBehaviour {
 
     //AnimEvent stores all the data we need per animation in order to do a crossfade between animations.
     [HideInInspector]

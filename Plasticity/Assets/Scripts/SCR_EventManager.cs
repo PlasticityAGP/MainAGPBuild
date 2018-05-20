@@ -14,15 +14,15 @@ public class InputEvent : UnityEvent<int>
 }
 
 
-public class EventManager : MonoBehaviour
+public class SCR_EventManager : MonoBehaviour
 {
     //Event dictionary will associate a string name with a specific InputEvent object
     private Dictionary<string, InputEvent> EventDictionary;
 
     //CurrentManager is an instance of the event manager script
-    private static EventManager CurrentManager;
+    private static SCR_EventManager CurrentManager;
 
-    public static EventManager instance
+    public static SCR_EventManager instance
     {
         get
         {
@@ -30,7 +30,7 @@ public class EventManager : MonoBehaviour
             if (!CurrentManager)
             {
                 //Look for an instance of the event manager in our scene
-                CurrentManager = FindObjectOfType(typeof(EventManager)) as EventManager;
+                CurrentManager = FindObjectOfType(typeof(SCR_EventManager)) as SCR_EventManager;
                 if (!CurrentManager)
                 {
                     //If we cannot find an event manager in the scene, we got a problem

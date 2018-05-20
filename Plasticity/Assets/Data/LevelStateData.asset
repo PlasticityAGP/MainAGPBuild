@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Name: LevelStateData
   m_EditorClassIdentifier: 
   LevelArray:
-  - Character
-  CurrentLevel: InitialLevel
+  - SCN_Test_Base
+  CurrentLevel: Test
   StatePuzzle0: 0
   StatePuzzle1: 1
   StatePuzzle2: 2
