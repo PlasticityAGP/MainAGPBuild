@@ -109,7 +109,7 @@ public class CharacterManager : MonoBehaviour
 
     private void OnDisable()
     {
-        //Tell the EventManager we are no longer listening as the CharacterController gets disabled.
+        //Tell the EventManager we are no longer listening as the CharacterManager gets disabled.
         EventManager.StopListening("UpKey", UpListener);
         EventManager.StopListening("DownKey", DownListener);
         EventManager.StopListening("LeftKey", LeftListener);
@@ -184,7 +184,7 @@ public class CharacterManager : MonoBehaviour
     void Start()
     {
 
-        if (RefToModel == null) Debug.LogError("You need to pass in a reference to the model you wish the character controller to use");
+        if (RefToModel == null) Debug.LogError("You need to pass in a reference to the model you wish the character manager to use");
 
         //Make sure the current character has a Rigidbody component
         if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
@@ -201,9 +201,9 @@ public class CharacterManager : MonoBehaviour
         AnimManager.CharacterAnimator = CharacterAnimator;
 
         //Make sure we have at least one of each type of animation specified.
-        if (RunAnimations.Length == 0) Debug.LogError("You need at least one run animation specified in the CharacterController");
-        if (IdleAnimations.Length == 0) Debug.LogError("You need at least one idle animation specified in the CharacterController");
-        if (JumpAnimations.Length == 0) Debug.LogError("You need at least one jump animation specified in the CharacterController");
+        if (RunAnimations.Length == 0) Debug.LogError("You need at least one run animation specified in the CharacterManager");
+        if (IdleAnimations.Length == 0) Debug.LogError("You need at least one idle animation specified in the CharacterManager");
+        if (JumpAnimations.Length == 0) Debug.LogError("You need at least one jump animation specified in the CharacterManager");
 
 
         //Our first move direction will just be the forward vector of the player

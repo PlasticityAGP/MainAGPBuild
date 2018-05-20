@@ -8,7 +8,7 @@ public class InputManager : MonoBehaviour {
     /*
      * The Input manager is the first place player input is registered. Key bindings can be adjusted in the editor without 
      * needing to update any code. The Input Manager fires events that are managed by the Event Manager and listened to by the 
-     * Character Controller. This way, any object in the game can listen to input events, and the back end of where we are listening 
+     * Character Manager. This way, any object in the game can listen to input events, and the back end of where we are listening 
      * for input is all in the same place. 
      */
 
