@@ -11,7 +11,10 @@ public class SceneLoader : MonoBehaviour {
     private string[] LevelArray;
 
 	void Start () {
+        //Grab the array from our saved data asset.
         LevelArray = LevelData.LevelArray;
+        //Below is an example of how we can edit data asset at runtime.
+        //LevelData.CurrentLevel = "NotCharacter";
         LoadScenes();
 	}
 	

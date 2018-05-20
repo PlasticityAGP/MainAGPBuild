@@ -63,6 +63,9 @@ public class CharacterManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
     private LayerMask GroundLayer;
+    [SerializeField]
+    [Tooltip("Reference to the LevelData asset for the game")]
+    private LevelStates LevelData;
 
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     private bool MoveDir = true;
@@ -85,6 +88,8 @@ public class CharacterManager : MonoBehaviour
     private Rigidbody RBody;
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
     private bool DidAJump = false;
+
+    
 
     private void Awake()
     {
@@ -133,6 +138,9 @@ public class CharacterManager : MonoBehaviour
         //    Down = true;
         //else
         //    Down = false;
+
+        //Allows us to print name of current level for testing
+        Debug.Log(LevelData.CurrentLevel);
     }
     private void LeftPressed(int value)
     {
