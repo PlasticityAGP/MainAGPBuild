@@ -6,11 +6,12 @@ using UnityEngine.SceneManagement;
 public class SceneLoader : MonoBehaviour {
 
     [SerializeField]
-    [Tooltip("A list of scenes we want to load in an additive and asynchronous manner to the current scene")]
+    [Tooltip("What level state data we want the scene loader to operate based on")]
+    private LevelStates LevelData; 
     private string[] LevelArray;
 
-
 	void Start () {
+        LevelArray = LevelData.LevelArray;
         LoadScenes();
 	}
 	
