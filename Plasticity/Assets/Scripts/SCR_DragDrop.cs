@@ -8,9 +8,16 @@ public class SCR_DragDrop : MonoBehaviour {
     private UnityAction<int> InteractListener;
     private bool Interact = false;
     private Rigidbody RBody;
+
+    private float InitialSpeed;
     [SerializeField]
+    [Tooltip("Speed we want to slow down the player to when they drag an object")]
+    private float MaxDragSpeed;
+
     [Tooltip("Reference to the character that can interact with this object")]
-    private GameObject Character;
+    public GameObject Character;
+
+    private SCR_CharacterManager CharacterManager;
 
     private void Awake()
     {
@@ -48,25 +55,16 @@ public class SCR_DragDrop : MonoBehaviour {
     void Start () {
         if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
         else Debug.LogError("This interactable object needs a rigidbody attached to it");
+        if (Character.GetComponent<SCR_CharacterManager>()) CharacterManager = Character.GetComponent<SCR_CharacterManager>();
+        else Debug.LogError("We need a reference to a Character GameObject with an attached SCR_CharacterManager script in the DragDrop script");
+        InitialSpeed = CharacterManager.MoveSpeed;
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.Equals(Character))
         {
-            if (Character.GetComponent<SCR_CharacterManager>().IsGrounded())
-            {
-                if (Interact)
-                {
-                    UnfreezeXY();
-                    //Debug.Log("Entered + interacted");
-                    RBody.velocity = Character.GetComponent<Rigidbody>().velocity;
-                }
-            }
-            else
-            {
-                FreezeAll();
-            }
+            InTrigger();
             
         }
     }
@@ -79,8 +77,29 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
-    void FreezeAll()
+    [HideInInspector]
+    public void InTrigger()
     {
+        if (CharacterManager.IsGrounded())
+        {
+            if (Interact)
+            {
+                UnfreezeXY();
+                CharacterManager.MoveSpeed = MaxDragSpeed;
+                //Debug.Log("Entered + interacted");
+                RBody.velocity = Character.GetComponent<Rigidbody>().velocity;
+            }
+        }
+        else
+        {
+            FreezeAll();
+        }
+    }
+
+    [HideInInspector]
+    public void FreezeAll()
+    {
+        CharacterManager.MoveSpeed = InitialSpeed;
         RBody.constraints =  RigidbodyConstraints.FreezeAll;
     }
 

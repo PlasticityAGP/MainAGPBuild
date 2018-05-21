@@ -32,9 +32,8 @@ public class SCR_CharacterManager : MonoBehaviour
     [SerializeField]
     [Tooltip("An array of string names for jumping animations for the character")]
     private string[] JumpAnimations;
-    [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
-    private float MoveSpeed = 6;
+    public float MoveSpeed = 6;
     [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
     private float Acceleration = 4;
