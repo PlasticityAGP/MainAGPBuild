@@ -442,4 +442,14 @@ public class SCR_CharacterManager : MonoBehaviour
             }
         }
     }
+
+    [HideInInspector]
+    public bool NearZenith()
+    {
+        if (DidAJump && Mathf.Abs(MoveVec.y) <= 1)
+        {
+            return true;
+        }
+        return false;
+    }
 }

@@ -17,7 +17,8 @@ public class SCR_DragDrop : MonoBehaviour {
     [Tooltip("Reference to the character that can interact with this object")]
     public GameObject Character;
 
-    private SCR_CharacterManager CharacterManager;
+    [HideInInspector]
+    public SCR_CharacterManager CharacterManager;
 
     private void Awake()
     {
