@@ -59,7 +59,7 @@ public class SCR_DragDrop : MonoBehaviour {
                 if (Interact)
                 {
                     UnfreezeXY();
-                    Debug.Log("Entered + interacted");
+                    //Debug.Log("Entered + interacted");
                     RBody.velocity = Character.GetComponent<Rigidbody>().velocity;
                 }
             }

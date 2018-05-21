@@ -135,7 +135,7 @@ public class SCR_CharacterManager : MonoBehaviour
         //    Down = false;
 
         //Allows us to print name of current level for testing
-        Debug.Log(LevelData.CurrentLevel);
+        //Debug.Log(LevelData.CurrentLevel);
     }
     private void LeftPressed(int value)
     {
@@ -224,8 +224,8 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.05f);
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.05f);
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f);
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f);
         RaycastHit Result;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
         //because we want our velocity to match the slope of the surface slightly before we return true.

@@ -513,7 +513,6 @@ MonoBehaviour:
     m_Bits: 4294967295
   LevelData: {fileID: 0}
   RBody: {fileID: 0}
-  DidAJump: 0
 --- !u!1001 &1012574618
 Prefab:
   m_ObjectHideFlags: 0
@@ -553,11 +552,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: GroundLayer.m_Bits
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
   m_IsPrefabParent: 0
@@ -591,7 +585,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1386316440}
   m_LocalRotation: {x: 0, y: 0, z: 0.08715578, w: 0.9961947}
-  m_LocalPosition: {x: -7.34, y: -0.7, z: 0}
+  m_LocalPosition: {x: -7.34, y: -0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 242657811}

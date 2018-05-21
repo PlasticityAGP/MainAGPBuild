@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 114989280144640750}
   - component: {fileID: 114051743485352108}
   m_Layer: 0
-  m_Name: Character
+  m_Name: PF_Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1167,8 +1167,9 @@ MonoBehaviour:
   MaxGroundAngle: 120
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
   LevelData: {fileID: 11400000, guid: fb9694f3c0a226044ac074384b4fdad5, type: 2}
+  RBody: {fileID: 0}
 --- !u!136 &136348256801458980
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -1178,10 +1179,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.22843568
+  m_Radius: 0.3494129
   m_Height: 2.0006175
   m_Direction: 1
-  m_Center: {x: -8.621239e-17, y: 0.9108348, z: 0.025183335}
+  m_Center: {x: 3.0071067e-16, y: 0.9108348, z: 0}
 --- !u!137 &137528024389003848
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
