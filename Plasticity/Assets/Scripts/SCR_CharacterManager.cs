@@ -19,7 +19,6 @@ public class SCR_CharacterManager : MonoBehaviour
     //private bool Down = false;
     private bool Left = false;
     private bool Right = false;
-    //private bool Interact = false;
 
     [SerializeField]
     [Tooltip("Pass in a reference to the model for this character")]
@@ -85,8 +84,9 @@ public class SCR_CharacterManager : MonoBehaviour
     SCR_AnimEventManager AnimManager;
 
     //Reference to the character's rigidbody
-    private Rigidbody RBody;
+    public Rigidbody RBody;
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
+
     private bool DidAJump = false;
 
     
@@ -99,7 +99,6 @@ public class SCR_CharacterManager : MonoBehaviour
         DownListener = new UnityAction<int>(DownPressed);
         LeftListener = new UnityAction<int>(LeftPressed);
         RightListener = new UnityAction<int>(RightPressed);
-        InteractListener = new UnityAction<int>(InteractPressed);
     }
 
     private void OnEnable()
@@ -109,7 +108,6 @@ public class SCR_CharacterManager : MonoBehaviour
         SCR_EventManager.StartListening("DownKey", DownListener);
         SCR_EventManager.StartListening("LeftKey", LeftListener);
         SCR_EventManager.StartListening("RightKey", RightListener);
-        SCR_EventManager.StartListening("InteractKey", InteractListener);
     }
 
     private void OnDisable()
@@ -119,17 +117,14 @@ public class SCR_CharacterManager : MonoBehaviour
         SCR_EventManager.StopListening("DownKey", DownListener);
         SCR_EventManager.StopListening("LeftKey", LeftListener);
         SCR_EventManager.StopListening("RightKey", RightListener);
-        SCR_EventManager.StopListening("InteractKey", InteractListener);
     }
 
     //The following 5 functions are callbacks that get called by the event listeners
     private void UpPressed(int value)
     {
         //The value passed by the event indicates whether or not the key is pressed down. 
-        if (value == 1)
-            Up = true;
-        else
-            Up = false;
+        if (value == 1) Up = true;
+        else Up = false;
     }
     private void DownPressed(int value)
     {
@@ -158,8 +153,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
 
         }
-        else
-            Left = false;
+        else Left = false;
     }
     private void RightPressed(int value)
     {
@@ -176,17 +170,9 @@ public class SCR_CharacterManager : MonoBehaviour
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
             }
         }
-        else
-            Right = false;
+        else Right = false;
     }
-    private void InteractPressed(int value)
-    {
-        //The value passed by the event indicates whether or not the key is pressed down.
-        //if (value == 1)
-        //    Interact = true;
-        //else
-        //    Interact = false;
-    }
+
 
     // Use this for initialization
     void Start()
@@ -233,12 +219,13 @@ public class SCR_CharacterManager : MonoBehaviour
         PerTickAnimations();
     }
 
-    private bool IsGrounded()
+    [HideInInspector]
+    public bool IsGrounded()
     {
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f);
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f);
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.05f);
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.05f);
         RaycastHit Result;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
         //because we want our velocity to match the slope of the surface slightly before we return true.
