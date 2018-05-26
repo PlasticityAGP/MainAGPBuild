@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 114051743485352108}
   m_Layer: 0
   m_Name: PF_Character
-  m_TagString: Untagged
+  m_TagString: Character
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1160,7 +1160,7 @@ MonoBehaviour:
   Acceleration: 4
   MoveWhileJumping: 0
   JumpWhileHeld: 0
-  JumpForce: 5
+  JumpForce: 5.5
   UpGravityOnPlayer: 10
   DownGravityOnPlayer: 16
   GroundTraceDistance: 0.1

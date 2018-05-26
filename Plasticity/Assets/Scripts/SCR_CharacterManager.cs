@@ -399,7 +399,7 @@ public class SCR_CharacterManager : MonoBehaviour
             //If we aren't decelerate more quickly
             else
             {
-                SpeedModifier -= (Acceleration / 10.0f) * DeltaTime;
+                SpeedModifier -= (Acceleration / 20.0f) * DeltaTime;
                 if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
             }
         }
@@ -441,15 +441,5 @@ public class SCR_CharacterManager : MonoBehaviour
                 AnimManager.AnimLock = true;
             }
         }
-    }
-
-    [HideInInspector]
-    public bool NearZenith()
-    {
-        if (DidAJump && Mathf.Abs(MoveVec.y) <= 1)
-        {
-            return true;
-        }
-        return false;
     }
 }
