@@ -16,7 +16,7 @@ public class SCR_CharacterManager : MonoBehaviour
     //Booleans that will signify what input is being held down. For example, Up is true whenever an Up
     //Key is held down, and so on
     private bool Up = false;
-    //private bool Down = false;
+    private bool Down = false; // Uncommented by Matt for testing
     private bool Left = false;
     private bool Right = false;
 
@@ -88,7 +88,9 @@ public class SCR_CharacterManager : MonoBehaviour
 
     private bool DidAJump = false;
 
-    
+    private bool IsClimbing = false; // Added by Matt for testing
+    private bool jumpinOff = false; // Added by Matt for testing
+    public float ClimbSpeed = 3.0f; // Added by Matt for testing
 
     private void Awake()
     {
@@ -125,19 +127,38 @@ public class SCR_CharacterManager : MonoBehaviour
         if (value == 1) Up = true;
         else Up = false;
     }
-    private void DownPressed(int value)
+    private void DownPressed(int value) // Uncommented by Matt For Testing
     {
         //The value passed by the event indicates whether or not the key is pressed down.
-        //if (value == 1)
-        //    Down = true;
-        //else
-        //    Down = false;
+        if (value == 1)
+            Down = true;
+        else
+            Down = false;
 
         //Allows us to print name of current level for testing
         //Debug.Log(LevelData.CurrentLevel);
     }
     private void LeftPressed(int value)
     {
+        if (IsClimbing) // Added by Matt for Testing
+        {
+            if (value == 1)
+            {
+                Debug.Log("Player is reaching left to jump off of climbable object");
+                Left = true;
+                if (MoveDir)
+                    TurnCharacter();
+                // Play reaching animation
+            }
+            else
+            {
+                Debug.Log("Player is no longer reaching to jump");
+                Left = false;
+            }
+
+            return;
+        }
+
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
@@ -156,6 +177,25 @@ public class SCR_CharacterManager : MonoBehaviour
     }
     private void RightPressed(int value)
     {
+        if (IsClimbing) // Added by Matt for Testing
+        {
+            if (value == 1)
+            {
+                Debug.Log("Player is reaching right to jump off of climbable object");
+                Right = true;
+                if (!MoveDir)
+                    TurnCharacter();
+                // Play reaching animation
+            }
+            else
+            {
+                Debug.Log("Player is no longer reaching to jump");
+                Right = false;
+            }
+
+            return;
+        }
+
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
@@ -213,9 +253,48 @@ public class SCR_CharacterManager : MonoBehaviour
         //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
         CalculateGroundAngle();
         CalculateMoveVec();
-        Jump(Time.deltaTime);
+        if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
         MoveCharacter(Time.deltaTime);
         PerTickAnimations();
+    }
+
+    // Added by Matt for testing
+    private void Climb()
+    {
+        if (Up)
+        {
+            Debug.Log("Climbing Up");
+            MoveVec.y = ClimbSpeed;
+            // Play animation
+        }  
+        else if (Down)
+        {
+            Debug.Log("Climbing Down");
+            MoveVec.y = ClimbSpeed * -1;
+            // Play animation
+        }
+        else
+            MoveVec.y = 0;
+    }
+
+    // Added by Matt for testing
+    public void JumpOff()
+    {
+        //TODO: figure out jumping left and right
+        IsClimbing = false;
+        if (Up)
+        {
+            MoveVec.y = JumpForce;
+            if (Left && !Right) MoveVec.z = JumpForce * -1;
+            else if (!Left && Right) MoveVec.x = JumpForce;
+        }
+        
+    }
+
+    public void OnClimbable()
+    {
+        IsClimbing = true;
+        // TODO: have to change the player's x velocity accordingly.
     }
 
     [HideInInspector]
@@ -347,9 +426,6 @@ public class SCR_CharacterManager : MonoBehaviour
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
             if(MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
             else MoveVec.y -= DownGravityOnPlayer * DeltaTime;
-
-
-
         }
     }
 
@@ -406,8 +482,17 @@ public class SCR_CharacterManager : MonoBehaviour
 
         //Set velocity of player
         Vector3 FinalVel;
+        if (IsClimbing) // Added by Matt for testing
+        {
+            Debug.Log("Calling Climb()");
+            Climb();
+            if (!jumpinOff)
+                FinalVel = new Vector3(0, MoveVec.y, 0);
+            else
+                FinalVel = MoveVec;
+        }
         //If we are grounded and we didn't just jump move along slope of surface we are on.
-        if (IsGrounded() && !DidAJump)
+        else if (IsGrounded() && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
             //If the slope is too high, don't move
