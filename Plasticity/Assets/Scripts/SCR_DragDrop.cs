@@ -5,8 +5,11 @@ using UnityEngine.Events;
 
 public class SCR_DragDrop : MonoBehaviour {
 
+    //Listener to tell when character wants to interact
     private UnityAction<int> InteractListener;
     private bool Interact = false;
+
+    //The rigidbody of the object we will be moving
     private Rigidbody RBody;
 
     private float InitialSpeed;
@@ -54,10 +57,13 @@ public class SCR_DragDrop : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        //Get the rigidbody component we will be moving
         if (gameObject.transform.parent.GetComponent<Rigidbody>()) RBody = gameObject.transform.parent.GetComponent<Rigidbody>();
         else Debug.LogError("This interactable object needs a rigidbody attached to it");
+        //Get the character manager so that we can set the character's speed when they start moving the object
         if (Character.GetComponent<SCR_CharacterManager>()) CharacterManager = Character.GetComponent<SCR_CharacterManager>();
         else Debug.LogError("We need a reference to a Character GameObject with an attached SCR_CharacterManager script in the DragDrop script");
+        //Define an initial speed that we want to return the character to after they finish moving the object
         InitialSpeed = CharacterManager.MoveSpeed;
     }
 
@@ -66,6 +72,8 @@ public class SCR_DragDrop : MonoBehaviour {
         if (other.gameObject.tag == "Character")
         {
             //Debug.Log("Testing");
+
+            //Call method that allows box movement.
             InTrigger(other.gameObject);
             
         }
@@ -75,6 +83,7 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         if (other.gameObject.tag == "Character")
         {
+            //If the character is not in range to move the box, don't allow the box to move.
             FreezeAll();
         }
     }
@@ -86,6 +95,8 @@ public class SCR_DragDrop : MonoBehaviour {
         {
             if (Interact)
             {
+                //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
+                //and set the velocity of the object to be moved
                 UnfreezeXY();
                 CharacterManager.MoveSpeed = MaxDragSpeed;
                 //Debug.Log("Entered + interacted");
@@ -94,6 +105,7 @@ public class SCR_DragDrop : MonoBehaviour {
         }
         else
         {
+            //In all other cases we want the character to be still
             FreezeAll();
         }
     }
@@ -101,18 +113,15 @@ public class SCR_DragDrop : MonoBehaviour {
     [HideInInspector]
     public void FreezeAll()
     {
+        //Freeze rigidbody via constraints, and return the player to their original speed
         CharacterManager.MoveSpeed = InitialSpeed;
         RBody.constraints =  RigidbodyConstraints.FreezeAll;
     }
 
     void UnfreezeXY()
     {
+        //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
         RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
     }
 
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
 }

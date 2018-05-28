@@ -66,7 +66,7 @@ public class SCR_Ladder : MonoBehaviour {
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
-        Debug.Log("started climbing");
+        //Debug.Log("started climbing");
         CharacterManager.OnClimbable();
     }
 
@@ -77,7 +77,7 @@ public class SCR_Ladder : MonoBehaviour {
         reaching = false;
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
-        Debug.Log("stopped climbing");
+        //Debug.Log("stopped climbing");
         CharacterManager.JumpOff();
     }
 

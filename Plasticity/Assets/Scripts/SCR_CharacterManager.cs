@@ -144,7 +144,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             if (value == 1)
             {
-                Debug.Log("Player is reaching left to jump off of climbable object");
+                //Debug.Log("Player is reaching left to jump off of climbable object");
                 Left = true;
                 if (MoveDir)
                     TurnCharacter();
@@ -152,7 +152,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Player is no longer reaching to jump");
+                //Debug.Log("Player is no longer reaching to jump");
                 Left = false;
             }
 
@@ -181,7 +181,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             if (value == 1)
             {
-                Debug.Log("Player is reaching right to jump off of climbable object");
+                //Debug.Log("Player is reaching right to jump off of climbable object");
                 Right = true;
                 if (!MoveDir)
                     TurnCharacter();
@@ -189,7 +189,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Player is no longer reaching to jump");
+                //Debug.Log("Player is no longer reaching to jump");
                 Right = false;
             }
 
@@ -263,13 +263,13 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         if (Up)
         {
-            Debug.Log("Climbing Up");
+            //Debug.Log("Climbing Up");
             MoveVec.y = ClimbSpeed;
             // Play animation
         }  
         else if (Down)
         {
-            Debug.Log("Climbing Down");
+            //Debug.Log("Climbing Down");
             MoveVec.y = ClimbSpeed * -1;
             // Play animation
         }
@@ -497,7 +497,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
         if (IsClimbing) // Added by Matt for testing
         {
-            Debug.Log("Calling Climb()");
+            //Debug.Log("Calling Climb()");
             Climb();
             if (!jumpinOff)
                 FinalVel = new Vector3(0, MoveVec.y, 0);
