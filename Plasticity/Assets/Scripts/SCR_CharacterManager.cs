@@ -87,7 +87,7 @@ public class SCR_CharacterManager : MonoBehaviour
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
 
     private bool DidAJump = false;
-
+    private bool VelocityAllowed = true;
     private bool IsClimbing = false; // Added by Matt for testing
     private bool jumpinOff = false; // Added by Matt for testing
     public float ClimbSpeed = 3.0f; // Added by Matt for testing
@@ -448,6 +448,18 @@ public class SCR_CharacterManager : MonoBehaviour
         if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
     }
 
+    [HideInInspector]
+    public void FreezeVelocity()
+    {
+        VelocityAllowed = false;
+    }
+
+    [HideInInspector]
+    public void UnfreezeVelocity()
+    {
+        VelocityAllowed = true;
+    }
+
     private void MoveCharacter(float DeltaTime)
     {
 
@@ -506,7 +518,9 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y, MoveVec.z * MoveSpeed * SpeedModifier);
         }
+        if (!VelocityAllowed) FinalVel = Vector3.zero;
         RBody.velocity = FinalVel;
+
     }
 
     //This function makes calls to the AnimManager for animations that need to be updated or calculated per update cycle
