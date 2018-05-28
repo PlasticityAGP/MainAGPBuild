@@ -482,6 +482,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
         //Set velocity of player
         Vector3 FinalVel;
+
         if (IsClimbing) // Added by Matt for testing
         {
             Debug.Log("Calling Climb()");
@@ -491,6 +492,7 @@ public class SCR_CharacterManager : MonoBehaviour
             else
                 FinalVel = MoveVec;
         }
+
         //If we are grounded and we didn't just jump move along slope of surface we are on.
         else if (IsGrounded() && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
         {

@@ -54,7 +54,7 @@ public class SCR_DragDrop : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
+        if (gameObject.transform.parent.GetComponent<Rigidbody>()) RBody = gameObject.transform.parent.GetComponent<Rigidbody>();
         else Debug.LogError("This interactable object needs a rigidbody attached to it");
         if (Character.GetComponent<SCR_CharacterManager>()) CharacterManager = Character.GetComponent<SCR_CharacterManager>();
         else Debug.LogError("We need a reference to a Character GameObject with an attached SCR_CharacterManager script in the DragDrop script");
@@ -63,23 +63,24 @@ public class SCR_DragDrop : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.Equals(Character))
+        if (other.gameObject.tag == "Character")
         {
-            InTrigger();
+            //Debug.Log("Testing");
+            InTrigger(other.gameObject);
             
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.Equals(Character))
+        if (other.gameObject.tag == "Character")
         {
             FreezeAll();
         }
     }
 
     [HideInInspector]
-    public void InTrigger()
+    public void InTrigger(GameObject Other)
     {
         if (CharacterManager.IsGrounded())
         {
@@ -88,7 +89,7 @@ public class SCR_DragDrop : MonoBehaviour {
                 UnfreezeXY();
                 CharacterManager.MoveSpeed = MaxDragSpeed;
                 //Debug.Log("Entered + interacted");
-                RBody.velocity = Character.GetComponent<Rigidbody>().velocity;
+                RBody.velocity = Other.GetComponent<Rigidbody>().velocity;
             }
         }
         else

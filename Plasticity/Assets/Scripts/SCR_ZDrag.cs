@@ -8,20 +8,20 @@ public class SCR_ZDrag : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        ScriptOfParent = gameObject.transform.parent.gameObject.GetComponent<SCR_DragDrop>();
+        ScriptOfParent = gameObject.transform.parent.GetComponentInChildren<SCR_DragDrop>();
 	}
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.Equals(ScriptOfParent.Character))
+        if (other.gameObject.tag == "Character")
         {
-            ScriptOfParent.InTrigger();
+            ScriptOfParent.InTrigger(other.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.Equals(ScriptOfParent.Character))
+        if (other.gameObject.tag == "Character")
         {
             ScriptOfParent.FreezeAll();
         }
