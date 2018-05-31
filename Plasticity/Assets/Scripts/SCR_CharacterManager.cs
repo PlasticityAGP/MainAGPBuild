@@ -83,6 +83,7 @@ public class SCR_CharacterManager : MonoBehaviour
     SCR_AnimEventManager AnimManager;
 
     //Reference to the character's rigidbody
+    [HideInInspector]
     public Rigidbody RBody;
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
 
