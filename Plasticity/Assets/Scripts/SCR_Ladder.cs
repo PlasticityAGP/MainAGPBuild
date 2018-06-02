@@ -66,8 +66,10 @@ public class SCR_Ladder : MonoBehaviour {
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
-        //Debug.Log("started climbing");
-        CharacterManager.OnClimbable();
+        Debug.Log("started climbing");
+        float maxclimb = this.transform.position.y + this.transform.localScale.y/2;
+        float minclimb = this.transform.position.y - this.transform.localScale.y/2;
+        CharacterManager.OnClimbable(maxclimb, minclimb);
     }
 
     // The player hops off the ladder.
@@ -77,7 +79,7 @@ public class SCR_Ladder : MonoBehaviour {
         reaching = false;
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
-        //Debug.Log("stopped climbing");
+        Debug.Log("stopped climbing");
         CharacterManager.JumpOff();
     }
 

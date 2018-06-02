@@ -83,15 +83,17 @@ public class SCR_CharacterManager : MonoBehaviour
     SCR_AnimEventManager AnimManager;
 
     //Reference to the character's rigidbody
-    [HideInInspector]
     public Rigidbody RBody;
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
 
     private bool DidAJump = false;
     private bool VelocityAllowed = true;
-    private bool IsClimbing = false; // Added by Matt for testing
+    public bool IsClimbing = false; // Added by Matt for testing
     private bool jumpinOff = false; // Added by Matt for testing
+    private bool FallingOff = false;
     public float ClimbSpeed = 3.0f; // Added by Matt for testing
+    private float highclimb;
+    private float lowclimb;
 
     private void Awake()
     {
@@ -145,7 +147,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             if (value == 1)
             {
-                //Debug.Log("Player is reaching left to jump off of climbable object");
+                Debug.Log("Player is reaching left to jump off of climbable object");
                 Left = true;
                 if (MoveDir)
                     TurnCharacter();
@@ -153,7 +155,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else
             {
-                //Debug.Log("Player is no longer reaching to jump");
+                Debug.Log("Player is no longer reaching to jump");
                 Left = false;
             }
 
@@ -182,7 +184,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             if (value == 1)
             {
-                //Debug.Log("Player is reaching right to jump off of climbable object");
+                Debug.Log("Player is reaching right to jump off of climbable object");
                 Right = true;
                 if (!MoveDir)
                     TurnCharacter();
@@ -190,7 +192,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else
             {
-                //Debug.Log("Player is no longer reaching to jump");
+                Debug.Log("Player is no longer reaching to jump");
                 Right = false;
             }
 
@@ -264,14 +266,18 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         if (Up)
         {
-            //Debug.Log("Climbing Up");
-            MoveVec.y = ClimbSpeed;
+            if (this.transform.position.y > highclimb)
+                MoveVec.y = 0;
+            else
+                MoveVec.y = ClimbSpeed;
             // Play animation
         }  
         else if (Down)
         {
-            //Debug.Log("Climbing Down");
-            MoveVec.y = ClimbSpeed * -1;
+            if (this.transform.position.y < lowclimb)
+                MoveVec.y = 0;
+            else
+                MoveVec.y = ClimbSpeed * -1;
             // Play animation
         }
         else
@@ -282,20 +288,33 @@ public class SCR_CharacterManager : MonoBehaviour
     public void JumpOff()
     {
         //TODO: figure out jumping left and right
-        IsClimbing = false;
         if (Up)
         {
             MoveVec.y = JumpForce;
-            if (Left && !Right) MoveVec.z = JumpForce * -1;
-            else if (!Left && Right) MoveVec.x = JumpForce;
+            if (Left && !Right)
+            {
+                MoveVec.x = JumpForce / 2 * -1;
+                Debug.Log("Jumped off Leftwards");
+            }
+            else if (!Left && Right) MoveVec.x = JumpForce / 2;
+            else Debug.Log("freaky stuff");
+            jumpinOff = true;
+            Jump(Time.deltaTime);
         }
-        
     }
 
-    public void OnClimbable()
+    public void OnClimbable(float high, float low)
     {
+        highclimb = high;
+        lowclimb = low;
         IsClimbing = true;
+        MoveVec.x = 0;
         // TODO: have to change the player's x velocity accordingly.
+    }
+
+    public void GrabRope()
+    {
+        //TODO: everything
     }
 
     [HideInInspector]
@@ -398,12 +417,42 @@ public class SCR_CharacterManager : MonoBehaviour
         }
     }
 
+    [HideInInspector]
+    public void FreezeVelocity()
+    {
+        VelocityAllowed = false;
+    }
+
+    [HideInInspector]
+    public void UnfreezeVelocity()
+    {
+        VelocityAllowed = true;
+    }
+
+
+
     private void Jump(float DeltaTime)
     {
-        CalculateMoveVec();
+        if (IsClimbing || jumpinOff)
+        {
+            MoveVec.y = JumpForce;
+            //Tell anim manager to play a jump animation.
+            AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
+
+            OnBeginJump();
+            IsClimbing = false;
+            return;
+        }
+        else
+        {
+            CalculateMoveVec();
+        }
+
+        
         //If the player has pressed an UP key and the player is currently standing on the ground
         if (Up && IsGrounded())
         {
+            FallingOff = false;
             if (DidAJump) OnEndJump();
             //Need a different jump force if we are moving uphill while jumping.
             if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
@@ -416,6 +465,7 @@ public class SCR_CharacterManager : MonoBehaviour
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
         else if (!Up && IsGrounded())
         {
+            FallingOff = false;
             if (DidAJump) OnEndJump();
         }
         //In all other cases the player is falling. Here we calculate the y component of velocity while falling.
@@ -447,18 +497,6 @@ public class SCR_CharacterManager : MonoBehaviour
 
         AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
         if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
-    }
-
-    [HideInInspector]
-    public void FreezeVelocity()
-    {
-        VelocityAllowed = false;
-    }
-
-    [HideInInspector]
-    public void UnfreezeVelocity()
-    {
-        VelocityAllowed = true;
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -496,16 +534,24 @@ public class SCR_CharacterManager : MonoBehaviour
         //Set velocity of player
         Vector3 FinalVel;
 
-        if (IsClimbing) // Added by Matt for testing
+        if (FallingOff)
         {
-            //Debug.Log("Calling Climb()");
-            Climb();
-            if (!jumpinOff)
-                FinalVel = new Vector3(0, MoveVec.y, 0);
-            else
-                FinalVel = MoveVec;
+            if (MoveSpeed == 0) MoveSpeed = 1;
+            if (SpeedModifier == 0) SpeedModifier = 1;
+            MoveVec.x = RBody.velocity.x / MoveSpeed / SpeedModifier;
         }
 
+        if (IsClimbing) // Added by Matt for testing
+        {
+            Climb();
+            FinalVel = new Vector3(0, MoveVec.y, 0);
+        }
+        else if (jumpinOff)
+        {
+            FinalVel = new Vector3(MoveVec.x, MoveVec.y, 0);
+            jumpinOff = false;
+            FallingOff = true;
+        }
         //If we are grounded and we didn't just jump move along slope of surface we are on.
         else if (IsGrounded() && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
         {
@@ -519,9 +565,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y, MoveVec.z * MoveSpeed * SpeedModifier);
         }
-        if (!VelocityAllowed) FinalVel = Vector3.zero;
         RBody.velocity = FinalVel;
-
     }
 
     //This function makes calls to the AnimManager for animations that need to be updated or calculated per update cycle
@@ -530,8 +574,13 @@ public class SCR_CharacterManager : MonoBehaviour
         //This lock allows crossfadeing of animations to only be called once per transition
         if (!AnimManager.AnimLock)
         {
+            if (IsClimbing)
+            {
+                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
+                AnimManager.AnimLock = true;
+            }
             //If the player is on the ground but not moving, play the idle animation.
-            if (IsGrounded() && !(Left || Right) && !DidAJump)
+            else if (IsGrounded() && !(Left || Right) && !DidAJump)
             {
                 AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
                 AnimManager.AnimLock = true;
