@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class SCR_CharacterManager : MonoBehaviour
 {
@@ -20,50 +21,62 @@ public class SCR_CharacterManager : MonoBehaviour
     private bool Left = false;
     private bool Right = false;
 
+    [Title("Character Model")]
     [SerializeField]
     [Tooltip("Pass in a reference to the model for this character")]
     private GameObject RefToModel;
+    [Title("Animations")]
+    [InfoBox("Each of the type of animations stores an array of Animation State names that are associated with the Character Model child Game Object. These categories of animation will randomly choose" +
+        " one of the level states in its array to play. This adds a little randomness/lifelike feeling to the way our character moves")]
     [SerializeField]
     [Tooltip("An array of string names for running animations for the character")]
+    [ValidateInput("NotEmpty", "There must be at least one idle animation specified")]
     private string[] IdleAnimations;
     [SerializeField]
     [Tooltip("An array of string names for idle animations for the character")]
+    [ValidateInput("NotEmpty", "There must be at least one run animation specified")]
     private string[] RunAnimations;
     [SerializeField]
     [Tooltip("An array of string names for jumping animations for the character")]
+    [ValidateInput("NotEmpty", "There must be at least one jump animation specified")]
     private string[] JumpAnimations;
+    [Title("Movement")]
     [Tooltip("Determines the maximum speed our character can move.")]
-    public float MoveSpeed = 6;
+    [ValidateInput("LessThanZero", "We cannot have a max move speed <= 0.0")]
+    public float MoveSpeed;
     [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
-    private float Acceleration = 4;
+    [ValidateInput("LessThanZero", "We cannot have an acceleration value <= 0.0")]
+    private float Acceleration;
     [SerializeField]
     [Tooltip("Determines if you want the player to be able to ajust their velocity mid air")]
-    private bool MoveWhileJumping = false;
+    private bool MoveWhileJumping;
     [SerializeField]
     [Tooltip("If true, allows the player to continuously jump while UP is held down")]
-    private bool JumpWhileHeld = false;
+    private bool JumpWhileHeld;
     [SerializeField]
     [Tooltip("How much force you want the player to jump with.")]
-    private float JumpForce = 5;
+    [ValidateInput("LessThanZero", "We cannot have a jump force <= 0.0")]
+    private float JumpForce;
     [SerializeField]
     [Tooltip("Impact of gravity as the player rises to zenith of jump.")]
-    private float UpGravityOnPlayer = 9;
+    [ValidateInput("LessThanZero", "We cannot have an up gravity component <= 0.0")]
+    private float UpGravityOnPlayer;
     [SerializeField]
     [Tooltip("Impact of gravity as the player falls from the zenith of their jump")]
-    private float DownGravityOnPlayer = 14;
+    [ValidateInput("LessThanZero", "We cannot have a down gravity component <= 0.0")]
+    private float DownGravityOnPlayer;
+    [Title("Environment")]
     [SerializeField]
     [Tooltip("Trace distance for determining if the player has landed.")]
-    private float GroundTraceDistance = 1.05f;
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float GroundTraceDistance;
     [SerializeField]
     [Tooltip("The maximum angle between player and ground that is walkable by player")]
-    private float MaxGroundAngle = 120;
+    private float MaxGroundAngle;
     [SerializeField]
     [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
     private LayerMask GroundLayer;
-    [SerializeField]
-    [Tooltip("Reference to the LevelData asset for the game")]
-    private SCR_LevelStates LevelData;
 
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     private bool MoveDir = true;
@@ -83,17 +96,29 @@ public class SCR_CharacterManager : MonoBehaviour
     SCR_AnimEventManager AnimManager;
 
     //Reference to the character's rigidbody
+    [HideInInspector]
     public Rigidbody RBody;
     //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
 
     private bool DidAJump = false;
     private bool VelocityAllowed = true;
+    [HideInInspector]
     public bool IsClimbing = false; // Added by Matt for testing
     private bool jumpinOff = false; // Added by Matt for testing
     private bool FallingOff = false;
     public float ClimbSpeed = 3.0f; // Added by Matt for testing
     private float highclimb;
     private float lowclimb;
+
+    private bool NotEmpty(string[] array)
+    {
+        if (array.Length == 0) return false;
+        else return true;
+    }
+    private bool LessThanZero(float input)
+    {
+        return input > 0.0f;
+    }
 
     private void Awake()
     {
@@ -261,7 +286,6 @@ public class SCR_CharacterManager : MonoBehaviour
         PerTickAnimations();
     }
 
-    // Added by Matt for testing
     private void Climb()
     {
         if (Up)
@@ -284,7 +308,9 @@ public class SCR_CharacterManager : MonoBehaviour
             MoveVec.y = 0;
     }
 
-    // Added by Matt for testing
+    /// <summary>
+    /// This is a temporary summary TODO: MATT
+    /// </summary>
     public void JumpOff()
     {
         //TODO: figure out jumping left and right
@@ -303,6 +329,11 @@ public class SCR_CharacterManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This is a temporary summary TODO: MATT
+    /// </summary>
+    /// <param name="high"></param>
+    /// <param name="low"></param>
     public void OnClimbable(float high, float low)
     {
         highclimb = high;
@@ -312,12 +343,11 @@ public class SCR_CharacterManager : MonoBehaviour
         // TODO: have to change the player's x velocity accordingly.
     }
 
-    public void GrabRope()
-    {
-        //TODO: everything
-    }
-
-    [HideInInspector]
+    /// <summary>
+    /// Draws traces down from the character to determine if they are resting on the ground or not. Returns true if on the ground, returns false 
+    /// in the air
+    /// </summary>
+    /// <returns>Whether the player is on the ground or not</returns>
     public bool IsGrounded()
     {
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
@@ -417,19 +447,21 @@ public class SCR_CharacterManager : MonoBehaviour
         }
     }
 
-    [HideInInspector]
+    /// <summary>
+    /// Sets the character's velocity to Vector3.Zero, and prevents the CharacterManager from updating velocity unitl UnfreezeVelocity() is called
+    /// </summary>
     public void FreezeVelocity()
     {
         VelocityAllowed = false;
     }
 
-    [HideInInspector]
+    /// <summary>
+    /// Allows the CharacterManager to begin updating velocity again.
+    /// </summary>
     public void UnfreezeVelocity()
     {
         VelocityAllowed = true;
     }
-
-
 
     private void Jump(float DeltaTime)
     {
