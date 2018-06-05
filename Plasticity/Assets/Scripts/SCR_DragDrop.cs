@@ -123,5 +123,4 @@ public class SCR_DragDrop : MonoBehaviour {
         //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
         RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
     }
-
 }

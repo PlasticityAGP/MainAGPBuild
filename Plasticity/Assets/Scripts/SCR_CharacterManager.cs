@@ -147,7 +147,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             if (value == 1)
             {
-                Debug.Log("Player is reaching left to jump off of climbable object");
+                //Debug.Log("Player is reaching left to jump off of climbable object");
                 Left = true;
                 if (MoveDir)
                     TurnCharacter();
@@ -155,7 +155,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Player is no longer reaching to jump");
+                //Debug.Log("Player is no longer reaching to jump");
                 Left = false;
             }
 
@@ -184,7 +184,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             if (value == 1)
             {
-                Debug.Log("Player is reaching right to jump off of climbable object");
+                //Debug.Log("Player is reaching right to jump off of climbable object");
                 Right = true;
                 if (!MoveDir)
                     TurnCharacter();
@@ -192,7 +192,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Player is no longer reaching to jump");
+                //Debug.Log("Player is no longer reaching to jump");
                 Right = false;
             }
 
@@ -294,10 +294,10 @@ public class SCR_CharacterManager : MonoBehaviour
             if (Left && !Right)
             {
                 MoveVec.x = JumpForce / 2 * -1;
-                Debug.Log("Jumped off Leftwards");
+                //Debug.Log("Jumped off Leftwards");
             }
             else if (!Left && Right) MoveVec.x = JumpForce / 2;
-            else Debug.Log("freaky stuff");
+            //else Debug.Log("freaky stuff");
             jumpinOff = true;
             Jump(Time.deltaTime);
         }
@@ -565,7 +565,8 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y, MoveVec.z * MoveSpeed * SpeedModifier);
         }
-        RBody.velocity = FinalVel;
+        if (VelocityAllowed) RBody.velocity = FinalVel;
+        else RBody.velocity = Vector3.zero;
     }
 
     //This function makes calls to the AnimManager for animations that need to be updated or calculated per update cycle
