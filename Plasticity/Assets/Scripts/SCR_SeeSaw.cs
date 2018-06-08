@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class SCR_SeeSaw : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("This float impacts how much the SeeSaw reacts to the player's weight. The higher the number, the quicker it changes pitch")]
+    [ValidateInput("GreaterThanOrEqualZero", "The EffectOfWeightOnSeeSaw cannot be a negative number!")]
     private float EffectOfWeightOnSeeSaw = 1.0f;
     //Reference to the hinge joint on our parent game object
     private HingeJoint SeeSawJoint;
@@ -13,6 +15,11 @@ public class SCR_SeeSaw : MonoBehaviour
     private Rigidbody ParentRbody;
     //Predefined axis along which the seesaw will rotate
     private Vector3 ZVec = new Vector3(0.0f, 0.0f, 1.0f);
+
+    private bool GreaterThanOrEqualZero(float input)
+    {
+        return input >= 0.0f;
+    }
 
     // Use this for initialization
     void Start()

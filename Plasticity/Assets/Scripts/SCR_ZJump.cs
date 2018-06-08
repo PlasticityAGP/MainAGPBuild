@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 
 public class SCR_ZJump : MonoBehaviour {
@@ -16,6 +17,7 @@ public class SCR_ZJump : MonoBehaviour {
     private bool ZTransformMethod;
     [SerializeField]
     [Tooltip("A reference point whose z value will be used to move the player in the z axis")]
+    [ValidateInput("IsNull", "There must be a reference point referenced in this script!")]
     private GameObject ReferencePoint;
 
     //Value that dictates the linear interpolation of z position
@@ -36,6 +38,18 @@ public class SCR_ZJump : MonoBehaviour {
     //Reference to character and it's manager
     private GameObject Character;
     private SCR_CharacterManager CharacterManager;
+
+    private bool IsNull(GameObject thing)
+    {
+        try
+        {
+            return thing.scene.IsValid();
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     private void Awake()
     {

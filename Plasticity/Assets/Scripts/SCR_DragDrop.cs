@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class SCR_DragDrop : MonoBehaviour {
 
@@ -15,13 +16,32 @@ public class SCR_DragDrop : MonoBehaviour {
     private float InitialSpeed;
     [SerializeField]
     [Tooltip("Speed we want to slow down the player to when they drag an object")]
+    [ValidateInput("GreaterThanZero", "The Drag speed cannot be zero or a negative number!")]
     private float MaxDragSpeed;
 
     [Tooltip("Reference to the character that can interact with this object")]
+    [ValidateInput("IsNull", "There must be a reference to the Character!")]
     public GameObject Character;
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
+
+    private bool GreaterThanZero(float input)
+    {
+        return input > 0.0f;
+    }
+
+    private bool IsNull(GameObject thing)
+    {
+        try
+        {
+            return thing.scene.IsValid();
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     private void Awake()
     {
@@ -88,6 +108,11 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+
+    /// <summary>
+    /// Should be called when the character is overlapping a trigger to pull a DragOBJ
+    /// </summary>
+    /// <param name="Other">Other should be whatever GameObject is overlapping the trigger</param>
     [HideInInspector]
     public void InTrigger(GameObject Other)
     {
@@ -110,6 +135,9 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// FreezeAll sets all of the Rigidbody constraints to true on the draggable object
+    /// </summary>
     [HideInInspector]
     public void FreezeAll()
     {
@@ -118,7 +146,7 @@ public class SCR_DragDrop : MonoBehaviour {
         RBody.constraints =  RigidbodyConstraints.FreezeAll;
     }
 
-    void UnfreezeXY()
+    private void UnfreezeXY()
     {
         //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
         RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
