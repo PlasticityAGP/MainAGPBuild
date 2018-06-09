@@ -7,10 +7,8 @@ public class SCR_LevelStates : ScriptableObject {
 
     [Tooltip("A list of scenes we want to load in an additive and asynchronous manner to the current scene")]
     public string[] LevelArray;
-
     [Tooltip("A string name of the current level")]
     public string CurrentLevel;
-
     [Tooltip("The current state of the 0th puzzle")]
     public int StatePuzzle0;
     [Tooltip("The current state of the 1st puzzle")]

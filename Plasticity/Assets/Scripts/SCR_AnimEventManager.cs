@@ -40,6 +40,13 @@ public class SCR_AnimEventManager : MonoBehaviour {
     }
 
     //NewAnimEvent will be called in the CharacterManager in order to add events to our AnimList.
+
+    /// <summary>
+    /// Queues an animation for play in our AnimEventManager
+    /// </summary>
+    /// <param name="Name">Name of the animation state we want to play</param>
+    /// <param name="CrossFade">Over how long we should fade this animation into being played</param>
+    /// <param name="TimeBeforePlay">The amount of downtime we want to have before playing this animation</param>
     [HideInInspector]
     public void NewAnimEvent(string Name, float CrossFade, float TimeBeforePlay)
     {

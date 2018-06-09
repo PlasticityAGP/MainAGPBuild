@@ -24,6 +24,7 @@ public class SCR_CharacterManager : MonoBehaviour
     [Title("Character Model")]
     [SerializeField]
     [Tooltip("Pass in a reference to the model for this character")]
+    [ValidateInput("IsNull", "There must be a reference to the character model1")]
     private GameObject RefToModel;
     [Title("Animations")]
     [InfoBox("Each of the type of animations stores an array of Animation State names that are associated with the Character Model child Game Object. These categories of animation will randomly choose" +
@@ -118,6 +119,17 @@ public class SCR_CharacterManager : MonoBehaviour
     private bool LessThanZero(float input)
     {
         return input > 0.0f;
+    }
+    private bool IsNull(GameObject thing)
+    {
+        try
+        {
+            return thing.scene.IsValid();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private void Awake()
