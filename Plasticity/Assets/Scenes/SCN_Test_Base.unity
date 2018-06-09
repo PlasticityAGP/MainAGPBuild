@@ -171,7 +171,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4252114140715862, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 1.05
+      value: 1.08
       objectReference: {fileID: 0}
     - target: {fileID: 4252114140715862, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2, type: 2}
       propertyPath: m_LocalRotation.x
@@ -198,21 +198,6 @@ Prefab:
       propertyPath: Character
       value: 
       objectReference: {fileID: 1012574619}
-    - target: {fileID: 114729957246585380, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2,
-        type: 2}
-      propertyPath: ZTransformMethod
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114867658631166112, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2,
-        type: 2}
-      propertyPath: MaxDragSpeed
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114729957246585380, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2,
-        type: 2}
-      propertyPath: ReferencePoint
-      value: 
-      objectReference: {fileID: 1766569145}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2, type: 2}
   m_IsPrefabParent: 0
@@ -703,11 +688,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afbbfca989737db4387d8b41917cb684, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1766569145 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1257496432202606, guid: 0fb1dbcfa7fbcc246861d8fc2f50c2f2,
-    type: 2}
-  m_PrefabInternal: {fileID: 260024593}
 --- !u!1001 &1828338575
 Prefab:
   m_ObjectHideFlags: 0
@@ -746,16 +726,6 @@ Prefab:
     - target: {fileID: 4689772884020736, guid: 162e019cca3563e4c9adabb762fb11bc, type: 2}
       propertyPath: m_RootOrder
       value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 59882991542640400, guid: 162e019cca3563e4c9adabb762fb11bc,
-        type: 2}
-      propertyPath: m_Limits.max
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114935782923347678, guid: 162e019cca3563e4c9adabb762fb11bc,
-        type: 2}
-      propertyPath: EffectOfWeightOnSeeSaw
-      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 162e019cca3563e4c9adabb762fb11bc, type: 2}
