@@ -23,7 +23,9 @@ public class SCR_ZDrag : MonoBehaviour {
         //If the object that has just entered is a character, let the Jump script
         if (other.gameObject.tag == "Character")
         {
+            ScriptOfParent.IsZ = true;
             IsInside = true;
+            if (ScriptOfParent.Interact) ScriptOfParent.EnteredAndInteracted();
         }
     }
 
@@ -41,6 +43,7 @@ public class SCR_ZDrag : MonoBehaviour {
         //We want to freeze the movement of the box if we are not in range to push it
         if (other.gameObject.tag == "Character")
         {
+            ScriptOfParent.IsZ = false;
             IsInside = false;
             ScriptOfParent.FreezeAll();
         }
