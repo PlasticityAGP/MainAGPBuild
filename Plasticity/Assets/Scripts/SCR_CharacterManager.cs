@@ -80,7 +80,8 @@ public class SCR_CharacterManager : MonoBehaviour
     private LayerMask GroundLayer;
 
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
-    private bool MoveDir = true;
+    [HideInInspector]
+    public bool MoveDir = true;
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
     //InitialDir vector is used for determining what direction player velocity should be in if they turn

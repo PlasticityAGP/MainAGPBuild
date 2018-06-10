@@ -157,9 +157,11 @@ public class SCR_DragDrop : MonoBehaviour {
             Ik.solver.leftHandEffector.target = ZEffectorLeft.transform;
             Ik.solver.leftHandEffector.positionWeight = 1.0f;
             Ik.solver.leftHandEffector.rotationWeight = 1.0f;
+            Ik.solver.leftArmChain.bendConstraint.weight = 0.0f;
             Ik.solver.rightHandEffector.target = ZEffectorRight.transform;
             Ik.solver.rightHandEffector.positionWeight = 1.0f;
             Ik.solver.rightHandEffector.rotationWeight = 1.0f;
+            Ik.solver.rightArmChain.bendConstraint.weight = 0.0f;
 
         }
     }
@@ -200,9 +202,11 @@ public class SCR_DragDrop : MonoBehaviour {
             Ik.solver.leftHandEffector.target = null;
             Ik.solver.leftHandEffector.positionWeight = 0.0f;
             Ik.solver.leftHandEffector.rotationWeight = 0.0f;
+            Ik.solver.leftArmChain.bendConstraint.weight = 0.0f;
             Ik.solver.rightHandEffector.target = null;
             Ik.solver.rightHandEffector.positionWeight = 0.0f;
             Ik.solver.rightHandEffector.rotationWeight = 0.0f;
+            Ik.solver.rightArmChain.bendConstraint.weight = 0.0f;
         }
     }
 
@@ -219,7 +223,10 @@ public class SCR_DragDrop : MonoBehaviour {
             Vector3 A = ZEffectorRight.transform.position - ZEffectorLeft.transform.position;
             float Mag = A.magnitude;
             Vector3 Midpoint = ZEffectorLeft.transform.position + (A.normalized * (Mag / 2.0f));
-            Vector3 Adjust =  (A.normalized * -0.5f);
+            float weight;
+            if (CharacterManager.MoveDir) weight = -0.1f;
+            else weight = -0.4f;
+            Vector3 Adjust =  (A.normalized * weight);
             Vector3 B = ZEffectorRight.transform.position - Midpoint;
             Vector3 C = Character.transform.position - ZEffectorLeft.transform.position;
 

@@ -1627,6 +1627,7 @@ MonoBehaviour:
   GroundLayer:
     serializedVersion: 2
     m_Bits: 1
+  MoveDir: 1
   RBody: {fileID: 0}
   IsClimbing: 0
   ClimbSpeed: 3
