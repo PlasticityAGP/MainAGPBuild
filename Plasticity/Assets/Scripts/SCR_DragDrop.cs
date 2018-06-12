@@ -17,12 +17,26 @@ public class SCR_DragDrop : MonoBehaviour {
     [HideInInspector]
     public bool IsZ;
     private bool OverlapTrigger;
+    private bool LerpToEffector;
+    private float Weight;
+    private Queue<float> FromQueue;
+    private Queue<float> ToQueue;
     private float InitialSpeed;
     [SerializeField]
+    [Tooltip("The farthest left a left hand effector is allowed to go on this object")]
+    [ValidateInput("IsNull", "There must be a reference to the Left Endpoint Game Object!")]
+    private GameObject LeftEndPoint;
+    [SerializeField]
+    [Tooltip("The farthest right a left hand effector is allowed to go on this object")]
+    [ValidateInput("IsNull", "There must be a reference to the Left Endpoint Game Object!")]
+    private GameObject RightEndPoint;
+    [SerializeField]
     [Tooltip("Left hand IK effector on box when dragging from Z")]
+    [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
     private GameObject ZEffectorLeft;
     [SerializeField]
     [Tooltip("Right hand IK effector on box when dragging from Z")]
+    [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
     private GameObject ZEffectorRight;
     [SerializeField]
     [Tooltip("Speed we want to slow down the player to when they drag an object")]
@@ -110,6 +124,9 @@ public class SCR_DragDrop : MonoBehaviour {
         InitialSpeed = CharacterManager.MoveSpeed;
         IsZ = false;
         OverlapTrigger = false;
+        LerpToEffector = false;
+        FromQueue = new Queue<float>();
+        ToQueue = new Queue<float>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -141,6 +158,8 @@ public class SCR_DragDrop : MonoBehaviour {
         {
             //If the character is not in range to move the box, don't allow the box to move.
             OverlapTrigger = false;
+            Ik.solver.leftHandEffector.target = null;
+            Ik.solver.rightHandEffector.target = null;
             FreezeAll();
         }
     }
@@ -155,13 +174,8 @@ public class SCR_DragDrop : MonoBehaviour {
         {
             //Debug.Log("SET IK EFFECTORS");
             Ik.solver.leftHandEffector.target = ZEffectorLeft.transform;
-            Ik.solver.leftHandEffector.positionWeight = 1.0f;
-            Ik.solver.leftHandEffector.rotationWeight = 1.0f;
-            Ik.solver.leftArmChain.bendConstraint.weight = 0.0f;
             Ik.solver.rightHandEffector.target = ZEffectorRight.transform;
-            Ik.solver.rightHandEffector.positionWeight = 1.0f;
-            Ik.solver.rightHandEffector.rotationWeight = 1.0f;
-            Ik.solver.rightArmChain.bendConstraint.weight = 0.0f;
+            StartEffectorLerp(0.0f, 1.0f);
 
         }
     }
@@ -199,14 +213,7 @@ public class SCR_DragDrop : MonoBehaviour {
         if (IsZ)
         {
             //Debug.Log("RESET EFFECTORS");
-            Ik.solver.leftHandEffector.target = null;
-            Ik.solver.leftHandEffector.positionWeight = 0.0f;
-            Ik.solver.leftHandEffector.rotationWeight = 0.0f;
-            Ik.solver.leftArmChain.bendConstraint.weight = 0.0f;
-            Ik.solver.rightHandEffector.target = null;
-            Ik.solver.rightHandEffector.positionWeight = 0.0f;
-            Ik.solver.rightHandEffector.rotationWeight = 0.0f;
-            Ik.solver.rightArmChain.bendConstraint.weight = 0.0f;
+            StartEffectorLerp(1.0f, 0.0f);
         }
     }
 
@@ -216,23 +223,125 @@ public class SCR_DragDrop : MonoBehaviour {
         RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
     }
 
-    private void FixedUpdate()
+    private void EffectorCalculations()
     {
         if (IsZ)
         {
             Vector3 A = ZEffectorRight.transform.position - ZEffectorLeft.transform.position;
             float Mag = A.magnitude;
             Vector3 Midpoint = ZEffectorLeft.transform.position + (A.normalized * (Mag / 2.0f));
-            float weight;
-            if (CharacterManager.MoveDir) weight = -0.1f;
-            else weight = -0.4f;
-            Vector3 Adjust =  (A.normalized * weight);
+            if (Weight == -0.4f && CharacterManager.MoveDir && Interact)
+            {
+                if (!(Ik.solver.leftHandEffector.positionWeight == 0.0f))
+                {
+                    StartEffectorLerp(1.0f, 0.5f);
+                    StartEffectorLerp(0.5f, 1.0f);
+                }
+            }
+            if (Weight == -0.1f && !CharacterManager.MoveDir && Interact)
+            {
+                if (!(Ik.solver.leftHandEffector.positionWeight == 0.0f))
+                {
+                    StartEffectorLerp(1.0f, 0.5f);
+                    StartEffectorLerp(0.5f, 1.0f);
+                }
+            }
+            if (CharacterManager.MoveDir) Weight = -0.1f;
+            else Weight = -0.4f;
+            Vector3 Adjust = (A.normalized * Weight);
             Vector3 B = ZEffectorRight.transform.position - Midpoint;
             Vector3 C = Character.transform.position - ZEffectorLeft.transform.position;
 
             Vector3 Offset = Vector3.Dot(C, B.normalized) * B.normalized;
-            ZEffectorLeft.transform.position = ZEffectorLeft.transform.position + Offset + Adjust;
-            ZEffectorRight.transform.position = ZEffectorRight.transform.position + Offset + Adjust;
+            Vector3 Left = ZEffectorLeft.transform.position + Offset + Adjust;
+            Vector3 Right = ZEffectorRight.transform.position + Offset + Adjust;
+            ZEffectorLeft.transform.position = Left;
+            ZEffectorRight.transform.position = Right;
+            if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(LeftEndPoint.transform.position - Right))
+            {
+                Ik.solver.leftHandEffector.target = LeftEndPoint.transform;
+            }
+            else
+            {
+
+                Ik.solver.leftHandEffector.target = ZEffectorLeft.transform;
+            }
+            if (Vector3.Magnitude(Right - Left) > Vector3.Magnitude(RightEndPoint.transform.position - Left))
+            {
+                Ik.solver.rightHandEffector.target = RightEndPoint.transform;
+            }
+            else
+            {
+                Ik.solver.rightHandEffector.target = ZEffectorRight.transform;
+            }
         }
+    }
+
+    private void StartEffectorLerp(float from, float to)
+    {
+        LerpToEffector = true;
+        Ik.solver.leftHandEffector.positionWeight = from;
+        Ik.solver.leftHandEffector.rotationWeight = from;
+        Ik.solver.rightHandEffector.positionWeight = from;
+        Ik.solver.rightHandEffector.rotationWeight = from;
+        FromQueue.Enqueue(from);
+        ToQueue.Enqueue(to);
+    }
+
+    private void EndEffectorLerp()
+    {
+        if ((FromQueue.Count + ToQueue.Count) == 0) LerpToEffector = false;
+        FromQueue.Dequeue();
+        ToQueue.Dequeue();
+    }
+
+    private void EffectorDoLerp(float DeltaTime, float from, float to)
+    {
+        if(from > to)
+        {
+            float temp = Ik.solver.leftHandEffector.positionWeight;
+            temp -= (DeltaTime * 4.0f);
+            if(temp <= to)
+            {
+                EndEffectorLerp();
+                Ik.solver.leftHandEffector.positionWeight = to;
+                Ik.solver.leftHandEffector.rotationWeight = to;
+                Ik.solver.rightHandEffector.positionWeight = to;
+                Ik.solver.rightHandEffector.rotationWeight = to;
+            }
+            else
+            {
+                Ik.solver.leftHandEffector.positionWeight = temp;
+                Ik.solver.leftHandEffector.rotationWeight = temp;
+                Ik.solver.rightHandEffector.positionWeight = temp;
+                Ik.solver.rightHandEffector.rotationWeight = temp;
+            }
+        }
+        else
+        {
+            float temp = Ik.solver.leftHandEffector.positionWeight;
+            temp += (DeltaTime * 4.0f);
+            if (temp >= to)
+            {
+                EndEffectorLerp();
+                Ik.solver.leftHandEffector.positionWeight = to;
+                Ik.solver.leftHandEffector.rotationWeight = to;
+                Ik.solver.rightHandEffector.positionWeight = to;
+                Ik.solver.rightHandEffector.rotationWeight = to;
+            }
+            else
+            {
+                Ik.solver.leftHandEffector.positionWeight = temp;
+                Ik.solver.leftHandEffector.rotationWeight = temp;
+                Ik.solver.rightHandEffector.positionWeight = temp;
+                Ik.solver.rightHandEffector.rotationWeight = temp;
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        EffectorCalculations();
+        if (LerpToEffector && (FromQueue.Count + ToQueue.Count) != 0) EffectorDoLerp(Time.deltaTime, FromQueue.Peek(), ToQueue.Peek());
     }
 }
