@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 54462374531337018}
   - component: {fileID: 114989280144640750}
   - component: {fileID: 114051743485352108}
+  - component: {fileID: 114594211292410248}
   m_Layer: 0
   m_Name: PF_Character
   m_TagString: Character
@@ -1138,6 +1139,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterAnimator: {fileID: 0}
   AnimLock: 0
+--- !u!114 &114594211292410248
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1377970212060658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86ddc666076be654a817d94eaff3cdde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeftSpeed: 0
+  RightSpeed: 0
 --- !u!114 &114976610917159546
 MonoBehaviour:
   m_ObjectHideFlags: 1

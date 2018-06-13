@@ -45,7 +45,7 @@ public class SCR_ZDrag : MonoBehaviour {
         {
             ScriptOfParent.IsZ = false;
             IsInside = false;
-            ScriptOfParent.FreezeAll();
+            ScriptOfParent.OnZTriggerExit();
         }
     }
 
