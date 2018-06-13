@@ -9,6 +9,7 @@ public class SCR_DragDrop : MonoBehaviour {
 
     //Listener to tell when character wants to interact
     private UnityAction<int> InteractListener;
+    private UnityAction<int> TurnListener;
     [HideInInspector]
     public bool Interact = false;
     private SCR_IKToolset IkTools;
@@ -68,18 +69,21 @@ public class SCR_DragDrop : MonoBehaviour {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
         InteractListener = new UnityAction<int>(InteractPressed);
+        TurnListener = new UnityAction<int>(CharacterTurned);
     }
 
     private void OnEnable()
     {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("InteractKey", InteractListener);
+        SCR_EventManager.StartListening("CharacterTurn", TurnListener);
     }
 
     private void OnDisable()
     {
         //Tell the EventManager we are no longer listening as the CharacterManager gets disabled.
         SCR_EventManager.StopListening("InteractKey", InteractListener);
+        SCR_EventManager.StopListening("CharacterTurn", TurnListener);
     }
 
     private void InteractPressed(int value)
@@ -106,6 +110,16 @@ public class SCR_DragDrop : MonoBehaviour {
         }            
     }
 
+    private void CharacterTurned(int value)
+    {
+        if(IsZ && Interact)
+        {
+            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.7f);
+            IkTools.StartEffectorLerp("LeftHand", 0.7f, 1.0f);
+            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.7f);
+            IkTools.StartEffectorLerp("RightHand", 0.7f, 1.0f);
+        }
+    }
 
     // Use this for initialization
     void Start () {
@@ -234,26 +248,6 @@ public class SCR_DragDrop : MonoBehaviour {
             Vector3 A = ZEffectorRight.transform.position - ZEffectorLeft.transform.position;
             float Mag = A.magnitude;
             Vector3 Midpoint = ZEffectorLeft.transform.position + (A.normalized * (Mag / 2.0f));
-            //if (Weight == -0.4f && CharacterManager.MoveDir && Interact)
-            //{
-            //    if (!(IkTools.GetEffectorWeight("LeftHand") == 0.0f))
-            //    {
-            //        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.5f);
-            //        IkTools.StartEffectorLerp("LeftHand", 0.5f, 1.0f);
-            //        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.5f);
-            //        IkTools.StartEffectorLerp("RightHand", 0.5f, 1.0f);
-            //    }
-            //}
-            //if (Weight == -0.1f && !CharacterManager.MoveDir && Interact)
-            //{
-            //    if (!(IkTools.GetEffectorWeight("LeftHand") == 0.0f))
-            //    {
-            //        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.5f);
-            //        IkTools.StartEffectorLerp("LeftHand", 0.5f, 1.0f);
-            //        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.5f);
-            //        IkTools.StartEffectorLerp("RightHand", 0.5f, 1.0f);
-            //    }
-            //}
             if (CharacterManager.MoveDir) Weight = -0.1f;
             else Weight = -0.4f;
             Vector3 Adjust = (A.normalized * Weight);

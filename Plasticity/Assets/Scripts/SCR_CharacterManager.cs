@@ -394,6 +394,8 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         //If we turn, we flip the boolean the signifies player direction
         MoveDir = !MoveDir;
+        if (MoveDir) SCR_EventManager.TriggerEvent("CharacterTurn", 1);
+        else SCR_EventManager.TriggerEvent("CharacterTurn", 0);
         Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
         RefToModel.transform.Rotate(TurnAround);
         if (IsGrounded())
