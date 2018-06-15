@@ -69,7 +69,7 @@ public class SCR_Ladder : MonoBehaviour {
         //Debug.Log("started climbing");
         float maxclimb = this.transform.position.y + this.transform.localScale.y/2;
         float minclimb = this.transform.position.y - this.transform.localScale.y/2;
-        CharacterManager.OnClimbable(maxclimb, minclimb);
+        CharacterManager.OnClimbable(maxclimb, minclimb, this);
     }
 
     // The player hops off the ladder.

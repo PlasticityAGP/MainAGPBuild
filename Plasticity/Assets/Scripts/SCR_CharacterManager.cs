@@ -111,6 +111,7 @@ public class SCR_CharacterManager : MonoBehaviour
     public float ClimbSpeed = 3.0f; // Added by Matt for testing
     private float highclimb;
     private float lowclimb;
+    private SCR_Ladder ladder;
 
     private bool NotEmpty(string[] array)
     {
@@ -319,6 +320,37 @@ public class SCR_CharacterManager : MonoBehaviour
         }
         else
             MoveVec.y = 0;
+
+        if(MoveVec.y == 0)
+        {
+            if (Left && (RBody.transform.position.x > ladder.transform.position.x))
+            {
+                if(this.transform.position.y > highclimb)
+                    Clamber(0); //Clamber to the left
+                else if(this.transform.position.y < lowclimb)
+                {
+                    IsClimbing = false;
+                }
+            }
+            else if (Left && (RBody.transform.position.x > ladder.transform.position.x))
+            {
+                if (this.transform.position.y > highclimb)
+                    Clamber(1); //Clamber to the right
+                else if (this.transform.position.y < lowclimb)
+                {
+                    IsClimbing = false;
+                }
+            }
+
+
+
+        }
+    }
+
+    // Empty Function called in climb
+    private void Clamber(int direction)
+    {
+
     }
 
     /// <summary>
@@ -326,7 +358,6 @@ public class SCR_CharacterManager : MonoBehaviour
     /// </summary>
     public void JumpOff()
     {
-        //TODO: figure out jumping left and right
         if (Up)
         {
             MoveVec.y = JumpForce;
@@ -347,9 +378,9 @@ public class SCR_CharacterManager : MonoBehaviour
     /// </summary>
     /// <param name="high"></param>
     /// <param name="low"></param>
-    public void OnClimbable(float high, float low)
+    public void OnClimbable(float high, float low, SCR_Ladder ladder)
     {
-        highclimb = high;
+        highclimb = high - 1.5f;
         lowclimb = low;
         IsClimbing = true;
         MoveVec.x = 0;
