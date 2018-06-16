@@ -706,14 +706,14 @@ public class SCR_CharacterManager : MonoBehaviour
         if (MoveDir)
         {
             XValue = other.transform.position.x - (other.transform.lossyScale.x / 2.0f);
-            ZValueLeft = other.transform.position.z + 0.5f;
-            ZValueRight = other.transform.position.z - 0.5f;
+            ZValueLeft = gameObject.transform.position.z + 0.5f;
+            ZValueRight = gameObject.transform.position.z - 0.5f;
         }     
         else
         {
             XValue = other.transform.position.x + (other.transform.lossyScale.x / 2.0f);
-            ZValueLeft = other.transform.position.z - 0.5f;
-            ZValueRight = other.transform.position.z + 0.5f;
+            ZValueLeft = gameObject.transform.position.z - 0.5f;
+            ZValueRight = gameObject.transform.position.z + 0.5f;
         }
         float YValue = other.transform.position.y + (other.transform.lossyScale.y / 2.0f);
         Vector3 LeftHandPoint = new Vector3(XValue, YValue, ZValueLeft);
