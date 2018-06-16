@@ -122,20 +122,14 @@ public class SCR_CharacterManager : MonoBehaviour
     public bool IsClimbing = false; 
     private bool JumpingOff = false; 
     private bool FallingOff = false;
-<<<<<<< HEAD
-    public float ClimbSpeed = 3.0f; // Added by Matt for testing
-    private float highclimb;
-    private float lowclimb;
-    private SCR_Ladder ladder;
-=======
-    private bool CurrentlyLedging = false;
-    public float ClimbSpeed = 3.0f; 
     private float HighClimb;
     private float LowClimb;
+    private SCR_Ladder Ladder;
+    private bool CurrentlyLedging = false;
+    public float ClimbSpeed = 3.0f; 
     private bool DoLedgeLerp = false;
     private float LedgeYTarget;
     private float LedgeXTarget;
->>>>>>> master
 
     private bool NotEmpty(string[] array)
     {
@@ -362,20 +356,20 @@ public class SCR_CharacterManager : MonoBehaviour
 
         if(MoveVec.y == 0)
         {
-            if (Left && (RBody.transform.position.x > ladder.transform.position.x))
+            if (Left && (RBody.transform.position.x > Ladder.transform.position.x))
             {
-                if(this.transform.position.y > highclimb)
+                if(this.transform.position.y > HighClimb)
                     Clamber(0); //Clamber to the left
-                else if(this.transform.position.y < lowclimb)
+                else if(this.transform.position.y < LowClimb)
                 {
                     IsClimbing = false;
                 }
             }
-            else if (Left && (RBody.transform.position.x > ladder.transform.position.x))
+            else if (Left && (RBody.transform.position.x > Ladder.transform.position.x))
             {
-                if (this.transform.position.y > highclimb)
+                if (this.transform.position.y > HighClimb)
                     Clamber(1); //Clamber to the right
-                else if (this.transform.position.y < lowclimb)
+                else if (this.transform.position.y < LowClimb)
                 {
                     IsClimbing = false;
                 }
@@ -419,13 +413,8 @@ public class SCR_CharacterManager : MonoBehaviour
     /// <param name="low"></param>
     public void OnClimbable(float high, float low, SCR_Ladder ladder)
     {
-<<<<<<< HEAD
-        highclimb = high - 1.5f;
-        lowclimb = low;
-=======
-        HighClimb = high;
+        HighClimb = high- 1.5f;
         LowClimb = low;
->>>>>>> master
         IsClimbing = true;
         MoveVec.x = 0;
         // TODO: have to change the player's x velocity accordingly.
