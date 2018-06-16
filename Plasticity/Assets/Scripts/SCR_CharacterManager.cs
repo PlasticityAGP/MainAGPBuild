@@ -24,8 +24,16 @@ public class SCR_CharacterManager : MonoBehaviour
     [Title("Character Model")]
     [SerializeField]
     [Tooltip("Pass in a reference to the model for this character")]
-    [ValidateInput("IsNull", "There must be a reference to the character model1")]
+    [ValidateInput("IsNull", "There must be a reference to the character model")]
     private GameObject RefToModel;
+    [SerializeField]
+    [Tooltip("Pass in a reference to the Game Object representing the top bound of the ledging window")]
+    [ValidateInput("IsNull", "There must be a reference to the Game Object representing the top bound of the ledging window")]
+    private GameObject LedgeTopBound;
+    [SerializeField]
+    [Tooltip("Pass in a reference to the Game Object representing the bottom bound of the ledging window")]
+    [ValidateInput("IsNull", "There must be a reference to the Game Object representing the bottom bound of the ledging window")]
+    private GameObject LedgeBottomBound;
     [Title("Animations")]
     [InfoBox("Each of the type of animations stores an array of Animation State names that are associated with the Character Model child Game Object. These categories of animation will randomly choose" +
         " one of the level states in its array to play. This adds a little randomness/lifelike feeling to the way our character moves")]
@@ -67,6 +75,10 @@ public class SCR_CharacterManager : MonoBehaviour
     [Tooltip("Impact of gravity as the player falls from the zenith of their jump")]
     [ValidateInput("LessThanZero", "We cannot have a down gravity component <= 0.0")]
     private float DownGravityOnPlayer;
+    [SerializeField]
+    [Tooltip("The distance away from a wall the player is allowed to be before snapping to the wall via ledging")]
+    [ValidateInput("LessThanZero", "We cannot have a ledging distance <= 0.0f")]
+    private float LedgingAllowedDistance;
     [Title("Environment")]
     [SerializeField]
     [Tooltip("Trace distance for determining if the player has landed.")]
@@ -93,9 +105,11 @@ public class SCR_CharacterManager : MonoBehaviour
     private float GroundAngle = 90;
     //Hit info will store the hit result of the raycast that is shot from the player towards the ground
     private RaycastHit HitInfo;
+    private RaycastHit LedgingWall;
     //CharacterAnimator will store a reference to the Animator of our Character.
     private Animator CharacterAnimator;
-    SCR_AnimEventManager AnimManager;
+    private SCR_AnimEventManager AnimManager;
+    private SCR_IKToolset IkTools;
 
     //Reference to the character's rigidbody
     [HideInInspector]
@@ -105,13 +119,23 @@ public class SCR_CharacterManager : MonoBehaviour
     private bool DidAJump = false;
     private bool VelocityAllowed = true;
     [HideInInspector]
-    public bool IsClimbing = false; // Added by Matt for testing
-    private bool jumpinOff = false; // Added by Matt for testing
+    public bool IsClimbing = false; 
+    private bool JumpingOff = false; 
     private bool FallingOff = false;
+<<<<<<< HEAD
     public float ClimbSpeed = 3.0f; // Added by Matt for testing
     private float highclimb;
     private float lowclimb;
     private SCR_Ladder ladder;
+=======
+    private bool CurrentlyLedging = false;
+    public float ClimbSpeed = 3.0f; 
+    private float HighClimb;
+    private float LowClimb;
+    private bool DoLedgeLerp = false;
+    private float LedgeYTarget;
+    private float LedgeXTarget;
+>>>>>>> master
 
     private bool NotEmpty(string[] array)
     {
@@ -166,19 +190,29 @@ public class SCR_CharacterManager : MonoBehaviour
     private void UpPressed(int value)
     {
         //The value passed by the event indicates whether or not the key is pressed down. 
-        if (value == 1) Up = true;
+        if (value == 1)
+        {
+            Up = true;
+            if (CurrentlyLedging)
+            {
+                LedgeMount();
+            }
+        }
         else Up = false;
     }
     private void DownPressed(int value) // Uncommented by Matt For Testing
     {
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
+        {
             Down = true;
+            if (CurrentlyLedging)
+            {
+                LedgeDismount();
+            }   
+        }
         else
             Down = false;
-
-        //Allows us to print name of current level for testing
-        //Debug.Log(LevelData.CurrentLevel);
     }
     private void LeftPressed(int value)
     {
@@ -269,6 +303,9 @@ public class SCR_CharacterManager : MonoBehaviour
         if (gameObject.GetComponent<SCR_AnimEventManager>()) AnimManager = gameObject.GetComponent<SCR_AnimEventManager>();
         else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
 
+        if (gameObject.GetComponent<SCR_IKToolset>()) IkTools = gameObject.GetComponent<SCR_IKToolset>();
+        else Debug.LogError("We need a SCR_IKToolset script attached to one of the Character's child Game Objects");
+
         //Make sure the model has an animator component
         if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
         else Debug.LogError("There is currently not an animator attached to this character's model");
@@ -296,6 +333,8 @@ public class SCR_CharacterManager : MonoBehaviour
         CalculateGroundAngle();
         CalculateMoveVec();
         if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
+        if (DidAJump && !CurrentlyLedging)CheckForLedges();
+        if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
         MoveCharacter(Time.deltaTime);
         PerTickAnimations();
     }
@@ -304,7 +343,7 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         if (Up)
         {
-            if (this.transform.position.y > highclimb)
+            if (this.transform.position.y > HighClimb)
                 MoveVec.y = 0;
             else
                 MoveVec.y = ClimbSpeed;
@@ -312,7 +351,7 @@ public class SCR_CharacterManager : MonoBehaviour
         }  
         else if (Down)
         {
-            if (this.transform.position.y < lowclimb)
+            if (this.transform.position.y < LowClimb)
                 MoveVec.y = 0;
             else
                 MoveVec.y = ClimbSpeed * -1;
@@ -368,7 +407,7 @@ public class SCR_CharacterManager : MonoBehaviour
             }
             else if (!Left && Right) MoveVec.x = JumpForce / 2;
             //else Debug.Log("freaky stuff");
-            jumpinOff = true;
+            JumpingOff = true;
             Jump(Time.deltaTime);
         }
     }
@@ -380,8 +419,13 @@ public class SCR_CharacterManager : MonoBehaviour
     /// <param name="low"></param>
     public void OnClimbable(float high, float low, SCR_Ladder ladder)
     {
+<<<<<<< HEAD
         highclimb = high - 1.5f;
         lowclimb = low;
+=======
+        HighClimb = high;
+        LowClimb = low;
+>>>>>>> master
         IsClimbing = true;
         MoveVec.x = 0;
         // TODO: have to change the player's x velocity accordingly.
@@ -511,7 +555,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
     private void Jump(float DeltaTime)
     {
-        if (IsClimbing || jumpinOff)
+        if (IsClimbing || JumpingOff)
         {
             MoveVec.y = JumpForce;
             //Tell anim manager to play a jump animation.
@@ -553,7 +597,7 @@ public class SCR_CharacterManager : MonoBehaviour
             if (!DidAJump) OnBeginJump();
 
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
-            if(MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
+            if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
             else MoveVec.y -= DownGravityOnPlayer * DeltaTime;
         }
     }
@@ -569,6 +613,7 @@ public class SCR_CharacterManager : MonoBehaviour
     private void OnEndJump()
     {
         DidAJump = false;
+        CurrentlyLedging = false;
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
         if (!JumpWhileHeld) Up = false;
@@ -624,10 +669,10 @@ public class SCR_CharacterManager : MonoBehaviour
             Climb();
             FinalVel = new Vector3(0, MoveVec.y, 0);
         }
-        else if (jumpinOff)
+        else if (JumpingOff)
         {
             FinalVel = new Vector3(MoveVec.x, MoveVec.y, 0);
-            jumpinOff = false;
+            JumpingOff = false;
             FallingOff = true;
         }
         //If we are grounded and we didn't just jump move along slope of surface we are on.
@@ -670,6 +715,110 @@ public class SCR_CharacterManager : MonoBehaviour
                 AnimManager.NewAnimEvent("Falling", 0.45f, 0.0f);
                 AnimManager.AnimLock = true;
             }
+        }
+    }
+
+    private void CheckForLedges()
+    {
+        Vector3 RayCastDir;
+        if (MoveDir) RayCastDir = gameObject.transform.forward;
+        else RayCastDir = -1.0f * gameObject.transform.forward;
+        RaycastHit TopResult;
+        RaycastHit BottomResult;
+        bool TopHit;
+        bool BottomHit;
+        Debug.DrawLine(LedgeBottomBound.transform.position, LedgeBottomBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.green);
+        if (Physics.Raycast(LedgeBottomBound.transform.position, RayCastDir, out BottomResult, LedgingAllowedDistance, GroundLayer))
+            BottomHit = true;
+        else BottomHit = false;
+        Debug.DrawLine(LedgeTopBound.transform.position, LedgeTopBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.magenta);
+        if (Physics.Raycast(LedgeTopBound.transform.position, RayCastDir, out TopResult, LedgingAllowedDistance, GroundLayer))
+            TopHit = true;
+        else TopHit = false;
+        if (BottomHit && !TopHit) StartLedging(BottomResult);
+    }
+
+    private void StartLedging(RaycastHit other)
+    {
+        LedgingWall = other;
+        CurrentlyLedging = true;
+        float XValue;
+        float ZValueLeft;
+        float ZValueRight;
+        if (MoveDir)
+        {
+            XValue = other.transform.position.x - (other.transform.lossyScale.x / 2.0f);
+            ZValueLeft = gameObject.transform.position.z + 0.5f;
+            ZValueRight = gameObject.transform.position.z - 0.5f;
+        }     
+        else
+        {
+            XValue = other.transform.position.x + (other.transform.lossyScale.x / 2.0f);
+            ZValueLeft = gameObject.transform.position.z - 0.5f;
+            ZValueRight = gameObject.transform.position.z + 0.5f;
+        }
+        float YValue = other.transform.position.y + (other.transform.lossyScale.y / 2.0f);
+        Vector3 LeftHandPoint = new Vector3(XValue, YValue, ZValueLeft);
+        Vector3 RightHandPoint = new Vector3(XValue, YValue, ZValueRight);
+        IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
+        IkTools.SetEffectorLocation("RightHand", RightHandPoint);
+        IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f);
+        IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f);
+        FreezeVelocity();
+    }
+
+    private void LedgeDismount()
+    {
+        MoveVec = Vector3.zero;
+        UnfreezeVelocity();
+        if(IkTools.GetEffectorWeight("LeftHand") != 0.0f)
+        {
+            IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f);
+        }
+        if (IkTools.GetEffectorWeight("RightHand") != 0.0f)
+        {
+            IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f);
+        }
+
+    }
+
+    private void LedgeMount()
+    {
+        LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f) + GroundTraceDistance;
+        if(transform.position.x - LedgingWall.transform.position.x > 0.0f)
+            LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f) + GroundTraceDistance;
+        else
+            LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f) - GroundTraceDistance;
+        IkTools.SetEffectorWeightSpeed("LeftHand", 1.0f);
+        IkTools.SetEffectorWeightSpeed("RightHand", 1.0f);
+        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f);
+        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f);
+        DoLedgeLerp = true;
+
+    }
+
+    private void LedgeLerp(float DeltaTime)
+    {
+        Vector3 temp;
+        if(LedgeYTarget - transform.position.y > 0.0f)
+        {
+            temp = new Vector3(transform.position.x, transform.position.y + (DeltaTime * 2.0f), transform.position.z);
+            transform.position = temp;
+        }
+        else if (MoveDir && LedgeXTarget - transform.position.x > 0.0f)
+        {
+            temp = new Vector3(transform.position.x + (DeltaTime * 2.0f), transform.position.y, transform.position.z);
+            transform.position = temp;
+        }
+        else if (!MoveDir && LedgeXTarget - transform.position.x < 0.0f)
+        {
+            temp = new Vector3(transform.position.x - (DeltaTime * 2.0f), transform.position.y, transform.position.z);
+            transform.position = temp;
+        }
+        else
+        {
+            DoLedgeLerp = false;
+            LedgeDismount();
         }
     }
 }
