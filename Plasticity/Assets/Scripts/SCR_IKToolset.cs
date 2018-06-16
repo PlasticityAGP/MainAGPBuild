@@ -31,6 +31,20 @@ public class SCR_IKToolset : MonoBehaviour {
         RightHandTo = new Queue<float>();
     }
 
+    public void SetEffectorLocation(string ID, Vector3 Loc)
+    {
+        if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
+        {
+            Ik.solver.leftHandEffector.position = Loc;
+        }
+
+        else if (ID.Equals("RightHand") || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
+        {
+            Ik.solver.rightHandEffector.position = Loc;
+        }
+        else Debug.LogError("We could not find the specified effector!");
+    }
+
     public void SetEffector(string ID, GameObject obj)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
@@ -79,6 +93,21 @@ public class SCR_IKToolset : MonoBehaviour {
             Debug.LogError("We could not find the specified effector!");
             return 0.0f;
         }
+    }
+
+    public void SetEffectorWeightSpeed(string ID, float speed)
+    {
+        if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
+        {
+            LeftSpeed = speed;
+        }
+
+        else if (ID.Equals("RightHand") || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
+        {
+            RightSpeed = speed;
+        }
+
+        else Debug.LogError("We could not find the specified effector!");
     }
 
     private void LeftEffectorDoLerp(float DeltaTime, float from, float to)
@@ -158,6 +187,7 @@ public class SCR_IKToolset : MonoBehaviour {
         if ((LeftHandFrom.Count + LeftHandTo.Count) == 0) LerpLeftHand = false;
         LeftHandFrom.Dequeue();
         LeftHandTo.Dequeue();
+        LeftSpeed = 4.0f;
     }
 
     private void EndRightEffectorLerp()
@@ -165,6 +195,7 @@ public class SCR_IKToolset : MonoBehaviour {
         if ((LeftHandFrom.Count + LeftHandTo.Count) == 0) LerpLeftHand = false;
         RightHandFrom.Dequeue();
         RightHandTo.Dequeue();
+        RightSpeed = 4.0f;
     }
 
     private void FixedUpdate()

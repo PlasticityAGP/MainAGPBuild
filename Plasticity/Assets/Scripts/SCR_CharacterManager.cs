@@ -108,7 +108,8 @@ public class SCR_CharacterManager : MonoBehaviour
     private RaycastHit LedgingWall;
     //CharacterAnimator will store a reference to the Animator of our Character.
     private Animator CharacterAnimator;
-    SCR_AnimEventManager AnimManager;
+    private SCR_AnimEventManager AnimManager;
+    private SCR_IKToolset IkTools;
 
     //Reference to the character's rigidbody
     [HideInInspector]
@@ -294,6 +295,9 @@ public class SCR_CharacterManager : MonoBehaviour
         //Make sure the character has an animation manager
         if (gameObject.GetComponent<SCR_AnimEventManager>()) AnimManager = gameObject.GetComponent<SCR_AnimEventManager>();
         else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
+
+        if (gameObject.GetComponent<SCR_IKToolset>()) IkTools = gameObject.GetComponent<SCR_IKToolset>();
+        else Debug.LogError("We need a SCR_IKToolset script attached to one of the Character's child Game Objects");
 
         //Make sure the model has an animator component
         if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
@@ -696,6 +700,28 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         LedgingWall = other;
         CurrentlyLedging = true;
+        float XValue;
+        float ZValueLeft;
+        float ZValueRight;
+        if (MoveDir)
+        {
+            XValue = other.transform.position.x - (other.transform.lossyScale.x / 2.0f);
+            ZValueLeft = other.transform.position.z + 0.5f;
+            ZValueRight = other.transform.position.z - 0.5f;
+        }     
+        else
+        {
+            XValue = other.transform.position.x + (other.transform.lossyScale.x / 2.0f);
+            ZValueLeft = other.transform.position.z - 0.5f;
+            ZValueRight = other.transform.position.z + 0.5f;
+        }
+        float YValue = other.transform.position.y + (other.transform.lossyScale.y / 2.0f);
+        Vector3 LeftHandPoint = new Vector3(XValue, YValue, ZValueLeft);
+        Vector3 RightHandPoint = new Vector3(XValue, YValue, ZValueRight);
+        IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
+        IkTools.SetEffectorLocation("RightHand", RightHandPoint);
+        IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f);
+        IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f);
         FreezeVelocity();
     }
 
@@ -703,6 +729,15 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         MoveVec = Vector3.zero;
         UnfreezeVelocity();
+        if(IkTools.GetEffectorWeight("LeftHand") != 0.0f)
+        {
+            IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f);
+        }
+        if (IkTools.GetEffectorWeight("RightHand") != 0.0f)
+        {
+            IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f);
+        }
+
     }
 
     private void LedgeMount()
@@ -712,6 +747,10 @@ public class SCR_CharacterManager : MonoBehaviour
             LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f) + GroundTraceDistance;
         else
             LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f) - GroundTraceDistance;
+        IkTools.SetEffectorWeightSpeed("LeftHand", 1.0f);
+        IkTools.SetEffectorWeightSpeed("RightHand", 1.0f);
+        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f);
+        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f);
         DoLedgeLerp = true;
 
     }

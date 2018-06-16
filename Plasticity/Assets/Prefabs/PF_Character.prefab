@@ -274,6 +274,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1399188006228340
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4955627985666316}
+  m_Layer: 0
+  m_Name: LedgeBottomBound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1440018333055678
 GameObject:
   m_ObjectHideFlags: 1
@@ -329,6 +344,21 @@ GameObject:
   - component: {fileID: 4437830792888248}
   m_Layer: 0
   m_Name: mixamorig:LeftHandIndex4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1537326733513572
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4896309637959880}
+  m_Layer: 0
+  m_Name: LedgeTopBound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -590,7 +620,7 @@ Transform:
   - {fileID: 4943039971836224}
   - {fileID: 4826780028022186}
   m_Father: {fileID: 4528877080420016}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4087902805323572
 Transform:
@@ -796,7 +826,7 @@ Transform:
   m_LocalScale: {x: 0.39370078, y: 0.39370078, z: 0.39370078}
   m_Children: []
   m_Father: {fileID: 4528877080420016}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4528877080420016
 Transform:
@@ -808,9 +838,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4033370765595710}
   - {fileID: 4603503631529890}
   - {fileID: 4478256131693210}
-  - {fileID: 4033370765595710}
   m_Father: {fileID: 4911214937496954}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -867,7 +897,7 @@ Transform:
   m_LocalScale: {x: 0.39370078, y: 0.39370078, z: 0.39370078}
   m_Children: []
   m_Father: {fileID: 4528877080420016}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4609782351725438
 Transform:
@@ -880,6 +910,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4192920909801296}
+  - {fileID: 4896309637959880}
+  - {fileID: 4955627985666316}
   m_Father: {fileID: 4812324239846616}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1023,6 +1055,19 @@ Transform:
   m_Father: {fileID: 4576027446220974}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4896309637959880
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1537326733513572}
+  m_LocalRotation: {x: -0.000000009313225, y: 1.1308898e-12, z: 1.2161404e-13, w: 1}
+  m_LocalPosition: {x: -0, y: 0.413, z: -0.015}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4609782351725438}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4911214937496954
 Transform:
   m_ObjectHideFlags: 1
@@ -1064,6 +1109,19 @@ Transform:
   - {fileID: 4087902805323572}
   m_Father: {fileID: 4118155707653540}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4955627985666316
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1399188006228340}
+  m_LocalRotation: {x: -0.000000009313225, y: 1.1308898e-12, z: 1.2161404e-13, w: 1}
+  m_LocalPosition: {x: 0, y: 0.09, z: -0.015}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4609782351725438}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4975791561268712
 Transform:
@@ -1623,6 +1681,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RefToModel: {fileID: 1258876109009026}
+  LedgeTopBound: {fileID: 1537326733513572}
+  LedgeBottomBound: {fileID: 1399188006228340}
   IdleAnimations:
   - Idle
   RunAnimations:
@@ -1636,6 +1696,7 @@ MonoBehaviour:
   JumpForce: 5.5
   UpGravityOnPlayer: 10
   DownGravityOnPlayer: 16
+  LedgingAllowedDistance: 0.6
   GroundTraceDistance: 0.1
   MaxGroundAngle: 120
   GroundLayer:
