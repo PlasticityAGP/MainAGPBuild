@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Assembly-CSharp</name>
+    </assembly>
+    <members>
+        <member name="M:SCR_AnimEventManager.NewAnimEvent(System.String,System.Single,System.Single)">
+            <summary>
+            Queues an animation for play in our AnimEventManager
+            </summary>
+            <param name="Name">Name of the animation state we want to play</param>
+            <param name="CrossFade">Over how long we should fade this animation into being played</param>
+            <param name="TimeBeforePlay">The amount of downtime we want to have before playing this animation</param>
+        </member>
+        <member name="M:SCR_CharacterManager.JumpOff">
+            <summary>
+            This is a temporary summary TODO: MATT
+            </summary>
+        </member>
+        <member name="M:SCR_CharacterManager.OnClimbable(System.Single,System.Single)">
+            <summary>
+            This is a temporary summary TODO: MATT
+            </summary>
+            <param name="high"></param>
+            <param name="low"></param>
+        </member>
+        <member name="M:SCR_CharacterManager.IsGrounded">
+            <summary>
+            Draws traces down from the character to determine if they are resting on the ground or not. Returns true if on the ground, returns false 
+            in the air
+            </summary>
+            <returns>Whether the player is on the ground or not</returns>
+        </member>
+        <member name="M:SCR_CharacterManager.FreezeVelocity">
+            <summary>
+            Sets the character's velocity to Vector3.Zero, and prevents the CharacterManager from updating velocity unitl UnfreezeVelocity() is called
+            </summary>
+        </member>
+        <member name="M:SCR_CharacterManager.UnfreezeVelocity">
+            <summary>
+            Allows the CharacterManager to begin updating velocity again.
+            </summary>
+        </member>
+        <member name="M:SCR_DragDrop.InTrigger(UnityEngine.GameObject)">
+            <summary>
+            Should be called when the character is overlapping a trigger to pull a DragOBJ
+            </summary>
+            <param name="Other">Other should be whatever GameObject is overlapping the trigger</param>
+        </member>
+        <member name="M:SCR_DragDrop.FreezeAll">
+            <summary>
+            FreezeAll sets all of the Rigidbody constraints to true on the draggable object
+            </summary>
+        </member>
+    </members>
+</doc>
