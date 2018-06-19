@@ -94,6 +94,8 @@ public class SCR_CharacterManager : MonoBehaviour
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     [HideInInspector]
     public bool MoveDir = true;
+    [HideInInspector]
+    public bool MovingInZ = false;
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
     //InitialDir vector is used for determining what direction player velocity should be in if they turn
@@ -326,7 +328,7 @@ public class SCR_CharacterManager : MonoBehaviour
         CalculateGroundAngle();
         CalculateMoveVec();
         if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
-        if (DidAJump && !CurrentlyLedging)CheckForLedges();
+        if (DidAJump && !CurrentlyLedging && !MovingInZ)CheckForLedges();
         if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
         MoveCharacter(Time.deltaTime);
         PerTickAnimations();
@@ -685,11 +687,11 @@ public class SCR_CharacterManager : MonoBehaviour
         RaycastHit BottomResult;
         bool TopHit;
         bool BottomHit;
-        Debug.DrawLine(LedgeBottomBound.transform.position, LedgeBottomBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.green);
+        //Debug.DrawLine(LedgeBottomBound.transform.position, LedgeBottomBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.green);
         if (Physics.Raycast(LedgeBottomBound.transform.position, RayCastDir, out BottomResult, LedgingAllowedDistance, GroundLayer))
             BottomHit = true;
         else BottomHit = false;
-        Debug.DrawLine(LedgeTopBound.transform.position, LedgeTopBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.magenta);
+        //Debug.DrawLine(LedgeTopBound.transform.position, LedgeTopBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.magenta);
         if (Physics.Raycast(LedgeTopBound.transform.position, RayCastDir, out TopResult, LedgingAllowedDistance, GroundLayer))
             TopHit = true;
         else TopHit = false;
