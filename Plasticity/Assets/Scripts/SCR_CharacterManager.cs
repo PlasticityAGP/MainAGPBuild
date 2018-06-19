@@ -720,8 +720,8 @@ public class SCR_CharacterManager : MonoBehaviour
         Vector3 RightHandPoint = new Vector3(XValue, YValue, ZValueRight);
         IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
-        IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f);
-        IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f);
+        IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 4.0f);
+        IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 4.0f);
         FreezeVelocity();
     }
 
@@ -731,11 +731,11 @@ public class SCR_CharacterManager : MonoBehaviour
         UnfreezeVelocity();
         if(IkTools.GetEffectorWeight("LeftHand") != 0.0f)
         {
-            IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f);
+            IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 4.0f);
         }
         if (IkTools.GetEffectorWeight("RightHand") != 0.0f)
         {
-            IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f);
+            IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 4.0f);
         }
 
     }
@@ -747,10 +747,8 @@ public class SCR_CharacterManager : MonoBehaviour
             LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f) + GroundTraceDistance;
         else
             LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f) - GroundTraceDistance;
-        IkTools.SetEffectorWeightSpeed("LeftHand", 1.0f);
-        IkTools.SetEffectorWeightSpeed("RightHand", 1.0f);
-        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f);
-        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f);
+        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 1.0f);
+        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 1.0f);
         DoLedgeLerp = true;
 
     }

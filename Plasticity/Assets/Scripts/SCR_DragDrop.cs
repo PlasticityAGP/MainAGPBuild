@@ -114,10 +114,10 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         if(IsZ && Interact)
         {
-            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.7f);
-            IkTools.StartEffectorLerp("LeftHand", 0.7f, 1.0f);
-            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.7f);
-            IkTools.StartEffectorLerp("RightHand", 0.7f, 1.0f);
+            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.7f, 4.0f);
+            IkTools.StartEffectorLerp("LeftHand", 0.7f, 1.0f, 4.0f);
+            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.7f, 4.0f);
+            IkTools.StartEffectorLerp("RightHand", 0.7f, 1.0f, 4.0f);
         }
     }
 
@@ -162,10 +162,10 @@ public class SCR_DragDrop : MonoBehaviour {
 
     public void OnZTriggerExit()
     {
-        IkTools.SetEffector("LeftHand", null);
-        IkTools.SetEffector("RightHand", null);
-        IkTools.StartEffectorLerp("LeftHand", 0.0f, 0.0f);
-        IkTools.StartEffectorLerp("RightHand", 0.0f, 0.0f);
+        IkTools.SetEffectorTarget("LeftHand", null);
+        IkTools.SetEffectorTarget("RightHand", null);
+        IkTools.StartEffectorLerp("LeftHand", 0.0f, 0.0f, 4.0f);
+        IkTools.StartEffectorLerp("RightHand", 0.0f, 0.0f, 4.0f);
         FreezeAll();
     }
 
@@ -174,8 +174,8 @@ public class SCR_DragDrop : MonoBehaviour {
         if (other.gameObject.tag == "Character")
         {
             OverlapTrigger = false;
-            IkTools.SetEffector("LeftHand", null);
-            IkTools.SetEffector("RightHand", null);
+            IkTools.SetEffectorTarget("LeftHand", null);
+            IkTools.SetEffectorTarget("RightHand", null);
             FreezeAll();
         }
     }
@@ -189,10 +189,10 @@ public class SCR_DragDrop : MonoBehaviour {
         if (IsZ)
         {
             //Debug.Log("SET IK EFFECTORS");
-            IkTools.SetEffector("LeftHand", ZEffectorLeft);
-            IkTools.SetEffector("RightHand", ZEffectorRight);
-            IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f);
-            IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f);
+            IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
+            IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
+            IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 4.0f);
+            IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 4.0f);
 
         }
     }
@@ -230,8 +230,8 @@ public class SCR_DragDrop : MonoBehaviour {
         if (IsZ)
         {
             //Debug.Log("RESET EFFECTORS");
-            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f);
-            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f);
+            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 4.0f);
+            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 4.0f);
         }
     }
 
@@ -261,19 +261,19 @@ public class SCR_DragDrop : MonoBehaviour {
             ZEffectorRight.transform.position = Right;
             if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(LeftEndPoint.transform.position - Right))
             {
-                if(IsZ) IkTools.SetEffector("LeftHand", LeftEndPoint);
+                if(IsZ) IkTools.SetEffectorTarget("LeftHand", LeftEndPoint);
             }
             else
             {
-                if (IsZ) IkTools.SetEffector("LeftHand", ZEffectorLeft);
+                if (IsZ) IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
             }
             if (Vector3.Magnitude(Right - Left) > Vector3.Magnitude(RightEndPoint.transform.position - Left))
             {
-                if (IsZ) IkTools.SetEffector("RightHand", RightEndPoint);
+                if (IsZ) IkTools.SetEffectorTarget("RightHand", RightEndPoint);
             }
             else
             {
-                if (IsZ) IkTools.SetEffector("RightHand", ZEffectorRight);
+                if (IsZ) IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
             }
         }
     }
