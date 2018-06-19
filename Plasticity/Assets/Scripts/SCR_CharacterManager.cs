@@ -90,6 +90,9 @@ public class SCR_CharacterManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
     private LayerMask GroundLayer;
+    [SerializeField]
+    [Tooltip("Layermask that signifies what objects are considered to be walls.")]
+    private LayerMask WallLayer;
 
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     [HideInInspector]
@@ -211,33 +214,14 @@ public class SCR_CharacterManager : MonoBehaviour
     }
     private void LeftPressed(int value)
     {
-        if (IsClimbing) // Added by Matt for Testing
-        {
-            if (value == 1)
-            {
-                //Debug.Log("Player is reaching left to jump off of climbable object");
-                Left = true;
-                if (MoveDir)
-                    TurnCharacter();
-                // Play reaching animation
-            }
-            else
-            {
-                //Debug.Log("Player is no longer reaching to jump");
-                Left = false;
-            }
-
-            return;
-        }
-
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
             Left = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
-            if (MoveDir)
+            if (MoveDir && !CurrentlyLedging)
                 TurnCharacter();
-            if (IsGrounded())
+            if (IsGrounded() && !IsClimbing)
             {
                 //Tell the animation manager to play a running animation is left is pressed and player is on ground.
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
@@ -248,33 +232,14 @@ public class SCR_CharacterManager : MonoBehaviour
     }
     private void RightPressed(int value)
     {
-        if (IsClimbing) // Added by Matt for Testing
-        {
-            if (value == 1)
-            {
-                //Debug.Log("Player is reaching right to jump off of climbable object");
-                Right = true;
-                if (!MoveDir)
-                    TurnCharacter();
-                // Play reaching animation
-            }
-            else
-            {
-                //Debug.Log("Player is no longer reaching to jump");
-                Right = false;
-            }
-
-            return;
-        }
-
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
             Right = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
-            if (!MoveDir)
+            if (!MoveDir && !CurrentlyLedging)
                 TurnCharacter();
-            if (IsGrounded())
+            if (IsGrounded() && !IsClimbing)
             {
                 //Tell the animation manager to play a running animation is left is pressed and player is on ground.
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
@@ -678,6 +643,8 @@ public class SCR_CharacterManager : MonoBehaviour
         }
     }
 
+    //This function fires two raycasts out from the character to try and hit a wall. If the bottom hits and the top misses, it starts
+    //ledging
     private void CheckForLedges()
     {
         Vector3 RayCastDir;
@@ -687,39 +654,45 @@ public class SCR_CharacterManager : MonoBehaviour
         RaycastHit BottomResult;
         bool TopHit;
         bool BottomHit;
-        //Debug.DrawLine(LedgeBottomBound.transform.position, LedgeBottomBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.green);
-        if (Physics.Raycast(LedgeBottomBound.transform.position, RayCastDir, out BottomResult, LedgingAllowedDistance, GroundLayer))
+        //Fire the bottom raycast and see if it registered a hit
+        if (Physics.Raycast(LedgeBottomBound.transform.position, RayCastDir, out BottomResult, LedgingAllowedDistance, WallLayer))
             BottomHit = true;
         else BottomHit = false;
-        //Debug.DrawLine(LedgeTopBound.transform.position, LedgeTopBound.transform.position + (RayCastDir * LedgingAllowedDistance), Color.magenta);
-        if (Physics.Raycast(LedgeTopBound.transform.position, RayCastDir, out TopResult, LedgingAllowedDistance, GroundLayer))
+        //Fire the top raycast and see if it registered a hit
+        if (Physics.Raycast(LedgeTopBound.transform.position, RayCastDir, out TopResult, LedgingAllowedDistance, WallLayer))
             TopHit = true;
         else TopHit = false;
+        //If the bottom raycast hit and the top didn't, call the StartLedging function and pass it the hitinfo of the wall it hit
         if (BottomHit && !TopHit) StartLedging(BottomResult);
     }
 
     private void StartLedging(RaycastHit other)
     {
         LedgingWall = other;
+        //Set currently ledging so that our player is not effected by gravity in the MoveCharacter function
         CurrentlyLedging = true;
         float XValue;
         float ZValueLeft;
         float ZValueRight;
+        //Depending on what direction we are looking, find two locations based on the width of the wall we are ledging on
+        //for the left hand and right hand effector to be set to.
         if (MoveDir)
         {
             XValue = other.transform.position.x - (other.transform.lossyScale.x / 2.0f);
-            ZValueLeft = gameObject.transform.position.z + 0.5f;
-            ZValueRight = gameObject.transform.position.z - 0.5f;
+            ZValueLeft = gameObject.transform.position.z + 0.3f;
+            ZValueRight = gameObject.transform.position.z - 0.3f;
         }     
         else
         {
             XValue = other.transform.position.x + (other.transform.lossyScale.x / 2.0f);
-            ZValueLeft = gameObject.transform.position.z - 0.5f;
-            ZValueRight = gameObject.transform.position.z + 0.5f;
+            ZValueLeft = gameObject.transform.position.z - 0.3f;
+            ZValueRight = gameObject.transform.position.z + 0.3f;
         }
+        //Find the y value of the effector locations based on the height of the wall
         float YValue = other.transform.position.y + (other.transform.lossyScale.y / 2.0f);
         Vector3 LeftHandPoint = new Vector3(XValue, YValue, ZValueLeft);
         Vector3 RightHandPoint = new Vector3(XValue, YValue, ZValueRight);
+        //Set effectors to new locations and begin lerping them to create that hanging visual
         IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
         IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 4.0f);
@@ -727,10 +700,13 @@ public class SCR_CharacterManager : MonoBehaviour
         FreezeVelocity();
     }
 
+    //Called when we want to drop down from the ledge
     private void LedgeDismount()
     {
+        //Set velocity to zero and unfreeze it
         MoveVec = Vector3.zero;
         UnfreezeVelocity();
+        //If our effectors have weight, need to lerp them from their current weights back down to zero
         if(IkTools.GetEffectorWeight("LeftHand") != 0.0f)
         {
             IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 4.0f);
@@ -742,27 +718,33 @@ public class SCR_CharacterManager : MonoBehaviour
 
     }
 
+    //Called when we want to clamber up on top of the ledge.
     private void LedgeMount()
     {
+        //Define Y and X checkpoints we need to reach when we move our character to climb up on top of the wall
         LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f) + GroundTraceDistance;
         if(transform.position.x - LedgingWall.transform.position.x > 0.0f)
             LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f) + GroundTraceDistance;
         else
             LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f) - GroundTraceDistance;
+        //Slowly lerp effectors back to zero weight
         IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 1.0f);
         IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 1.0f);
         DoLedgeLerp = true;
 
     }
 
+    //Execute a lerp with values defined in LedgeMount
     private void LedgeLerp(float DeltaTime)
     {
         Vector3 temp;
+        //If we aren't as high as the ledge yet, keep lerping up in Y
         if(LedgeYTarget - transform.position.y > 0.0f)
         {
             temp = new Vector3(transform.position.x, transform.position.y + (DeltaTime * 2.0f), transform.position.z);
             transform.position = temp;
         }
+        //If we have finished lerping up in Y, lerp in X according to the current move direction of the character.
         else if (MoveDir && LedgeXTarget - transform.position.x > 0.0f)
         {
             temp = new Vector3(transform.position.x + (DeltaTime * 2.0f), transform.position.y, transform.position.z);
@@ -775,6 +757,7 @@ public class SCR_CharacterManager : MonoBehaviour
         }
         else
         {
+            //Dismount from ledge once we have make it on top
             DoLedgeLerp = false;
             LedgeDismount();
         }
