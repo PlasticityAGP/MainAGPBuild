@@ -1701,8 +1701,12 @@ MonoBehaviour:
   MaxGroundAngle: 120
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 513
+  WallLayer:
+    serializedVersion: 2
+    m_Bits: 512
   MoveDir: 1
+  MovingInZ: 0
   RBody: {fileID: 0}
   IsClimbing: 0
   ClimbSpeed: 3
