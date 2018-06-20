@@ -114,6 +114,7 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         if(IsZ && Interact)
         {
+            //Lerp effectors when the character is in the propper trigger and has pressed the interact key down while turning
             IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.7f, 4.0f);
             IkTools.StartEffectorLerp("LeftHand", 0.7f, 1.0f, 4.0f);
             IkTools.StartEffectorLerp("RightHand", 1.0f, 0.7f, 4.0f);
@@ -162,6 +163,7 @@ public class SCR_DragDrop : MonoBehaviour {
 
     public void OnZTriggerExit()
     {
+        //Reset effectors when the character leaves the dragable object zone
         IkTools.SetEffectorTarget("LeftHand", null);
         IkTools.SetEffectorTarget("RightHand", null);
         IkTools.StartEffectorLerp("LeftHand", 0.0f, 0.0f, 4.0f);
@@ -240,14 +242,18 @@ public class SCR_DragDrop : MonoBehaviour {
         //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
         RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
     }
-
+    
+    //Calculate where effectors should be whenever the character is within the z trigger
     private void EffectorCalculations()
     {
         if (IsZ)
         {
+            //Do vector math to find points along a line defined by the right and left effector positions
             Vector3 A = ZEffectorRight.transform.position - ZEffectorLeft.transform.position;
             float Mag = A.magnitude;
+            //Midpoint between the two hands
             Vector3 Midpoint = ZEffectorLeft.transform.position + (A.normalized * (Mag / 2.0f));
+            //Adjust where hands should be relative to the character based on the direction the player is moving
             if (CharacterManager.MoveDir) Weight = -0.1f;
             else Weight = -0.4f;
             Vector3 Adjust = (A.normalized * Weight);
@@ -257,8 +263,10 @@ public class SCR_DragDrop : MonoBehaviour {
             Vector3 Offset = Vector3.Dot(C, B.normalized) * B.normalized;
             Vector3 Left = ZEffectorLeft.transform.position + Offset + Adjust;
             Vector3 Right = ZEffectorRight.transform.position + Offset + Adjust;
+            //Set effector locations based on calculations
             ZEffectorLeft.transform.position = Left;
             ZEffectorRight.transform.position = Right;
+            //If our effector locations lie outside of our box, set them to the corner of the box so the player isn't grabbing empty air
             if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(LeftEndPoint.transform.position - Right))
             {
                 if(IsZ) IkTools.SetEffectorTarget("LeftHand", LeftEndPoint);
