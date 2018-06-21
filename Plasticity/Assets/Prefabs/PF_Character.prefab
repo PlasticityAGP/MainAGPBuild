@@ -1297,7 +1297,7 @@ MonoBehaviour:
         defaultChildDirection: {x: 0, y: 0, z: 0}
     - pin: 0
       pull: 1
-      push: 0
+      push: 1
       pushParent: 1
       reach: 0.1
       reachSmoothing: 1
@@ -1347,7 +1347,7 @@ MonoBehaviour:
         defaultChildDirection: {x: 0, y: 0, z: 0}
     - pin: 0
       pull: 1
-      push: 0
+      push: 1
       pushParent: 1
       reach: 0.1
       reachSmoothing: 1
