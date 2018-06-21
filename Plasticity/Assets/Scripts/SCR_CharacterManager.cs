@@ -99,6 +99,9 @@ public class SCR_CharacterManager : MonoBehaviour
     public bool MoveDir = true;
     [HideInInspector]
     public bool MovingInZ = false;
+    [HideInInspector]
+    public bool CanJump = true;
+
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
     //InitialDir vector is used for determining what direction player velocity should be in if they turn
@@ -499,15 +502,18 @@ public class SCR_CharacterManager : MonoBehaviour
         //If the player has pressed an UP key and the player is currently standing on the ground
         if (Up && IsGrounded())
         {
-            FallingOff = false;
-            if (DidAJump) OnEndJump();
-            //Need a different jump force if we are moving uphill while jumping.
-            if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
-            else MoveVec.y = JumpForce;
-            //Tell anim manager to play a jump animation.
-            AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
+            if (CanJump)
+            {
+                FallingOff = false;
+                if (DidAJump) OnEndJump();
+                //Need a different jump force if we are moving uphill while jumping.
+                if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
+                else MoveVec.y = JumpForce;
+                //Tell anim manager to play a jump animation.
+                AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
+                OnBeginJump();
+            }
 
-            OnBeginJump();
         }
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
         else if (!Up && IsGrounded())

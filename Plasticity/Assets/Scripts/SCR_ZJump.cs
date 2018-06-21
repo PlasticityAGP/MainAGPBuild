@@ -72,6 +72,7 @@ public class SCR_ZJump : MonoBehaviour {
             {
                 if (OtherTriggerScript.IsInside)
                 {
+                    CharacterManager.CanJump = false;
                     Clamber = true;
                 }
             }
@@ -181,6 +182,7 @@ public class SCR_ZJump : MonoBehaviour {
             {
                 //If the player is done clambering, dont allow more clambering and allow the player to have velocity again
                 Clamber = false;
+                CharacterManager.CanJump = true;
                 CharacterManager.UnfreezeVelocity();
                 CharacterManager.MovingInZ = false;
                 LerpingY = true;

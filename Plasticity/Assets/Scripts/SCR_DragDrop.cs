@@ -188,18 +188,21 @@ public class SCR_DragDrop : MonoBehaviour {
         CharacterManager.MoveSpeed = MaxDragSpeed;
         if (IsZ)
         {
-            //Debug.Log("SET IK EFFECTORS");
-            IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
-            IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
-            if (CharacterManager.MoveDir)
+            if (Interact)
             {
-                IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 6.0f);
-                IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 2.0f);
-            }
-            else
-            {
-                IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 2.0f);
-                IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 6.0f);
+                //Debug.Log("SET IK EFFECTORS");
+                IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
+                IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
+                if (CharacterManager.MoveDir)
+                {
+                    IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 6.0f);
+                    IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 2.0f);
+                }
+                else
+                {
+                    IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 2.0f);
+                    IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 6.0f);
+                }
             }
         }
     }
@@ -239,13 +242,13 @@ public class SCR_DragDrop : MonoBehaviour {
             //Debug.Log("RESET EFFECTORS");
             if (CharacterManager.MoveDir)
             {
-                IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 3.0f);
-                IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 6.0f);
+                IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 3.0f);
+                IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 6.0f);
             }
             else
             {
-                IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 6.0f);
-                IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 3.0f);
+                IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 6.0f);
+                IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 3.0f);
             }
         }
     }

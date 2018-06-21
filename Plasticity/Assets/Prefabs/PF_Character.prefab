@@ -1668,7 +1668,7 @@ MonoBehaviour:
     rootNode: {fileID: 4826780028022186}
     spineStiffness: 0.5
     pullBodyVertical: 0.5
-    pullBodyHorizontal: 0
+    pullBodyHorizontal: 0.2
 --- !u!114 &114989280144640750
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1707,6 +1707,7 @@ MonoBehaviour:
     m_Bits: 512
   MoveDir: 1
   MovingInZ: 0
+  CanJump: 1
   RBody: {fileID: 0}
   IsClimbing: 0
   ClimbSpeed: 3
