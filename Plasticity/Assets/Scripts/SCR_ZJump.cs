@@ -72,6 +72,7 @@ public class SCR_ZJump : MonoBehaviour {
             {
                 if (OtherTriggerScript.IsInside)
                 {
+                    CharacterManager.CanJump = false;
                     Clamber = true;
                 }
             }
@@ -125,7 +126,10 @@ public class SCR_ZJump : MonoBehaviour {
                 float ZComp = Mathf.Lerp(Character.transform.position.z, ReferencePoint.transform.position.z, LerpValue);
                 Vector3 FinalPosition = new Vector3(Character.transform.position.x, Character.transform.position.y, ZComp);
                 Character.transform.position = FinalPosition;
+                if (Character.transform.position.z - ReferencePoint.transform.position.z == 0) CharacterManager.MovingInZ = false;
+                else CharacterManager.MovingInZ = true;
             }
+            else CharacterManager.MovingInZ = true;
         }
     }
 
@@ -135,6 +139,7 @@ public class SCR_ZJump : MonoBehaviour {
         {
             //As the player exits the trigger they should return to their original Z plane via ReturnLerp
             LerpBack = true;
+            CharacterManager.MovingInZ = true;
             LerpValue = 0.0f;
             Character = other.gameObject;
             CharacterManager = Character.GetComponent<SCR_CharacterManager>();
@@ -148,6 +153,7 @@ public class SCR_ZJump : MonoBehaviour {
         if (LerpValue >= 1.0f)
         {
             LerpBack = false;
+            CharacterManager.MovingInZ = false;
             LerpValue = 0.0f;
         }
         else
@@ -162,7 +168,11 @@ public class SCR_ZJump : MonoBehaviour {
     private void ClamberLerp(float DeltaTime)
     {
         //If the player is clambering, we don't want the CharacterManager to update velocity
-        if (ClamberLerpValue == 0.0f) CharacterManager.FreezeVelocity();
+        if (ClamberLerpValue == 0.0f)
+        {
+            CharacterManager.FreezeVelocity();
+            CharacterManager.MovingInZ = true;
+        }
 
         ClamberLerpValue += (DeltaTime * 4.0f);
 
@@ -172,7 +182,9 @@ public class SCR_ZJump : MonoBehaviour {
             {
                 //If the player is done clambering, dont allow more clambering and allow the player to have velocity again
                 Clamber = false;
+                CharacterManager.CanJump = true;
                 CharacterManager.UnfreezeVelocity();
+                CharacterManager.MovingInZ = false;
                 LerpingY = true;
                 ClamberLerpValue = 0.0f;
             }
