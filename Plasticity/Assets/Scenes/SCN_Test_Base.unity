@@ -393,7 +393,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: 0.054005854, y: -0.010465434, z: 0.0005660523, w: 0.9984856}
+  m_LocalRotation: {x: 0.054005977, y: -0.01046111, z: 0.00056582096, w: 0.9984857}
   m_LocalPosition: {x: 0.18000007, y: 1.58, z: -6.8499994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -511,6 +511,16 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: GroundLayer.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: WallLayer.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
   m_IsPrefabParent: 0
@@ -519,6 +529,35 @@ GameObject:
   m_PrefabParentObject: {fileID: 1377970212060658, guid: 0bf968594bcb48746b37c0734ddaa3f9,
     type: 2}
   m_PrefabInternal: {fileID: 1012574618}
+--- !u!114 &1012574620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1012574619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1999370065, guid: dcd2196c4e9166f499793f2007fcda35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"nest":{"source":"Macro","macro":0,"embed":null}}'
+    _objectReferences:
+    - {fileID: 11400000, guid: cd62e2f8fe41dc142bac5785866e3f42, type: 2}
+--- !u!114 &1012574621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1012574619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1465209106, guid: c8d0ad23af520fe46aabe2b1fecf6462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"declarations":{"collection":{"$content":[],"$version":"A"},"$version":"A"}}'
+    _objectReferences: []
 --- !u!1 &1031922988
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,7 +634,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: 0.054005854, y: -0.010465434, z: 0.0005660523, w: 0.9984856}
+  m_LocalRotation: {x: 0.054005977, y: -0.01046111, z: 0.00056582096, w: 0.9984857}
   m_LocalPosition: {x: -2.75, y: 3.0394733, z: -14.559999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
