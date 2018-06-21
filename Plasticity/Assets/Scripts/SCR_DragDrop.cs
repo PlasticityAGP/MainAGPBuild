@@ -115,10 +115,8 @@ public class SCR_DragDrop : MonoBehaviour {
         if(IsZ && Interact)
         {
             //Lerp effectors when the character is in the propper trigger and has pressed the interact key down while turning
-            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.7f, 4.0f);
-            IkTools.StartEffectorLerp("LeftHand", 0.7f, 1.0f, 4.0f);
-            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.7f, 4.0f);
-            IkTools.StartEffectorLerp("RightHand", 0.7f, 1.0f, 4.0f);
+            IkTools.StartEffectorLerp("LeftHand", 0.5f, 1.0f, 2.0f);
+            IkTools.StartEffectorLerp("RightHand", 0.5f, 1.0f, 2.0f);
         }
     }
 
@@ -166,8 +164,8 @@ public class SCR_DragDrop : MonoBehaviour {
         //Reset effectors when the character leaves the dragable object zone
         IkTools.SetEffectorTarget("LeftHand", null);
         IkTools.SetEffectorTarget("RightHand", null);
-        IkTools.StartEffectorLerp("LeftHand", 0.0f, 0.0f, 4.0f);
-        IkTools.StartEffectorLerp("RightHand", 0.0f, 0.0f, 4.0f);
+        IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 4.0f);
+        IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 4.0f);
         FreezeAll();
     }
 
@@ -193,9 +191,16 @@ public class SCR_DragDrop : MonoBehaviour {
             //Debug.Log("SET IK EFFECTORS");
             IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
             IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
-            IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 4.0f);
-            IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 4.0f);
-
+            if (CharacterManager.MoveDir)
+            {
+                IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 6.0f);
+                IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 2.0f);
+            }
+            else
+            {
+                IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 2.0f);
+                IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 6.0f);
+            }
         }
     }
 
@@ -232,8 +237,16 @@ public class SCR_DragDrop : MonoBehaviour {
         if (IsZ)
         {
             //Debug.Log("RESET EFFECTORS");
-            IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 4.0f);
-            IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 4.0f);
+            if (CharacterManager.MoveDir)
+            {
+                IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 3.0f);
+                IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 6.0f);
+            }
+            else
+            {
+                IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 6.0f);
+                IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 3.0f);
+            }
         }
     }
 
@@ -254,7 +267,7 @@ public class SCR_DragDrop : MonoBehaviour {
             //Midpoint between the two hands
             Vector3 Midpoint = ZEffectorLeft.transform.position + (A.normalized * (Mag / 2.0f));
             //Adjust where hands should be relative to the character based on the direction the player is moving
-            if (CharacterManager.MoveDir) Weight = -0.1f;
+            if (CharacterManager.MoveDir) Weight = -0.2f;
             else Weight = -0.4f;
             Vector3 Adjust = (A.normalized * Weight);
             Vector3 B = ZEffectorRight.transform.position - Midpoint;

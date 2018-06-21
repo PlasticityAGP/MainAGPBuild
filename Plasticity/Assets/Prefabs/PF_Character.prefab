@@ -1298,7 +1298,7 @@ MonoBehaviour:
     - pin: 0
       pull: 1
       push: 0
-      pushParent: 0
+      pushParent: 1
       reach: 0.1
       reachSmoothing: 1
       pushSmoothing: 1
@@ -1348,7 +1348,7 @@ MonoBehaviour:
     - pin: 0
       pull: 1
       push: 0
-      pushParent: 0
+      pushParent: 1
       reach: 0.1
       reachSmoothing: 1
       pushSmoothing: 1
@@ -1513,7 +1513,7 @@ MonoBehaviour:
       planeBone3: {fileID: 0}
       planeRotationOffset: {x: 0, y: 0, z: 0, w: 1}
     - bone: {fileID: 4718351587178544}
-      target: {fileID: 0}
+      target: {fileID: 4718351587178544}
       positionWeight: 0
       rotationWeight: 0
       position: {x: 0, y: 0, z: 0}
@@ -1527,7 +1527,7 @@ MonoBehaviour:
       planeBone3: {fileID: 0}
       planeRotationOffset: {x: 0, y: 0, z: 0, w: 1}
     - bone: {fileID: 4329732688690536}
-      target: {fileID: 0}
+      target: {fileID: 4329732688690536}
       positionWeight: 0
       rotationWeight: 0
       position: {x: 0, y: 0, z: 0}
@@ -1569,7 +1569,7 @@ MonoBehaviour:
       planeBone3: {fileID: 0}
       planeRotationOffset: {x: 0, y: 0, z: 0, w: 1}
     - bone: {fileID: 4943409798003616}
-      target: {fileID: 0}
+      target: {fileID: 4943409798003616}
       positionWeight: 0
       rotationWeight: 0
       position: {x: 0, y: 0, z: 0}
@@ -1583,7 +1583,7 @@ MonoBehaviour:
       planeBone3: {fileID: 4826780028022186}
       planeRotationOffset: {x: 0, y: 0, z: 0, w: 1}
     - bone: {fileID: 4975791561268712}
-      target: {fileID: 0}
+      target: {fileID: 4975791561268712}
       positionWeight: 0
       rotationWeight: 0
       position: {x: 0, y: 0, z: 0}
@@ -1638,7 +1638,7 @@ MonoBehaviour:
       twistWeight: 1
     boneMappings:
     - bone: {fileID: 4192920909801296}
-      maintainRotationWeight: 0
+      maintainRotationWeight: 0.5
     limbMappings:
     - parentBone: {fileID: 4579693686215178}
       bone1: {fileID: 4718351587178544}
