@@ -85,6 +85,10 @@ public class SCR_CharacterManager : MonoBehaviour
     [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
     private float GroundTraceDistance;
     [SerializeField]
+    [Tooltip("How much higher above origin IsGrounded trace should occur")]
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float YTraceOffset;
+    [SerializeField]
     [Tooltip("The maximum angle between player and ground that is walkable by player")]
     private float MaxGroundAngle;
     [SerializeField]
@@ -368,8 +372,9 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f);
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f);
+        Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f) + YOffset;
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f) + YOffset;
         RaycastHit Result;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
         //because we want our velocity to match the slope of the surface slightly before we return true.
@@ -550,7 +555,7 @@ public class SCR_CharacterManager : MonoBehaviour
         if (!JumpWhileHeld) Up = false;
 
         AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
-        if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
+        if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.05f);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -611,7 +616,12 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
             //If the slope is too high, don't move
-            if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
+            //if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
+            if(gameObject.transform.position.y - HitInfo.point.y < (GroundTraceDistance - YTraceOffset) * 0.5)
+            {
+                float difference = (GroundTraceDistance - YTraceOffset) - (gameObject.transform.position.y - HitInfo.point.y);
+                gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + (difference * 0.95f), gameObject.transform.position.z);
+            }
 
         }
         //Otherwise move, but with a y component of velocity that is determined by jumping/falling, and not the slope of the surface we are on.
@@ -728,11 +738,11 @@ public class SCR_CharacterManager : MonoBehaviour
     private void LedgeMount()
     {
         //Define Y and X checkpoints we need to reach when we move our character to climb up on top of the wall
-        LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f) + GroundTraceDistance;
+        LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f);
         if(transform.position.x - LedgingWall.transform.position.x > 0.0f)
-            LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f) + GroundTraceDistance;
+            LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f);
         else
-            LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f) - GroundTraceDistance;
+            LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f);
         //Slowly lerp effectors back to zero weight
         IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 1.0f);
         IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 1.0f);
