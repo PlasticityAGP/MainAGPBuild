@@ -3,34 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using RootMotion.FinalIK;
 
+//The purpose of this script is to provide tools for lerping effector weights in FinalIK. Currently only supports left and right hand effectors
+
+struct QueueObject
+{
+    public float duration;
+    public AnimationCurve curve;
+}
+
 public class SCR_IKToolset : MonoBehaviour {
 
+    //Reference to the IK component we have attached to our character model
     private FullBodyBipedIK Ik;
+    //Boolean that tells us when to start lerping the left hand effector weight
     private bool LerpLeftHand;
+    //Boolean that tells us when to start lerping the right hand effector weight
     private bool LerpRightHand;
-    [HideInInspector]
-    public float LeftSpeed;
-    [HideInInspector]
-    public float RightSpeed;
-    private Queue<float> LeftHandFrom;
-    private Queue<float> RightHandFrom;
-    private Queue<float> LeftHandTo;
-    private Queue<float> RightHandTo;
-
+    //Queues for storing effector weight targets to iterate through multiple lerps in succession
+    private QueueObject LeftHandQueue;
+    float LeftHandTimer;
+    private QueueObject RightHandQueue;
+    float RightHandTimer;
     // Use this for initialization
     void Start () {
+        //Find the instance of the IK component attached to our character
         if (gameObject.GetComponentInChildren<FullBodyBipedIK>()) Ik = gameObject.GetComponentInChildren<FullBodyBipedIK>();
         else Debug.LogError("We need a a FullBodyBipedIK component attached to one of the Character's child Game Objects");
         LerpLeftHand = false;
         LerpRightHand = false;
-        LeftSpeed = 4.0f;
-        RightSpeed = 4.0f;
-        LeftHandFrom = new Queue<float>();
-        LeftHandTo = new Queue<float>();
-        RightHandFrom = new Queue<float>();
-        RightHandTo = new Queue<float>();
+        LeftHandTimer = 0.0f;
+        RightHandTimer = 0.0f;
+
     }
 
+    /// <summary>
+    /// Sets a specific effector position to a fixed location in world space
+    /// </summary>
+    /// <param name="ID">What effector is having its location set</param>
+    /// <param name="Loc">What location you would like to set the effector to</param>
     public void SetEffectorLocation(string ID, Vector3 Loc)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
@@ -45,7 +55,12 @@ public class SCR_IKToolset : MonoBehaviour {
         else Debug.LogError("We could not find the specified effector!");
     }
 
-    public void SetEffector(string ID, GameObject obj)
+    /// <summary>
+    /// Tells a specific effector update its location to that of a tracked GameObject
+    /// </summary>
+    /// <param name="ID">Which effector you would like to have target a GameObject</param>
+    /// <param name="obj">The GameObject you would like the effector to follow</param>
+    public void SetEffectorTarget(string ID, GameObject obj)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
         {
@@ -61,27 +76,52 @@ public class SCR_IKToolset : MonoBehaviour {
         else Debug.LogError("We could not find the specified effector!");
     }
 
-    public void StartEffectorLerp(string ID, float from, float to)
+    public void ForceEffectorWeight(string ID, float weight)
+    {
+        if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
+        {
+            Ik.solver.leftHandEffector.positionWeight = weight;
+            Ik.solver.leftHandEffector.rotationWeight = weight;
+            LerpLeftHand = false;
+        }
+
+        else if (ID.Equals("RightHand") || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
+        {
+            Ik.solver.rightHandEffector.positionWeight = weight;
+            Ik.solver.rightHandEffector.rotationWeight = weight;
+            LerpRightHand = false;
+        }
+        else Debug.LogError("We could not find the specified effector!");
+    }
+
+    public void StartEffectorLerp(string ID, AnimationCurve curve, float duration)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
         {
             LerpLeftHand = true;
-            Ik.solver.leftHandEffector.positionWeight = from;
-            Ik.solver.leftHandEffector.rotationWeight = from;
-            LeftHandFrom.Enqueue(from);
-            LeftHandTo.Enqueue(to);
+            QueueObject InsertObject = new QueueObject();
+            InsertObject.duration = duration;
+            InsertObject.curve = curve;
+            LeftHandQueue = InsertObject;
+            LeftHandTimer = 0.0f;
         }
         else if (ID.Equals("RightHand") || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
         {
             LerpRightHand = true;
-            Ik.solver.rightHandEffector.positionWeight = from;
-            Ik.solver.rightHandEffector.rotationWeight = from;
-            RightHandFrom.Enqueue(from);
-            RightHandTo.Enqueue(to);
+            QueueObject InsertObject = new QueueObject();
+            InsertObject.duration = duration;
+            InsertObject.curve = curve;
+            RightHandQueue = InsertObject;
+            RightHandTimer = 0.0f;
         }
         else Debug.LogError("We could not find the specified effector!");
     } 
 
+    /// <summary>
+    /// Returns the current effector weight for a given effector 
+    /// </summary>
+    /// <param name="ID">The effector you would like to get the weight of</param>
+    /// <returns></returns>
     public float GetEffectorWeight(string ID)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
@@ -95,113 +135,54 @@ public class SCR_IKToolset : MonoBehaviour {
         }
     }
 
-    public void SetEffectorWeightSpeed(string ID, float speed)
+    //Execute the lerp between from and to
+    private void LeftEffectorDoLerp(float DeltaTime, QueueObject obj)
     {
-        if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
+        LeftHandTimer += DeltaTime;
+        if (LeftHandTimer >= obj.duration)
         {
-            LeftSpeed = speed;
-        }
-
-        else if (ID.Equals("RightHand") || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
-        {
-            RightSpeed = speed;
-        }
-
-        else Debug.LogError("We could not find the specified effector!");
-    }
-
-    private void LeftEffectorDoLerp(float DeltaTime, float from, float to)
-    {
-        if (from > to)
-        {
-            float temp = Ik.solver.leftHandEffector.positionWeight;
-            temp -= (DeltaTime * LeftSpeed);
-            if (temp <= to)
-            {
-                EndLeftEffectorLerp();
-                Ik.solver.leftHandEffector.positionWeight = to;
-                Ik.solver.leftHandEffector.rotationWeight = to;
-            }
-            else
-            {
-                Ik.solver.leftHandEffector.positionWeight = temp;
-                Ik.solver.leftHandEffector.rotationWeight = temp;
-            }
+            EndLeftEffectorLerp();
         }
         else
         {
-            float temp = Ik.solver.leftHandEffector.positionWeight;
-            temp += (DeltaTime * LeftSpeed);
-            if (temp >= to)
-            {
-                EndLeftEffectorLerp();
-                Ik.solver.leftHandEffector.positionWeight = to;
-                Ik.solver.leftHandEffector.rotationWeight = to;
-            }
-            else
-            {
-                Ik.solver.leftHandEffector.positionWeight = temp;
-                Ik.solver.leftHandEffector.rotationWeight = temp;
-            }
+            Ik.solver.leftHandEffector.positionWeight = obj.curve.Evaluate(LeftHandTimer);
+            Ik.solver.leftHandEffector.rotationWeight = obj.curve.Evaluate(LeftHandTimer);
         }
     }
 
-    private void RightEffectorDoLerp(float DeltaTime, float from, float to)
+    //Execute the lerp between from and to
+    private void RightEffectorDoLerp(float DeltaTime, QueueObject obj)
     {
-        if (from > to)
+        RightHandTimer += DeltaTime;
+        if (RightHandTimer >= obj.duration)
         {
-            float temp = Ik.solver.rightHandEffector.positionWeight;
-            temp -= (DeltaTime * RightSpeed);
-            if (temp <= to)
-            {
-                EndRightEffectorLerp();
-                Ik.solver.rightHandEffector.positionWeight = to;
-                Ik.solver.rightHandEffector.rotationWeight = to;
-            }
-            else
-            {
-                Ik.solver.rightHandEffector.positionWeight = temp;
-                Ik.solver.rightHandEffector.rotationWeight = temp;
-            }
+            EndRightEffectorLerp();
         }
         else
         {
-            float temp = Ik.solver.rightHandEffector.positionWeight;
-            temp += (DeltaTime * RightSpeed);
-            if (temp >= to)
-            {
-                EndRightEffectorLerp();
-                Ik.solver.rightHandEffector.positionWeight = to;
-                Ik.solver.rightHandEffector.rotationWeight = to;
-            }
-            else
-            {
-                Ik.solver.rightHandEffector.positionWeight = temp;
-                Ik.solver.rightHandEffector.rotationWeight = temp;
-            }
+            Ik.solver.rightHandEffector.positionWeight = obj.curve.Evaluate(RightHandTimer);
+            Ik.solver.rightHandEffector.rotationWeight = obj.curve.Evaluate(RightHandTimer);
         }
     }
 
     private void EndLeftEffectorLerp()
     {
-        if ((LeftHandFrom.Count + LeftHandTo.Count) == 0) LerpLeftHand = false;
-        LeftHandFrom.Dequeue();
-        LeftHandTo.Dequeue();
-        LeftSpeed = 4.0f;
+        //Make sure we aren't trying to dequeue from an empty queue and end lerping
+        LerpLeftHand = false;
+        LeftHandTimer = 0.0f;
     }
 
     private void EndRightEffectorLerp()
     {
-        if ((LeftHandFrom.Count + LeftHandTo.Count) == 0) LerpLeftHand = false;
-        RightHandFrom.Dequeue();
-        RightHandTo.Dequeue();
-        RightSpeed = 4.0f;
+        //Make sure we aren't trying to dequeue from an empty queue and end lerping
+        LerpRightHand = false;
+        RightHandTimer = 0.0f;
     }
 
     private void FixedUpdate()
     {
-        if (LerpLeftHand && (LeftHandFrom.Count + LeftHandTo.Count) != 0) LeftEffectorDoLerp(Time.deltaTime, LeftHandFrom.Peek(), LeftHandTo.Peek());
-        if (LerpRightHand && (RightHandFrom.Count + RightHandTo.Count) != 0) RightEffectorDoLerp(Time.deltaTime, RightHandFrom.Peek(), RightHandTo.Peek());
+        if (LerpLeftHand) LeftEffectorDoLerp(Time.deltaTime, LeftHandQueue);
+        if (LerpRightHand) RightEffectorDoLerp(Time.deltaTime, RightHandQueue);
     }
 
 }
