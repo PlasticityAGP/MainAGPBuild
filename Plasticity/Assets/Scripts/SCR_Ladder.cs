@@ -5,11 +5,21 @@ using UnityEngine.Events;
 
 public class SCR_Ladder : MonoBehaviour {
     private SCR_CharacterManager CharacterManager;
+    private GameObject Character;
 
+    [SerializeField]
+    private GameObject[] EffectorTargets;
+    [SerializeField]
+    private AnimationCurve[] CurveOfEffectors;
+    [SerializeField]
+    private float ClamberSpeed;
+    private SCR_IKToolset IkTools;
     private UnityAction<int> UpListener;
     private UnityAction<int> HorizontalListener;
     private bool climbing;
     private bool reaching;
+    private bool ClamberDir;
+    private bool AmLerpingCharacter;
 
     // Sets up a listener which calls Up() and Side() when the respective keys are pressed.
     private void Awake()
@@ -30,6 +40,8 @@ public class SCR_Ladder : MonoBehaviour {
     {
         if(other.tag == "Character")
         {
+            Character = other.gameObject;
+            if (IkTools == null) IkTools = other.GetComponentInChildren<SCR_IKToolset>();
             if (CharacterManager == null) CharacterManager = other.GetComponent<SCR_CharacterManager>();
             CharacterManager.Ladder = gameObject;
             SCR_EventManager.StartListening("UpKey", UpListener);
@@ -39,8 +51,23 @@ public class SCR_Ladder : MonoBehaviour {
     public void Clamber(int direction)
     {
         CharacterManager.AmClambering = true;
-        if (direction == 1) Debug.Log("I need to clamber to the right!");
-        else Debug.Log("I need to clamber to the left!");
+        CharacterManager.FreezeVelocity();
+        CharacterManager.IsClimbing = false;
+        if (direction == 1)
+        {
+            ClamberDir = true;
+            IkTools.SetEffectorTarget("LeftHand", EffectorTargets[0]);
+            IkTools.SetEffectorTarget("RightHand", EffectorTargets[1]);
+        }
+        else
+        {
+            ClamberDir = false;
+            IkTools.SetEffectorTarget("LeftHand", EffectorTargets[2]);
+            IkTools.SetEffectorTarget("RightHand", EffectorTargets[3]);
+        }
+        IkTools.StartEffectorLerp("LeftHand", CurveOfEffectors[0], 1.0f);
+        IkTools.StartEffectorLerp("RightHand", CurveOfEffectors[0], 1.0f);
+        AmLerpingCharacter = true;
     }
 
     // The listener stops paying attention.
@@ -95,9 +122,40 @@ public class SCR_Ladder : MonoBehaviour {
         CharacterManager.JumpOff();
     }
 
-    // Not used.
+    private void EndLerp()
+    {
+        climbing = false;
+        reaching = false;
+        CharacterManager.UnfreezeVelocity();
+        CharacterManager.AmClambering = false;
+        AmLerpingCharacter = false;
+    }
+
+    private void LerpCharacter(float DeltaTime)
+    {
+        if(Character.transform.position.y < EffectorTargets[0].transform.position.y)
+        {
+            Vector3 newpos = new Vector3(Character.transform.position.x, Character.transform.position.y + (DeltaTime*ClamberSpeed), Character.transform.position.z);
+            Character.transform.position = newpos;
+        }
+        else if (ClamberDir && Character.transform.position.x < EffectorTargets[0].transform.position.x)
+        {
+            Vector3 newpos = new Vector3(Character.transform.position.x + (DeltaTime * ClamberSpeed), Character.transform.position.y, Character.transform.position.z);
+            Character.transform.position = newpos;
+        }
+        else if (!ClamberDir && Character.transform.position.x > EffectorTargets[2].transform.position.x)
+        {
+            Vector3 newpos = new Vector3(Character.transform.position.x - (DeltaTime * ClamberSpeed), Character.transform.position.y, Character.transform.position.z);
+            Character.transform.position = newpos;
+        }
+        else
+        {
+            EndLerp();
+        }
+    }
+
     void Update()
     {
-
+        if (AmLerpingCharacter) LerpCharacter(Time.deltaTime);
     }
 }
