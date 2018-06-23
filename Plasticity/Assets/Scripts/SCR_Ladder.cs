@@ -31,15 +31,27 @@ public class SCR_Ladder : MonoBehaviour {
         if(other.tag == "Character")
         {
             if (CharacterManager == null) CharacterManager = other.GetComponent<SCR_CharacterManager>();
+            CharacterManager.Ladder = gameObject;
             SCR_EventManager.StartListening("UpKey", UpListener);
         }
+    }
+
+    public void Clamber(int direction)
+    {
+        CharacterManager.AmClambering = true;
+        if (direction == 1) Debug.Log("I need to clamber to the right!");
+        else Debug.Log("I need to clamber to the left!");
     }
 
     // The listener stops paying attention.
     private void OnTriggerExit(Collider other)
     {
         if (other.tag == "Character")
+        {
             SCR_EventManager.StopListening("UpKey", UpListener);
+            CharacterManager.AmClambering = false;
+        }
+            
     }
 
     // The "up" key is pressed while the player is inside the ladder's trigger.
@@ -69,7 +81,7 @@ public class SCR_Ladder : MonoBehaviour {
         //Debug.Log("started climbing");
         float maxclimb = this.transform.position.y + this.transform.localScale.y/2;
         float minclimb = this.transform.position.y - this.transform.localScale.y/2;
-        CharacterManager.OnClimbable(maxclimb, minclimb, this);
+        CharacterManager.OnClimbable(maxclimb, minclimb);
     }
 
     // The player hops off the ladder.

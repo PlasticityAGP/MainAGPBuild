@@ -480,7 +480,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04c3a6d2b1d68a849b37aead82c2b6e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Interact: 0
   IsZ: 0
   LeftEndPoint: {fileID: 1326073844690394}
   RightEndPoint: {fileID: 1797596041465854}

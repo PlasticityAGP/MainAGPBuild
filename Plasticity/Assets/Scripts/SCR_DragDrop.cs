@@ -11,7 +11,7 @@ public class SCR_DragDrop : MonoBehaviour {
     private UnityAction<int> InteractListener;
     private UnityAction<int> TurnListener;
     [HideInInspector]
-    public bool Interact = false;
+    private bool Interact = false;
     private SCR_IKToolset IkTools;
     //The rigidbody of the object we will be moving
     private Rigidbody RBody;
@@ -166,6 +166,12 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+    public void OnZTriggerEnter()
+    {
+        IsZ = true;
+        if (Interact) EnteredAndInteracted();
+    }
+
     public void OnZTriggerExit()
     {
         //Reset effectors when the character leaves the dragable object zone
@@ -186,7 +192,7 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
-    public void EnteredAndInteracted()
+    private void EnteredAndInteracted()
     {
         //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
         //and set the velocity of the object to be moved

@@ -1759,6 +1759,15 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.15046029
+      value: 0.8439489
+      inSlope: -3.1834705
+      outSlope: -3.1834705
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.22614487
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 0.25
       value: 0
       inSlope: 0
@@ -1838,6 +1847,15 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.15
+      value: 0.9
+      inSlope: -1.3117117
+      outSlope: -1.3117117
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.19059016
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 0.25
       value: 0
       inSlope: 0
@@ -1893,8 +1911,10 @@ MonoBehaviour:
   MoveDir: 1
   MovingInZ: 0
   CanJump: 1
+  AmClambering: 0
   RBody: {fileID: 0}
   IsClimbing: 0
+  Ladder: {fileID: 0}
   ClimbSpeed: 3
 --- !u!136 &136348256801458980
 CapsuleCollider:

@@ -112,6 +112,8 @@ public class SCR_CharacterManager : MonoBehaviour
     public bool MovingInZ = false;
     [HideInInspector]
     public bool CanJump = true;
+    [HideInInspector]
+    public bool AmClambering = false;
 
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
@@ -143,7 +145,8 @@ public class SCR_CharacterManager : MonoBehaviour
     private bool FallingOff = false;
     private float HighClimb;
     private float LowClimb;
-    private SCR_Ladder Ladder;
+    [HideInInspector]
+    public GameObject Ladder;
     private bool CurrentlyLedging = false;
     public float ClimbSpeed = 3.0f; 
     private bool DoLedgeLerp = false;
@@ -337,7 +340,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
         if(MoveVec.y == 0)
         {
-            if (Left && (RBody.transform.position.x > Ladder.transform.position.x))
+            if (Ladder.transform.position.x - gameObject.transform.position.x < 0.0f)
             {
                 if(this.transform.position.y > HighClimb)
                     Clamber(0); //Clamber to the left
@@ -346,7 +349,7 @@ public class SCR_CharacterManager : MonoBehaviour
                     IsClimbing = false;
                 }
             }
-            else if (Left && (RBody.transform.position.x > Ladder.transform.position.x))
+            else
             {
                 if (this.transform.position.y > HighClimb)
                     Clamber(1); //Clamber to the right
@@ -355,15 +358,17 @@ public class SCR_CharacterManager : MonoBehaviour
                     IsClimbing = false;
                 }
             }
-
-
-
         }
     }
 
     // Empty Function called in climb
     private void Clamber(int direction)
     {
+        if (!AmClambering)
+        {
+            Ladder.GetComponent<SCR_Ladder>().Clamber(direction);
+        }
+
 
     }
 
@@ -392,7 +397,7 @@ public class SCR_CharacterManager : MonoBehaviour
     /// </summary>
     /// <param name="high"></param>
     /// <param name="low"></param>
-    public void OnClimbable(float high, float low, SCR_Ladder ladder)
+    public void OnClimbable(float high, float low)
     {
         HighClimb = high- 1.5f;
         LowClimb = low;
@@ -749,8 +754,8 @@ public class SCR_CharacterManager : MonoBehaviour
         //Set effectors to new locations and begin lerping them to create that hanging visual
         IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
-        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.25f);
-        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.25f);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.5f);
+        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.5f);
         FreezeVelocity();
     }
 
@@ -763,8 +768,8 @@ public class SCR_CharacterManager : MonoBehaviour
         //If our effectors have weight, need to lerp them from their current weights back down to zero
         if(!AtTop)
         {
-            IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[1], 0.25f);
-            IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[1], 0.25f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[1], 0.5f);
+            IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[1], 0.5f);
         }
 
     }
