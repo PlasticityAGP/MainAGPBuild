@@ -43,6 +43,13 @@ public class SCR_DragDrop : MonoBehaviour {
     [Tooltip("Reference to the character that can interact with this object")]
     [ValidateInput("IsNull", "There must be a reference to the Character!")]
     public GameObject Character;
+    [SerializeField]
+    [Tooltip("Ik animations curves for left hand effector")]
+    private AnimationCurve[] LeftHandCurves;
+    [SerializeField]
+    [Tooltip("IK animation curves for right hand effector")]
+    private AnimationCurve[] RightHandCurves;
+
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
