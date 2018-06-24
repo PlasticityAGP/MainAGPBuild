@@ -11,7 +11,7 @@ public class SCR_DragDrop : MonoBehaviour {
     private UnityAction<int> InteractListener;
     private UnityAction<int> TurnListener;
     [HideInInspector]
-    public bool Interact = false;
+    private bool Interact = false;
     private SCR_IKToolset IkTools;
     //The rigidbody of the object we will be moving
     private Rigidbody RBody;
@@ -43,6 +43,13 @@ public class SCR_DragDrop : MonoBehaviour {
     [Tooltip("Reference to the character that can interact with this object")]
     [ValidateInput("IsNull", "There must be a reference to the Character!")]
     public GameObject Character;
+    [SerializeField]
+    [Tooltip("Ik animations curves for left hand effector")]
+    private AnimationCurve[] LeftHandCurves;
+    [SerializeField]
+    [Tooltip("IK animation curves for right hand effector")]
+    private AnimationCurve[] RightHandCurves;
+
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
@@ -115,8 +122,8 @@ public class SCR_DragDrop : MonoBehaviour {
         if(IsZ && Interact)
         {
             //Lerp effectors when the character is in the propper trigger and has pressed the interact key down while turning
-            IkTools.StartEffectorLerp("LeftHand", 0.5f, 1.0f, 2.0f);
-            IkTools.StartEffectorLerp("RightHand", 0.5f, 1.0f, 2.0f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.75f);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[3], 0.75f);
         }
     }
 
@@ -159,14 +166,19 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+    public void OnZTriggerEnter()
+    {
+        IsZ = true;
+        if (Interact) EnteredAndInteracted();
+    }
+
     public void OnZTriggerExit()
     {
         //Reset effectors when the character leaves the dragable object zone
         IkTools.SetEffectorTarget("LeftHand", null);
         IkTools.SetEffectorTarget("RightHand", null);
-        IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 4.0f);
-        IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 4.0f);
         FreezeAll();
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -180,7 +192,7 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
-    public void EnteredAndInteracted()
+    private void EnteredAndInteracted()
     {
         //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
         //and set the velocity of the object to be moved
@@ -190,18 +202,17 @@ public class SCR_DragDrop : MonoBehaviour {
         {
             if (Interact)
             {
-                //Debug.Log("SET IK EFFECTORS");
                 IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
                 IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
                 if (CharacterManager.MoveDir)
                 {
-                    IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 6.0f);
-                    IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 2.0f);
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0],  0.75f);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
                 }
                 else
                 {
-                    IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 2.0f);
-                    IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 6.0f);
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
                 }
             }
         }
@@ -234,23 +245,28 @@ public class SCR_DragDrop : MonoBehaviour {
     [HideInInspector]
     public void FreezeAll()
     {
-        //Freeze rigidbody via constraints, and return the player to their original speed
-        CharacterManager.MoveSpeed = InitialSpeed;
-        RBody.constraints =  RigidbodyConstraints.FreezeAll;
-        if (IsZ)
+        if (!IsZ)
         {
-            //Debug.Log("RESET EFFECTORS");
+            IkTools.ForceEffectorWeight("LeftHand", 0.0f);
+            IkTools.ForceEffectorWeight("RightHand", 0.0f);
+        }
+        else
+        {
             if (CharacterManager.MoveDir)
             {
-                IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 3.0f);
-                IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 6.0f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
             }
             else
             {
-                IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 6.0f);
-                IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 3.0f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
             }
         }
+
+        //Freeze rigidbody via constraints, and return the player to their original speed
+        CharacterManager.MoveSpeed = InitialSpeed;
+        RBody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
     private void UnfreezeXY()
