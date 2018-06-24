@@ -63,6 +63,11 @@ public class SCR_ZJump : MonoBehaviour {
         SCR_EventManager.StartListening("UpKey", UpListener);
     }
 
+    private void OnDisable()
+    {
+        SCR_EventManager.StopListening("UpKey", UpListener);
+    }
+
     private void UpPressed(int value)
     {
         //If we want to do the clambering method, allow for a clamber if up is pressed and the player is in the other trigger.

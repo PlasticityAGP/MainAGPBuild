@@ -9,14 +9,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8694d24f498a62240b317f72040a5522, type: 3}
-  m_Name: DATA_LevelState
+  m_Name: Test_LevelData
   m_EditorClassIdentifier: 
   LevelArray:
   - SCN_Test_Art
-  CurrentLevel: Test
-  StatePuzzle0: 0
-  StatePuzzle1: 1
-  StatePuzzle2: 2
-  StatePuzzle3: 3
-  StatePuzzle4: 4
-  StatePuzzle5: 5
+  LevelSettings: []
