@@ -126,6 +126,8 @@ public class SCR_Ladder : MonoBehaviour {
     {
         climbing = false;
         reaching = false;
+        IkTools.SetEffectorTarget("LeftHand", null);
+        IkTools.SetEffectorTarget("RightHand", null);
         CharacterManager.UnfreezeVelocity();
         CharacterManager.AmClambering = false;
         AmLerpingCharacter = false;
