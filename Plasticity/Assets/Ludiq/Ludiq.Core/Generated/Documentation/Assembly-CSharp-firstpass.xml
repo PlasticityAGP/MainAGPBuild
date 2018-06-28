@@ -3733,6 +3733,15 @@
         <member name="M:Cinemachine.PostFX.CinemachinePostProcessing.InitializeModule">
             <summary>Internal method called by editor module</summary>
         </member>
+        <member name="F:UnityEngine.PostProcessing.ColorGradingModel.Tonemapper.ACES">
+            <summary>
+            ACES Filmic reference tonemapper.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:UnityEngine.PostProcessing.ColorGradingModel.Tonemapper.Neutral" -->
+        <member name="F:UnityEngine.PostProcessing.ScreenSpaceReflectionModel.ReflectionSettings.iterationCount">
+            REFLECTIONS
+        </member>
         <member name="T:RootMotion.FinalIK.BipedIK">
             <summary>
             %IK system for standard biped characters that is designed to replicate and enhance the behaviour of the Unity's built-in character %IK setup.
