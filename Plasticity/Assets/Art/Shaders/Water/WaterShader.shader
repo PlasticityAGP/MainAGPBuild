@@ -1,4 +1,8 @@
 Shader "Custom/WaterShader" {
+	//Based on two shader examples 
+	//one by Luukezor at https://github.com/Luukezor/unity-shader-learning/blob/master/Shaders/S_WaterSimpleSurface.shader
+	//one by Lindsey Reid at https://github.com/thelindseyreid/Unity-Shader-Tutorials/blob/master/Assets/Materials/Shaders/water.shader
+	//Worked using a guide by Lindsey Reid at https://lindseyreidblog.wordpress.com/2017/12/15/simple-water-shader-in-unity/
 	Properties{
 		_WaterColor("Water Color", Color) = (1, 1, 1, 1)
 		_FoamColor("Foam Color", Color) = (1, 1, 1, 1)
