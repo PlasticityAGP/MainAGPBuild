@@ -75,10 +75,10 @@ Material:
     - _Cutoff: 0.5
     - _DepthFactor: 1
     - _DetailNormalMapScale: 1
-    - _DistortStrength: 0.6
+    - _DistortStrength: 0.5
     - _DstBlend: 0
-    - _ExtraHeight: 0.1
-    - _FoamMultiply: 1.87
+    - _ExtraHeight: 0.5
+    - _FoamMultiply: 1.25
     - _GlossMapScale: 1
     - _Glossiness: 0.824
     - _GlossyReflections: 1
@@ -86,12 +86,12 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ShoreFactor: 0.35
+    - _ShoreFactor: 0.92
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _WaveAmp: 0.06
+    - _WaveAmp: 0.15
     - _WaveSpeed: 50
     - _ZWrite: 1
     m_Colors:
@@ -99,5 +99,5 @@ Material:
     - _EdgeColor: {r: 0.9593928, g: 1, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShoreColor: {r: 0, g: 1, b: 0.896049, a: 1}
-    - _WaterColor: {r: 0, g: 0.35857058, b: 1, a: 0.26666668}
+    - _ShoreColor: {r: 0, g: 1, b: 0.99999976, a: 1}
+    - _WaterColor: {r: 0, g: 0.3156457, b: 1, a: 0.26666668}
