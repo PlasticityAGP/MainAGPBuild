@@ -99,5 +99,5 @@ Material:
     - _EdgeColor: {r: 0.9593928, g: 1, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShoreColor: {r: 0, g: 1, b: 0.99999976, a: 1}
-    - _WaterColor: {r: 0, g: 0.3156457, b: 1, a: 0.26666668}
+    - _ShoreColor: {r: 0.1792453, g: 0.10230509, b: 0.104519725, a: 1}
+    - _WaterColor: {r: 0.06906373, g: 0.1509434, b: 0.08660936, a: 0.45490196}
