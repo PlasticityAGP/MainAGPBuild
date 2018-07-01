@@ -153,6 +153,11 @@ public class SCR_CharacterManager : MonoBehaviour
     private float LedgeYTarget;
     private float LedgeXTarget;
 
+    public bool swimming;
+    private Vector3 swimspeed;
+    public float maxSwimSpeed;
+    public float swimAcceleration;
+
     private bool NotEmpty(string[] array)
     {
         if (array.Length == 0) return false;
@@ -307,14 +312,57 @@ public class SCR_CharacterManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
-        CalculateGroundAngle();
-        CalculateMoveVec();
-        if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
-        if (DidAJump && !CurrentlyLedging && !MovingInZ)CheckForLedges();
-        if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
-        MoveCharacter(Time.deltaTime);
-        PerTickAnimations();
+        if (swimming)
+        {
+            Swim();
+        }
+        else
+        {
+            //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
+            CalculateGroundAngle();
+            CalculateMoveVec();
+            if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
+            if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
+            if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
+            MoveCharacter(Time.deltaTime);
+            PerTickAnimations();
+        }
+    }
+
+    private void Swim()
+    {
+        swimspeed = RBody.velocity;
+        maxSwimSpeed *= swimAcceleration;
+        float horizontalSwim = swimspeed.x;
+        float verticalSwim = swimspeed.y;
+        float outOfPlaneSwim = swimspeed.z;
+        if (Up && !Down)
+            verticalSwim += maxSwimSpeed * Time.deltaTime;
+        else if (Down && !Up)
+            verticalSwim -= maxSwimSpeed * Time.deltaTime;
+        else if (verticalSwim > (0 + maxSwimSpeed * Time.deltaTime))
+            verticalSwim -= maxSwimSpeed * Time.deltaTime;
+        else if (verticalSwim < (0 - maxSwimSpeed * Time.deltaTime))
+            verticalSwim += maxSwimSpeed * Time.deltaTime;
+
+        if (Left && !Right)
+            horizontalSwim -= maxSwimSpeed * Time.deltaTime;
+        else if (Right && !Left)
+            horizontalSwim += maxSwimSpeed * Time.deltaTime;
+        else if (horizontalSwim < (0 - maxSwimSpeed/swimAcceleration * Time.deltaTime))
+            horizontalSwim += maxSwimSpeed/swimAcceleration * Time.deltaTime;
+        else if (horizontalSwim > (0 + maxSwimSpeed/swimAcceleration * Time.deltaTime))
+            horizontalSwim -= maxSwimSpeed/swimAcceleration * Time.deltaTime;
+
+        maxSwimSpeed /= swimAcceleration;
+
+        swimspeed = new Vector3(horizontalSwim, verticalSwim, outOfPlaneSwim);
+        if (swimspeed.magnitude > maxSwimSpeed)
+            swimspeed = swimspeed.normalized * maxSwimSpeed;
+        if (swimspeed.magnitude < maxSwimSpeed / 10)
+            swimspeed = new Vector3(0, 0, 0);
+
+        RBody.velocity = swimspeed;
     }
 
     private void Climb()

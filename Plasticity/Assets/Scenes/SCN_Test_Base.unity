@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -511,6 +511,41 @@ Prefab:
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: maxSwimSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MoveDir
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: RBody
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114051743485352108, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: CharacterAnimator
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114051743485352108, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: AnimLock
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: swimming
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: swimAcceleration
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
