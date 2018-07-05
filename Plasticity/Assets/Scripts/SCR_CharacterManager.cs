@@ -79,11 +79,22 @@ public class SCR_CharacterManager : MonoBehaviour
     [Tooltip("The distance away from a wall the player is allowed to be before snapping to the wall via ledging")]
     [ValidateInput("LessThanZero", "We cannot have a ledging distance <= 0.0f")]
     private float LedgingAllowedDistance;
+    [SerializeField]
+    [Tooltip("The left hand animation curves that dictate the speed that IK will lerp the left hand")]
+    private AnimationCurve[] LeftHandLedgingCurves;
+    [SerializeField]
+    [Tooltip("The right hand animation curves that dictate the speed that IK will lerp the right hand")]
+    private AnimationCurve[] RightHandLedgingCurves;
+
     [Title("Environment")]
     [SerializeField]
     [Tooltip("Trace distance for determining if the player has landed.")]
     [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
     private float GroundTraceDistance;
+    [SerializeField]
+    [Tooltip("How much higher above origin IsGrounded trace should occur")]
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float YTraceOffset;
     [SerializeField]
     [Tooltip("The maximum angle between player and ground that is walkable by player")]
     private float MaxGroundAngle;
@@ -101,6 +112,8 @@ public class SCR_CharacterManager : MonoBehaviour
     public bool MovingInZ = false;
     [HideInInspector]
     public bool CanJump = true;
+    [HideInInspector]
+    public bool AmClambering = false;
 
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
@@ -134,6 +147,8 @@ public class SCR_CharacterManager : MonoBehaviour
     public float ClimbSpeed = 3.0f;
     private float HighClimb;
     private float LowClimb;
+    [HideInInspector]
+    public GameObject Ladder;
     private bool DoLedgeLerp = false;
     private float LedgeYTarget;
     private float LedgeXTarget;
@@ -210,7 +225,7 @@ public class SCR_CharacterManager : MonoBehaviour
             Down = true;
             if (CurrentlyLedging)
             {
-                LedgeDismount();
+                LedgeDismount(false);
             }
         }
         else
@@ -332,6 +347,39 @@ public class SCR_CharacterManager : MonoBehaviour
         }
         else
             MoveVec.y = 0;
+
+        if(MoveVec.y == 0)
+        {
+            if (Ladder.transform.position.x - gameObject.transform.position.x < 0.0f)
+            {
+                if(this.transform.position.y > HighClimb)
+                    Clamber(0); //Clamber to the left
+                else if(this.transform.position.y < LowClimb)
+                {
+                    IsClimbing = false;
+                }
+            }
+            else
+            {
+                if (this.transform.position.y > HighClimb)
+                    Clamber(1); //Clamber to the right
+                else if (this.transform.position.y < LowClimb)
+                {
+                    IsClimbing = false;
+                }
+            }
+        }
+    }
+
+    // Empty Function called in climb
+    private void Clamber(int direction)
+    {
+        if (!AmClambering)
+        {
+            Ladder.GetComponent<SCR_Ladder>().Clamber(direction);
+        }
+
+
     }
 
     /// <summary>
@@ -339,7 +387,6 @@ public class SCR_CharacterManager : MonoBehaviour
     /// </summary>
     public void JumpOff()
     {
-        //TODO: figure out jumping left and right
         if (Up)
         {
             MoveVec.y = JumpForce;
@@ -362,7 +409,7 @@ public class SCR_CharacterManager : MonoBehaviour
     /// <param name="low"></param>
     public void OnClimbable(float high, float low)
     {
-        HighClimb = high;
+        HighClimb = high- 1.5f;
         LowClimb = low;
         IsClimbing = true;
         MoveVec.x = 0;
@@ -384,8 +431,9 @@ public class SCR_CharacterManager : MonoBehaviour
         bool isGroundedResult = false;
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f);
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f);
+        Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f) + YOffset;
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f) + YOffset;
         RaycastHit Result;
         float raycastExtension = 0.3f;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
@@ -576,7 +624,7 @@ public class SCR_CharacterManager : MonoBehaviour
         if (!JumpWhileHeld) Up = false;
 
         AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
-        if (Left || Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.15f);
+        if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.05f);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -637,7 +685,12 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
             //If the slope is too high, don't move
-            if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
+            //if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
+            if(gameObject.transform.position.y - HitInfo.point.y < (GroundTraceDistance - YTraceOffset) * 0.5)
+            {
+                float difference = (GroundTraceDistance - YTraceOffset) - (gameObject.transform.position.y - HitInfo.point.y);
+                gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + (difference * 0.95f), gameObject.transform.position.z);
+            }
 
         }
         //Otherwise move, but with a y component of velocity that is determined by jumping/falling, and not the slope of the surface we are on.
@@ -727,25 +780,22 @@ public class SCR_CharacterManager : MonoBehaviour
         //Set effectors to new locations and begin lerping them to create that hanging visual
         IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
-        IkTools.StartEffectorLerp("LeftHand", 0.0f, 1.0f, 4.0f);
-        IkTools.StartEffectorLerp("RightHand", 0.0f, 1.0f, 4.0f);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.5f);
+        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.5f);
         FreezeVelocity();
     }
 
     //Called when we want to drop down from the ledge
-    private void LedgeDismount()
+    private void LedgeDismount(bool AtTop)
     {
         //Set velocity to zero and unfreeze it
         MoveVec = Vector3.zero;
         UnfreezeVelocity();
         //If our effectors have weight, need to lerp them from their current weights back down to zero
-        if (IkTools.GetEffectorWeight("LeftHand") != 0.0f)
+        if(!AtTop)
         {
-            IkTools.StartEffectorLerp("LeftHand", IkTools.GetEffectorWeight("LeftHand"), 0.0f, 4.0f);
-        }
-        if (IkTools.GetEffectorWeight("RightHand") != 0.0f)
-        {
-            IkTools.StartEffectorLerp("RightHand", IkTools.GetEffectorWeight("RightHand"), 0.0f, 4.0f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[1], 0.5f);
+            IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[1], 0.5f);
         }
 
     }
@@ -754,14 +804,14 @@ public class SCR_CharacterManager : MonoBehaviour
     private void LedgeMount()
     {
         //Define Y and X checkpoints we need to reach when we move our character to climb up on top of the wall
-        LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f) + GroundTraceDistance;
+        LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f);
         if (transform.position.x - LedgingWall.transform.position.x > 0.0f)
-            LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f) + GroundTraceDistance;
+            LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f);
         else
-            LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f) - GroundTraceDistance;
+            LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f);
         //Slowly lerp effectors back to zero weight
-        IkTools.StartEffectorLerp("LeftHand", 1.0f, 0.0f, 1.0f);
-        IkTools.StartEffectorLerp("RightHand", 1.0f, 0.0f, 1.0f);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[2], 1.0f);
+        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[2], 1.0f);
         DoLedgeLerp = true;
 
     }
@@ -791,7 +841,7 @@ public class SCR_CharacterManager : MonoBehaviour
         {
             //Dismount from ledge once we have make it on top
             DoLedgeLerp = false;
-            LedgeDismount();
+            LedgeDismount(true);
         }
     }
 

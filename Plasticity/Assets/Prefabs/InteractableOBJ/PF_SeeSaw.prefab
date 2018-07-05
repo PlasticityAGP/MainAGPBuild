@@ -217,8 +217,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.99999964, y: 1.4465218, z: 1}
-  m_Center: {x: 0, y: 0.22326487, z: 0}
+  m_Size: {x: 0.99999964, y: 2.3111887, z: 1}
+  m_Center: {x: 0, y: 0.65559906, z: 0}
 --- !u!114 &114935782923347678
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -230,4 +230,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a33f09602b1de4f96718433de12249, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectOfWeightOnSeeSaw: 5
+  EffectOfWeightOnSeeSaw: 1.5
