@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class SCR_InputManager : MonoBehaviour {
+public class SCR_InputManager : MonoBehaviour
+{
 
     /*
      * The Input manager is the first place player input is registered. Key bindings can be adjusted in the editor without 
@@ -11,6 +12,9 @@ public class SCR_InputManager : MonoBehaviour {
      * Character Manager. This way, any object in the game can listen to input events, and the back end of where we are listening 
      * for input is all in the same place. 
      */
+
+    // Singleton reference
+    private static SCR_InputManager instance;
 
     [SerializeField]
     [Tooltip("Keys that will be bound to the move up action")]
@@ -40,18 +44,28 @@ public class SCR_InputManager : MonoBehaviour {
     private int RightPresses = 0;
     private int InteractPresses = 0;
 
+    // Singleton reference accessor
+    public static SCR_InputManager GetInstance() { return instance; }
 
-    void Start () {
+    void Start()
+    {
+        // Singleton logic
+        if (!instance) instance = this;
+        else
+        {
+            Debug.LogError("Multiple singleton instances.");
+            Destroy(this);
+        }
+    }
 
-	}
-	
-	void Update () {
+    void Update()
+    {
         UpKeys();
         LeftKeys();
         RightKeys();
         DownKeys();
         InteractKeys();
-	}
+    }
 
 
     private void UpKeys()
@@ -64,6 +78,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (UpPresses == 0)
                 {
                     SCR_EventManager.TriggerEvent("UpKey", 1);
+                    Bolt.CustomEvent.Trigger(gameObject, "UpPressed");
                 }
                 ++UpPresses;
             }
@@ -74,6 +89,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (UpPresses == 1)
                 {
                     SCR_EventManager.TriggerEvent("UpKey", 0);
+                    Bolt.CustomEvent.Trigger(gameObject, "UpReleased");
                 }
                 --UpPresses;
             }
@@ -90,6 +106,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (LeftPresses == 0)
                 {
                     SCR_EventManager.TriggerEvent("LeftKey", 1);
+                    Bolt.CustomEvent.Trigger(gameObject, "LeftPressed");
                 }
                 ++LeftPresses;
             }
@@ -100,6 +117,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (LeftPresses == 1)
                 {
                     SCR_EventManager.TriggerEvent("LeftKey", 0);
+                    Bolt.CustomEvent.Trigger(gameObject, "LeftReleased");
                 }
                 --LeftPresses;
             }
@@ -116,6 +134,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (RightPresses == 0)
                 {
                     SCR_EventManager.TriggerEvent("RightKey", 1);
+                    Bolt.CustomEvent.Trigger(gameObject, "RightPressed");
                 }
                 ++RightPresses;
             }
@@ -126,6 +145,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (RightPresses == 1)
                 {
                     SCR_EventManager.TriggerEvent("RightKey", 0);
+                    Bolt.CustomEvent.Trigger(gameObject, "RightReleased");
                 }
                 --RightPresses;
             }
@@ -142,6 +162,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (DownPresses == 0)
                 {
                     SCR_EventManager.TriggerEvent("DownKey", 1);
+                    Bolt.CustomEvent.Trigger(gameObject, "DownPressed");
                 }
                 ++DownPresses;
             }
@@ -152,6 +173,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (DownPresses == 1)
                 {
                     SCR_EventManager.TriggerEvent("DownKey", 0);
+                    Bolt.CustomEvent.Trigger(gameObject, "DownReleased");
                 }
                 --DownPresses;
             }
@@ -168,6 +190,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (InteractPresses == 0)
                 {
                     SCR_EventManager.TriggerEvent("InteractKey", 1);
+                    Bolt.CustomEvent.Trigger(gameObject, "InteractPressed");
                 }
                 ++InteractPresses;
             }
@@ -178,6 +201,7 @@ public class SCR_InputManager : MonoBehaviour {
                 if (InteractPresses == 1)
                 {
                     SCR_EventManager.TriggerEvent("InteractKey", 0);
+                    Bolt.CustomEvent.Trigger(gameObject, "InteractReleased");
                 }
                 --InteractPresses;
             }

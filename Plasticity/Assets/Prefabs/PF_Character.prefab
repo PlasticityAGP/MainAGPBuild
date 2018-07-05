@@ -252,6 +252,7 @@ GameObject:
   - component: {fileID: 114989280144640750}
   - component: {fileID: 114051743485352108}
   - component: {fileID: 114594211292410248}
+  - component: {fileID: 114534229771448358}
   m_Layer: 0
   m_Name: PF_Character
   m_TagString: Character
@@ -1197,6 +1198,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterAnimator: {fileID: 0}
   AnimLock: 0
+--- !u!114 &114534229771448358
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1377970212060658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad64822b56e2b6a49b33957b33289b80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114594211292410248
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1701,10 +1713,10 @@ MonoBehaviour:
   MaxGroundAngle: 120
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 513
+    m_Bits: 1
   WallLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 0
   MoveDir: 1
   MovingInZ: 0
   CanJump: 1
