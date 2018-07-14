@@ -158,9 +158,9 @@ public class SCR_CharacterManager : MonoBehaviour
     private Vector3 swimspeed;
     public float maxSwimSpeed;
     public float swimAcceleration;
-    public float maxTimeUnderWater;
-    private float timeUnderWater;
-    private float waterHeight;
+    public float maxTimeUnderWater = 2;
+    public float timeUnderWater;
+    public float waterHeight;
 
     private bool NotEmpty(string[] array)
     {
@@ -317,11 +317,15 @@ public class SCR_CharacterManager : MonoBehaviour
     private void FixedUpdate()
     {
         //Determine whether the player is swimming or not.
-        if(submerged)
+        if (submerged)
             InWater();
+        else
+            swimming = false;
 
         if (swimming)
         {
+            if(!CurrentlyLedging && !MovingInZ) CheckForLedges();
+            if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
             Swim();
         }
         else
@@ -336,7 +340,18 @@ public class SCR_CharacterManager : MonoBehaviour
             PerTickAnimations();
         }
     }
-    
+
+    /// <summary>
+    /// Allows any water bodies to declare the player as swimming, and share its surface height.
+    /// </summary>
+    /// <param name="inwater"></param> Is the player entering water?
+    /// <param name="sealevel"></param> The surface height of the water body.
+    public void IsInWater(bool inwater, float sealevel)
+    {
+        submerged = inwater;
+        if(submerged) waterHeight = sealevel;
+    }
+
     // If the player is touching water, this will determine if they are considered swimming
     // or if they are just walking in shallow water/jumping into water.
     private void InWater()
@@ -362,7 +377,7 @@ public class SCR_CharacterManager : MonoBehaviour
     private void Swim()
     {
         bool Underwater = false;
-        if (waterHeight > this.transform.position.y + this.transform.localScale.y / 1.75)
+        if (waterHeight > this.transform.position.y + this.transform.localScale.y*1.25f)
             Underwater = true;
 
         if (!Underwater)
@@ -388,10 +403,10 @@ public class SCR_CharacterManager : MonoBehaviour
             verticalSwim += maxSwimSpeed * Time.deltaTime;
         else if (Down && !Up)
             verticalSwim -= maxSwimSpeed * Time.deltaTime;
-        else if (verticalSwim > (0 + maxSwimSpeed * Time.deltaTime))
-            verticalSwim -= maxSwimSpeed * Time.deltaTime / 3f;
-        else if (verticalSwim < (0 - maxSwimSpeed * Time.deltaTime))
-            verticalSwim += maxSwimSpeed * Time.deltaTime / 3f;
+        else if (verticalSwim > 0.05f)
+            verticalSwim -= maxSwimSpeed * Time.deltaTime / 12f;
+        else if (verticalSwim < 0.05f)
+            verticalSwim += maxSwimSpeed * Time.deltaTime / 30f;
 
         if (Left && !Right)
             horizontalSwim -= maxSwimSpeed * Time.deltaTime;
