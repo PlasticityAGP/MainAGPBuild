@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 114989280144640750}
   - component: {fileID: 114051743485352108}
   - component: {fileID: 114594211292410248}
+  - component: {fileID: 114085416390290650}
   m_Layer: 2
   m_Name: PF_Character
   m_TagString: Character
@@ -1198,6 +1199,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterAnimator: {fileID: 0}
   AnimLock: 0
+--- !u!114 &114085416390290650
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1377970212060658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad64822b56e2b6a49b33957b33289b80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114160753474357384
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1914,8 +1926,8 @@ MonoBehaviour:
   AmClambering: 0
   RBody: {fileID: 0}
   IsClimbing: 0
-  Ladder: {fileID: 0}
   ClimbSpeed: 3
+  Ladder: {fileID: 0}
 --- !u!136 &136348256801458980
 CapsuleCollider:
   m_ObjectHideFlags: 1

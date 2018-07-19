@@ -1,0 +1,329 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Assembly-CSharp-Editor-firstpass</name>
+    </assembly>
+    <members>
+        <member name="F:Cinemachine.Editor.CinemachineBlenderSettingsEditor.GetAllVirtualCameras">
+            <summary>
+            Called when building the Camera popup menus, to get the domain of possible
+            cameras.  If no delegate is set, will find all top-level (non-slave)
+            virtual cameras in the scene.
+            </summary>
+        </member>
+        <member name="T:Cinemachine.Editor.CinemachineVirtualCameraBaseEditor`1">
+            <summary>
+            Base class for virtual camera editors.
+            Handles drawing the header and the basic properties.
+            </summary>
+        </member>
+        <member name="T:Cinemachine.Editor.CinemachineVirtualCameraEditor.CreatePipelineWithUndo">
+            <summary>
+            Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.CinemachineMenu.CreateDefaultVirtualCamera">
+            <summary>
+            Create a default Virtual Camera, with standard components
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.CinemachineMenu.InternalCreateVirtualCamera(System.String,System.Boolean,System.Type[])">
+            <summary>
+            Create a Virtual Camera, with components
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.CinemachineMenu.CreateCameraBrainIfAbsent">
+            <summary>
+            If there is no CinemachineBrain in the scene, try to create one on the main camera
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.CinemachineMenu.GenerateUniqueObjectName(System.Type,System.String)">
+            <summary>
+            Generate a unique name with the given prefix by adding a suffix to it
+            </summary>
+        </member>
+        <member name="T:Cinemachine.Editor.EmbeddeAssetEditor`1">
+            <summary>
+            Helper for drawing embedded asset editors
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.EmbeddeAssetEditor`1.#ctor(System.String,UnityEditor.Editor)">
+            <summary>
+            Create in OnEnable()
+            </summary>
+        </member>
+        <member name="F:Cinemachine.Editor.EmbeddeAssetEditor`1.OnCreateEditor">
+            <summary>
+            Called after the asset editor is created, in case it needs
+            to be customized
+            </summary>
+        </member>
+        <member name="F:Cinemachine.Editor.EmbeddeAssetEditor`1.OnChanged">
+            <summary>
+            Called when the asset being edited was changed by the user.
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.EmbeddeAssetEditor`1.OnDisable">
+            <summary>
+            Free the resources in OnDisable()
+            </summary>
+        </member>
+        <member name="F:Cinemachine.Editor.EmbeddeAssetEditor`1.m_CreateButtonGUIContent">
+            <summary>
+            Customize this after creation if you want
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.EmbeddeAssetEditor`1.DrawEditorCombo(System.String,System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Call this from OnInspectorGUI.  Will draw the asset reference field, and
+            the embedded editor, or a Create Asset button, if no asset is set.
+            </summary>
+        </member>
+        <member name="M:Cinemachine.Editor.SerializedPropertyHelper.PropertyName(System.Linq.Expressions.Expression{System.Func{System.Object}})">
+            This is a way to get a field name string in such a manner that the compiler will
+            generate errors for invalid fields.  Much better than directly using strings.
+            Usage: instead of
+            <example>
+            "m_MyField";
+            </example>
+            do this:
+            <example>
+            MyClass myclass = null;
+            SerializedPropertyHelper.PropertyName( () => myClass.m_MyField);
+            </example>
+        </member>
+        <member name="M:Cinemachine.Editor.SerializedPropertyHelper.FindProperty(UnityEditor.SerializedObject,System.Linq.Expressions.Expression{System.Func{System.Object}})">
+            Usage: instead of
+            <example>
+            mySerializedObject.FindProperty("m_MyField");
+            </example>
+            do this:
+            <example>
+            MyClass myclass = null;
+            mySerializedObject.FindProperty( () => myClass.m_MyField);
+            </example>
+        </member>
+        <member name="M:Cinemachine.Editor.SerializedPropertyHelper.FindPropertyRelative(UnityEditor.SerializedProperty,System.Linq.Expressions.Expression{System.Func{System.Object}})">
+            Usage: instead of
+            <example>
+            mySerializedProperty.FindPropertyRelative("m_MyField");
+            </example>
+            do this:
+            <example>
+            MyClass myclass = null;
+            mySerializedProperty.FindPropertyRelative( () => myClass.m_MyField);
+            </example>
+        </member>
+        <member name="T:Cinemachine.CinemachineFreeLookEditor.CreateRigWithUndo">
+            <summary>
+            Register with CinemachineFreeLook to create the pipeline in an undo-friendly manner
+            </summary>
+        </member>
+        <member name="T:Cinemachine.PostFX.PostFXAutoImport">
+            <summary>Integrates Cinemachine with PostProcessing V1 stack.</summary>
+            Since PostPorcessing V1 does not create a define in Player settings the
+            way V2 does, we do it ourselves if we detect the presence of PostProcessing V1
+        </member>
+        <member name="T:SaveDuringPlay.ObjectTreeUtil">
+            <summary>A collection of tools for finding objects</summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectTreeUtil.GetFullName(UnityEngine.GameObject)">
+            <summary>
+            Get the full name of an object, travelling up the transform parents to the root.
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectTreeUtil.FindObjectFromFullName(System.String,UnityEngine.GameObject[])">
+            <summary>
+            Will find the named object, active or inactive, from the full path.
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectTreeUtil.FindAllRootObjectsInScene">
+            <summary>Finds all the root objects in a scene, active or not</summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectTreeUtil.FindAllBehavioursInScene``1">
+            <summary>
+            This finds all the behaviours in scene, active or inactive, excluding prefabs
+            </summary>
+        </member>
+        <member name="F:SaveDuringPlay.GameObjectFieldScanner.OnLeafField">
+            <summary>
+            Called for each leaf field.  Return value should be true if action was taken.
+            It will be propagated back to the caller.
+            </summary>
+        </member>
+        <member name="F:SaveDuringPlay.GameObjectFieldScanner.OnFieldValueChanged">
+            <summary>
+            Called for each field node, if and only if OnLeafField() for it or one
+            of its leaves returned true.
+            </summary>
+        </member>
+        <member name="F:SaveDuringPlay.GameObjectFieldScanner.FilterField">
+            <summary>
+            Called for each field, to test whether to proceed with scanning it.  Return true to scan.
+            </summary>
+        </member>
+        <member name="F:SaveDuringPlay.GameObjectFieldScanner.bindingFlags">
+            <summary>
+            Which fields will be scanned
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.GameObjectFieldScanner.ScanFields(UnityEngine.GameObject,System.String)">
+            <summary>
+            Recursively scan the MonoBehaviours of a GameObject and its children.
+            For each leaf field found, call the OnFieldValue delegate.
+            </summary>
+        </member>
+        <member name="T:SaveDuringPlay.ObjectStateSaver">
+            <summary>
+            Using reflection, this class scans a GameObject (and optionally its children)
+            and records all the field settings.  This only works for "nice" field settings
+            within MonoBehaviours.  Changes to the behaviour stack made between saving
+            and restoring will fool this class.
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectStateSaver.CollectFieldValues(UnityEngine.GameObject)">
+            <summary>
+            Recursively collect all the field values in the MonoBehaviours
+            owned by this object and its descendants.  The values are stored
+            in an internal dictionary.
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectStateSaver.PutFieldValues(UnityEngine.GameObject,UnityEngine.GameObject[])">
+            <summary>
+            Recursively scan the MonoBehaviours of a GameObject and its children.
+            For each field found, look up its value in the internal dictionary.
+            If it's present and its value in the dictionary differs from the actual
+            value in the game object, Set the GameObject's value using the value
+            recorded in the dictionary.
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.ObjectStateSaver.FilterField(System.String,System.Reflection.FieldInfo)">
+            Ignore fields marked with the [NoSaveDuringPlay] attribute
+        </member>
+        <member name="M:SaveDuringPlay.ObjectStateSaver.LeafObjectFromString(System.Type,System.String,UnityEngine.GameObject[])">
+            <summary>
+            Parse a string to generate an object.
+            Only very limited primitive object types are supported.
+            Enums, Vectors and most other structures are automatically supported,
+            because the reflection system breaks them down into their primitive components.
+            You can add more support here, as needed.
+            </summary>
+        </member>
+        <member name="T:SaveDuringPlay.SaveDuringPlay">
+             <summary>
+             For all registered object types, record their state when exiting Play Mode,
+             and restore that state to the objects in the scene.  This is a very limited
+             implementation which has not been rigorously tested with many objects types.
+             It's quite possible that not everything will be saved.
+            
+             This class is expected to become obsolete when Unity implements this functionality
+             in a more general way.
+            
+             To use this class,
+             drop this script into your project, and add the [SaveDuringPlay] attribute to your class.
+            
+             Note: if you want some specific field in your class NOT to be saved during play,
+             add a property attribute whose class name contains the string "NoSaveDuringPlay"
+             and the field will not be saved.
+             </summary>
+        </member>
+        <member name="F:SaveDuringPlay.SaveDuringPlay.OnHotSave">
+            <summary>
+            If you need to get notified before state is collected for hotsave, this is the place
+            </summary>
+        </member>
+        <member name="M:SaveDuringPlay.SaveDuringPlay.FindInterestingObjects">
+            Collect all relevant objects, active or not
+        </member>
+        <member name="T:RootMotion.FinalIK.AimPoserInspector">
+            <summary>
+            Custom inspector for the Aim Poser for visualizing pose range
+            </summary>
+        </member>
+        <member name="M:RootMotion.FinalIK.IKSolverAimInspector.AddInspector(UnityEditor.SerializedProperty,System.Boolean)">
+            <summary>
+            Draws the custom inspector for IKSolverAim
+            </summary>
+        </member>
+        <member name="M:RootMotion.FinalIK.IKSolverAimInspector.AddScene(RootMotion.FinalIK.IKSolverAim,UnityEngine.Color,System.Boolean)">
+            <summary>
+            Draws the scene view helpers for IKSolverAim
+            </summary>
+        </member>
+        <member name="T:Sirenix.Serialization.Vector2IntFormatter">
+            <summary>
+            Custom formatter for the <see cref="T:UnityEngine.Vector2Int"/> type.
+            </summary>
+            <seealso cref="!:Sirenix.Serialization.MinimalBaseFormatter&lt;UnityEngine.Vector2Int&gt;" />
+        </member>
+        <member name="M:Sirenix.Serialization.Vector2IntFormatter.Read(UnityEngine.Vector2Int@,Sirenix.Serialization.IDataReader)">
+            <summary>
+            Reads into the specified value using the specified reader.
+            </summary>
+            <param name="value">The value to read into.</param>
+            <param name="reader">The reader to use.</param>
+        </member>
+        <member name="M:Sirenix.Serialization.Vector2IntFormatter.Write(UnityEngine.Vector2Int@,Sirenix.Serialization.IDataWriter)">
+            <summary>
+            Writes from the specified value using the specified writer.
+            </summary>
+            <param name="value">The value to write from.</param>
+            <param name="writer">The writer to use.</param>
+        </member>
+        <member name="T:Sirenix.Serialization.Vector3IntFormatter">
+            <summary>
+            Custom formatter for the <see cref="T:UnityEngine.Vector3Int"/> type.
+            </summary>
+            <seealso cref="!:Sirenix.Serialization.MinimalBaseFormatter&lt;UnityEngine.Vector3Int&gt;" />
+        </member>
+        <member name="M:Sirenix.Serialization.Vector3IntFormatter.Read(UnityEngine.Vector3Int@,Sirenix.Serialization.IDataReader)">
+            <summary>
+            Reads into the specified value using the specified reader.
+            </summary>
+            <param name="value">The value to read into.</param>
+            <param name="reader">The reader to use.</param>
+        </member>
+        <member name="M:Sirenix.Serialization.Vector3IntFormatter.Write(UnityEngine.Vector3Int@,Sirenix.Serialization.IDataWriter)">
+            <summary>
+            Writes from the specified value using the specified writer.
+            </summary>
+            <param name="value">The value to write from.</param>
+            <param name="writer">The writer to use.</param>
+        </member>
+        <member name="T:Sirenix.Utilities.EnsureOdinInspectorDefine">
+            <summary>
+            Defines the ODIN_INSPECTOR symbol.
+            </summary>
+        </member>
+        <member name="T:Sirenix.OdinInspector.Editor.Drawers.Vector2IntDrawer">
+            <summary>
+            Vector2Int proprety drawer.
+            </summary>
+        </member>
+        <member name="M:Sirenix.OdinInspector.Editor.Drawers.Vector2IntDrawer.DrawPropertyLayout(Sirenix.OdinInspector.Editor.IPropertyValueEntry{UnityEngine.Vector2Int},UnityEngine.GUIContent)">
+            <summary>
+            Draws the property.
+            </summary>
+        </member>
+        <member name="M:Sirenix.OdinInspector.Editor.Drawers.Vector2IntDrawer.PopulateGenericMenu(Sirenix.OdinInspector.Editor.InspectorProperty,UnityEditor.GenericMenu)">
+            <summary>
+            Populates the generic menu for the property.
+            </summary>
+        </member>
+        <member name="T:Sirenix.OdinInspector.Editor.Drawers.Vector3IntDrawer">
+            <summary>
+            Vector3Int property drawer.
+            </summary>
+        </member>
+        <member name="M:Sirenix.OdinInspector.Editor.Drawers.Vector3IntDrawer.DrawPropertyLayout(Sirenix.OdinInspector.Editor.IPropertyValueEntry{UnityEngine.Vector3Int},UnityEngine.GUIContent)">
+            <summary>
+            Draws the property.
+            </summary>
+        </member>
+        <member name="M:Sirenix.OdinInspector.Editor.Drawers.Vector3IntDrawer.PopulateGenericMenu(Sirenix.OdinInspector.Editor.InspectorProperty,UnityEditor.GenericMenu)">
+            <summary>
+            Populates the generic menu for the property.
+            </summary>
+        </member>
+    </members>
+</doc>
