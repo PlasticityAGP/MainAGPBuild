@@ -16,7 +16,8 @@ public class SCR_Ladder : MonoBehaviour {
     private SCR_IKToolset IkTools;
     private UnityAction<int> UpListener;
     private UnityAction<int> HorizontalListener;
-    private bool climbing;
+    [HideInInspector]
+    public bool climbing;
     private bool reaching;
     private bool ClamberDir;
     private bool AmLerpingCharacter;
@@ -43,7 +44,6 @@ public class SCR_Ladder : MonoBehaviour {
             Character = other.gameObject;
             if (IkTools == null) IkTools = other.GetComponentInChildren<SCR_IKToolset>();
             if (CharacterManager == null) CharacterManager = other.GetComponent<SCR_CharacterManager>();
-            CharacterManager.Ladder = gameObject;
             SCR_EventManager.StartListening("UpKey", UpListener);
         }
     }
@@ -84,10 +84,13 @@ public class SCR_Ladder : MonoBehaviour {
     // The "up" key is pressed while the player is inside the ladder's trigger.
     private void Up(int val)
     {
+        
         if (reaching)
             OffLadder();
         else if (val == 1 && !climbing)
+        {
             OnLadder();
+        }
     }
 
     // Either the "Left" or "Right" keys are pressed while the player is on the ladder.
@@ -102,12 +105,13 @@ public class SCR_Ladder : MonoBehaviour {
     // The player hops on the ladder.
     private void OnLadder()
     {
+        CharacterManager.Ladder = gameObject;
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
         //Debug.Log("started climbing");
-        float maxclimb = this.transform.position.y + this.transform.localScale.y/2;
-        float minclimb = this.transform.position.y - this.transform.localScale.y/2;
+        float maxclimb = ((transform.position.y + transform.localScale.y/2) * transform.up.normalized).y;
+        float minclimb = ((transform.position.y - transform.localScale.y/2) * transform.up.normalized).y;
         CharacterManager.OnClimbable(maxclimb, minclimb);
     }
 

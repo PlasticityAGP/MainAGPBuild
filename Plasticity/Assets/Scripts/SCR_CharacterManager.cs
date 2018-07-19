@@ -332,23 +332,32 @@ public class SCR_CharacterManager : MonoBehaviour
         if (Up)
         {
             if (this.transform.position.y > HighClimb)
-                MoveVec.y = 0;
+                MoveVec = Vector3.zero;
             else
-                MoveVec.y = ClimbSpeed;
+            {
+                MoveVec = ClimbSpeed * Ladder.transform.up;
+            }
+                
             // Play animation
         }
         else if (Down)
         {
             if (this.transform.position.y < LowClimb)
-                MoveVec.y = 0;
+            {
+                MoveVec = Vector3.zero;
+                Ladder.GetComponent<SCR_Ladder>().climbing = false;
+            }
             else
-                MoveVec.y = ClimbSpeed * -1;
+            {
+                MoveVec = (ClimbSpeed * Ladder.transform.up.normalized) * -1.0f;
+            }
+                
             // Play animation
         }
         else
-            MoveVec.y = 0;
+            MoveVec = Vector3.zero;
 
-        if(MoveVec.y == 0)
+        if(MoveVec == Vector3.zero)
         {
             if (Ladder.transform.position.x - gameObject.transform.position.x < 0.0f)
             {
@@ -672,7 +681,7 @@ public class SCR_CharacterManager : MonoBehaviour
         if (IsClimbing) // Added by Matt for testing
         {
             Climb();
-            FinalVel = new Vector3(0, MoveVec.y, 0);
+            FinalVel = MoveVec;
         }
         else if (JumpingOff)
         {
