@@ -12,7 +12,6 @@ public class SCR_CharacterManager : MonoBehaviour
     private UnityAction<int> DownListener;
     private UnityAction<int> LeftListener;
     private UnityAction<int> RightListener;
-    private UnityAction<int> InteractListener;
 
     //Booleans that will signify what input is being held down. For example, Up is true whenever an Up
     //Key is held down, and so on

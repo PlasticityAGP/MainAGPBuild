@@ -10,7 +10,6 @@ public class SCR_DragDrop : MonoBehaviour {
     //Listener to tell when character wants to interact
     private UnityAction<int> InteractListener;
     private UnityAction<int> TurnListener;
-    [HideInInspector]
     private bool Interact = false;
     private SCR_IKToolset IkTools;
     //The rigidbody of the object we will be moving
