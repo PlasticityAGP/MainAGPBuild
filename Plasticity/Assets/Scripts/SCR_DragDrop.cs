@@ -244,12 +244,12 @@ public class SCR_DragDrop : MonoBehaviour {
     [HideInInspector]
     public void FreezeAll()
     {
-        if (!IsZ)
+        if (!IsZ && Interact)
         {
             IkTools.ForceEffectorWeight("LeftHand", 0.0f);
             IkTools.ForceEffectorWeight("RightHand", 0.0f);
         }
-        else
+        else if(IsZ)
         {
             if (CharacterManager.MoveDir)
             {

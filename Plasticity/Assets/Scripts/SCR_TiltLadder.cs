@@ -64,6 +64,8 @@ public class SCR_TiltLadder : MonoBehaviour {
             Interact = false;
             if (Inside)
             {
+                IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
+                IkTools.SetEffectorTarget("RightHand", RightHandEffector);
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
                 IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
                 CharacterManager.MoveSpeed = InitialSpeed;
@@ -94,8 +96,8 @@ public class SCR_TiltLadder : MonoBehaviour {
             {
                 IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
                 IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
+                IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
                 CharacterManager.MoveSpeed = SlowDownSpeed;
             }
         }
