@@ -6,6 +6,8 @@ public class SCR_LevelTrigger : MonoBehaviour {
 
     [SerializeField]
     private int TriggerID;
+    [SerializeField]
+    private string TagOfTriggeringObject;
 
 	// Use this for initialization
 	void Start () {
@@ -19,8 +21,10 @@ public class SCR_LevelTrigger : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Character")
+        Debug.Log(other.tag);
+        if (other.tag == TagOfTriggeringObject)
         {
+            Debug.Log("Overlapping");
             SCR_EventManager.TriggerEvent("LevelTrigger", TriggerID);
         }
     }

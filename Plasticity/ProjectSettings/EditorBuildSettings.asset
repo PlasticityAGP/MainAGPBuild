@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SCN_City_Base.unity
     guid: 4d50ccb56a94de34b91d49c222023466
+  - enabled: 1
+    path: Assets/Scenes/SCN_BirdPuzzle_Art.unity
+    guid: 586f796e5864f4913a89e6a4e5f40033
   m_configObjects: {}
