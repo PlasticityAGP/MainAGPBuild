@@ -695,11 +695,6 @@ public class SCR_CharacterManager : MonoBehaviour
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
             //If the slope is too high, don't move
             if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
-            if(gameObject.transform.position.y - HitInfo.point.y < (GroundTraceDistance - YTraceOffset) * 0.5)
-            {
-                float difference = (GroundTraceDistance - YTraceOffset) - (gameObject.transform.position.y - HitInfo.point.y);
-                //gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + (difference * 0.95f), gameObject.transform.position.z);
-            }
 
         }
         //Otherwise move, but with a y component of velocity that is determined by jumping/falling, and not the slope of the surface we are on.
