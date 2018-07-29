@@ -113,7 +113,8 @@ public class SCR_CharacterManager : MonoBehaviour
     public bool CanJump = true;
     [HideInInspector]
     public bool AmClambering = false;
-
+    [HideInInspector]
+    public GameObject InteractingWith;
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
     //InitialDir vector is used for determining what direction player velocity should be in if they turn

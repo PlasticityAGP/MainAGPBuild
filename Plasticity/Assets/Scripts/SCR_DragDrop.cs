@@ -184,6 +184,7 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         if (other.gameObject.tag == "Character")
         {
+            CharacterManager.InteractingWith = null;
             OverlapTrigger = false;
             IkTools.SetEffectorTarget("LeftHand", null);
             IkTools.SetEffectorTarget("RightHand", null);
@@ -193,25 +194,29 @@ public class SCR_DragDrop : MonoBehaviour {
 
     private void EnteredAndInteracted()
     {
-        //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
-        //and set the velocity of the object to be moved
-        UnfreezeXY();
-        CharacterManager.MoveSpeed = MaxDragSpeed;
-        if (IsZ)
+        if(CharacterManager.InteractingWith == null)
         {
-            if (Interact)
+            //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
+            //and set the velocity of the object to be moved
+            UnfreezeXY();
+            CharacterManager.MoveSpeed = MaxDragSpeed;
+            CharacterManager.InteractingWith = gameObject;
+            if (IsZ)
             {
-                IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
-                IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
-                if (CharacterManager.MoveDir)
+                if (Interact)
                 {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0],  0.75f);
-                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
-                }
-                else
-                {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f);
-                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
+                    IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
+                    IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
+                    if (CharacterManager.MoveDir)
+                    {
+                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                    }
+                    else
+                    {
+                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f);
+                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
+                    }
                 }
             }
         }
@@ -248,9 +253,11 @@ public class SCR_DragDrop : MonoBehaviour {
         {
             IkTools.ForceEffectorWeight("LeftHand", 0.0f);
             IkTools.ForceEffectorWeight("RightHand", 0.0f);
+            CharacterManager.InteractingWith = null;
         }
         else if(IsZ)
         {
+            CharacterManager.InteractingWith = null;
             if (CharacterManager.MoveDir)
             {
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);

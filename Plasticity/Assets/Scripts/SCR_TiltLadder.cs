@@ -24,6 +24,7 @@ public class SCR_TiltLadder : MonoBehaviour {
     [SerializeField]
     private float SlowDownSpeed;
     private float InitialSpeed;
+    private bool PushEnabled = false;
 
     private void Awake()
     {
@@ -52,11 +53,7 @@ public class SCR_TiltLadder : MonoBehaviour {
             Interact = true;
             if (Inside)
             {
-                IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
-                IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
-                CharacterManager.MoveSpeed = SlowDownSpeed;
+                GrabLadder();
             }
         }
       else
@@ -64,11 +61,7 @@ public class SCR_TiltLadder : MonoBehaviour {
             Interact = false;
             if (Inside)
             {
-                IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
-                IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
-                CharacterManager.MoveSpeed = InitialSpeed;
+                ReleaseLadder();
             }
         }
     }
@@ -94,18 +87,14 @@ public class SCR_TiltLadder : MonoBehaviour {
             InitialSpeed = CharacterManager.MoveSpeed;
             if (Interact)
             {
-                IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
-                IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
-                CharacterManager.MoveSpeed = SlowDownSpeed;
+                GrabLadder();
             }
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Character" && Interact)
+        if(other.tag == "Character" && PushEnabled)
         {
             if (CharacterManager.MoveDir)
             {
@@ -125,12 +114,38 @@ public class SCR_TiltLadder : MonoBehaviour {
             Inside = false;
             if (Interact)
             {
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
                 IkTools.SetEffectorTarget("LeftHand", null);
                 IkTools.SetEffectorTarget("RightHand", null);
-                CharacterManager.MoveSpeed = InitialSpeed;
+                ReleaseLadder();
             }
+        }
+    }
+
+    private void GrabLadder()
+    {
+        if(CharacterManager.InteractingWith == null)
+        {
+            IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
+            IkTools.SetEffectorTarget("RightHand", RightHandEffector);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
+            CharacterManager.MoveSpeed = SlowDownSpeed;
+            CharacterManager.InteractingWith = gameObject;
+            PushEnabled = true;
+        }
+    }
+
+    private void ReleaseLadder()
+    {
+        if (CharacterManager.InteractingWith == gameObject)
+        {
+            IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
+            IkTools.SetEffectorTarget("RightHand", RightHandEffector);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
+            CharacterManager.MoveSpeed = InitialSpeed;
+            CharacterManager.InteractingWith = null;
+            PushEnabled = false;
         }
     }
 }
