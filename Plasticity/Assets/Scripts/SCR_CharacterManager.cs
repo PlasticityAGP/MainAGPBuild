@@ -153,8 +153,10 @@ public class SCR_CharacterManager : MonoBehaviour
     private float LedgeYTarget;
     private float LedgeXTarget;
 
-    public bool submerged;
+    private bool inWater;
+    public bool underWater;
     public bool swimming;
+    public bool waterJump;
     private Vector3 swimspeed;
     public float maxSwimSpeed;
     public float swimAcceleration;
@@ -311,18 +313,12 @@ public class SCR_CharacterManager : MonoBehaviour
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
         Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
-
+        waterJump = false;
     }
 
     private void FixedUpdate()
     {
-        //Determine whether the player is swimming or not.
-        if (submerged)
-            InWater();
-        else
-            swimming = false;
-
-        if (swimming)
+        /*if (swimming)
         {
             if(!CurrentlyLedging && !MovingInZ) CheckForLedges();
             if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
@@ -330,15 +326,16 @@ public class SCR_CharacterManager : MonoBehaviour
         }
         else
         {
-            //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
-            CalculateGroundAngle();
-            CalculateMoveVec();
-            if (!IsClimbing) Jump(Time.deltaTime);
-            if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
-            if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
-            MoveCharacter(Time.deltaTime);
-            PerTickAnimations();
-        }
+            
+        }*/
+        //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
+        CalculateGroundAngle();
+        CalculateMoveVec();
+        if (!IsClimbing) Jump(Time.deltaTime);
+        if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
+        if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
+        MoveCharacter(Time.deltaTime);
+        PerTickAnimations();
     }
 
     /// <summary>
@@ -348,8 +345,8 @@ public class SCR_CharacterManager : MonoBehaviour
     /// <param name="sealevel"></param> The surface height of the water body.
     public void IsInWater(bool inwater, float sealevel)
     {
-        submerged = inwater;
-        if(submerged) waterHeight = sealevel;
+        inWater = inwater;
+        if(inWater) waterHeight = sealevel;
     }
 
     // If the player is touching water, this will determine if they are considered swimming
@@ -358,7 +355,8 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         if (IsGrounded())
         {
-            if (waterHeight > this.transform.position.y + this.transform.localScale.y / 2)
+            waterJump = false;
+            if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
                 swimming = true;
             else
                 swimming = false;
@@ -376,59 +374,62 @@ public class SCR_CharacterManager : MonoBehaviour
     // TODO: should we allow them to jump if they're treading water?
     private void Swim()
     {
-        bool Underwater = false;
-        if (waterHeight > this.transform.position.y + this.transform.localScale.y*1.25f)
-            Underwater = true;
+        // Determining whether the player is at the water surface or not.
+        underWater = false;
+        if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
+        {
+            underWater = true; //Head is below water surface.
+            waterJump = false;
+        }
 
-        if (!Underwater)
+        // Setting base MoveVec
+        MoveVec = RBody.velocity;
+
+        // Records how long the player has been underwater.
+        if (!underWater)
             timeUnderWater = 0;
         else
             timeUnderWater += Time.deltaTime;
 
-        swimspeed = RBody.velocity;
-        maxSwimSpeed *= swimAcceleration;
-        float horizontalSwim = swimspeed.x;
-        float verticalSwim = swimspeed.y;
-        float outOfPlaneSwim = swimspeed.z;
-
-        if (timeUnderWater > maxTimeUnderWater && !Underwater)
+        // Forces the player to return to the surface if they've been underwater for too long.
+        if (timeUnderWater > maxTimeUnderWater && underWater)
         {
-            swimspeed = new Vector3(0, maxSwimSpeed, 0);
-            RBody.velocity = swimspeed;
+            MoveVec.y += maxSwimSpeed * Time.deltaTime;
+            if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
+            swimspeed = new Vector3(0, MoveVec.y, 0);
+            RBody.velocity = new Vector3(0, 2.5f, 0);
             return;
         }
 
+        // Calculates swimming movement under normal conditions.
+        maxSwimSpeed *= swimAcceleration;
 
         if (Up && !Down)
-            verticalSwim += maxSwimSpeed * Time.deltaTime;
+            MoveVec.y += maxSwimSpeed * Time.deltaTime;
         else if (Down && !Up)
-            verticalSwim -= maxSwimSpeed * Time.deltaTime;
-        else if (verticalSwim > 0.05f)
-            verticalSwim -= maxSwimSpeed * Time.deltaTime / 12f;
-        else if (verticalSwim < 0.05f)
-            verticalSwim += maxSwimSpeed * Time.deltaTime / 30f;
+            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.y > 0.05f)
+            MoveVec.y -= maxSwimSpeed * Time.deltaTime / 12f;
+        else if (MoveVec.y < 0.05f)
+            MoveVec.y += maxSwimSpeed * Time.deltaTime / 30f;
 
         if (Left && !Right)
-            horizontalSwim -= maxSwimSpeed * Time.deltaTime;
+            MoveVec.x -= maxSwimSpeed * Time.deltaTime;
         else if (Right && !Left)
-            horizontalSwim += maxSwimSpeed * Time.deltaTime;
-        else if (horizontalSwim < (0 - maxSwimSpeed/swimAcceleration * Time.deltaTime))
-            horizontalSwim += maxSwimSpeed * Time.deltaTime / 3f;
-        else if (horizontalSwim > (0 + maxSwimSpeed/swimAcceleration * Time.deltaTime))
-            horizontalSwim -= maxSwimSpeed * Time.deltaTime / 3f;
+            MoveVec.x += maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.x < (0 - maxSwimSpeed / swimAcceleration * Time.deltaTime) && !waterJump)
+            MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
+        else if (MoveVec.x > (0 + maxSwimSpeed / swimAcceleration * Time.deltaTime) && !waterJump)
+            MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
 
         maxSwimSpeed /= swimAcceleration;
 
-        if (!Underwater && verticalSwim > 0)
-            verticalSwim = 0;
-
-        swimspeed = new Vector3(horizontalSwim, verticalSwim, outOfPlaneSwim);
-        if (swimspeed.magnitude > maxSwimSpeed)
-            swimspeed = swimspeed.normalized * maxSwimSpeed;
-        if (swimspeed.magnitude < maxSwimSpeed / 10 && (!Up && !Down && !Left && !Right))
-            swimspeed = new Vector3(0, 0, 0);
-
-        RBody.velocity = swimspeed;
+        // Calculates vertical movement during edge cases.
+        if (!underWater)
+        {
+            if(MoveVec.y > 0)
+                MoveVec.y = 0;
+        }
     }
 
     // Controls for a player that is climbing a ladder.
@@ -570,6 +571,15 @@ public class SCR_CharacterManager : MonoBehaviour
 
     private void CalculateMoveVec()
     {
+        //Determine whether the player is swimming or not.
+        if (inWater || waterJump) InWater();
+        else swimming = false;
+        if (swimming)
+        {
+            Swim();
+            return;
+        }
+
         //If we are on a slope, we need our velocity to be parallel to the slope. We find this through 
         //a cross product of the normal of that slope, and our right and left vectors.
         if (IsGrounded())
@@ -659,9 +669,8 @@ public class SCR_CharacterManager : MonoBehaviour
             CalculateMoveVec();
         }
 
-        
         //If the player has pressed an UP key and the player is currently standing on the ground
-        if (Up && IsGrounded())
+        if (Up && (IsGrounded() || (swimming && !underWater)))
         {
             if (CanJump)
             {
@@ -674,10 +683,9 @@ public class SCR_CharacterManager : MonoBehaviour
                 AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
                 OnBeginJump();
             }
-
         }
-        //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
-        else if (!Up && IsGrounded())
+        //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be unchanged
+        else if ((!Up && IsGrounded()) || underWater)
         {
             FallingOff = false;
             if (DidAJump) OnEndJump();
@@ -756,16 +764,27 @@ public class SCR_CharacterManager : MonoBehaviour
             MoveVec.x = RBody.velocity.x / MoveSpeed / SpeedModifier;
         }
 
-        if (IsClimbing) // Added by Matt for testing
+        // If the player is climbing on a ladder, they move in the direction of the ladder.
+        if (IsClimbing)
         {
             Climb();
             FinalVel = new Vector3(0, MoveVec.y, 0);
         }
+        // If the player is jumping off of a ladder.
         else if (JumpingOff)
         {
             FinalVel = new Vector3(MoveVec.x, MoveVec.y, 0);
             JumpingOff = false;
             FallingOff = true;
+        }
+        else if (swimming)
+        {
+            if (MoveVec.magnitude > maxSwimSpeed)
+                MoveVec = MoveVec.normalized * maxSwimSpeed;
+            if (MoveVec.magnitude < maxSwimSpeed / 10 && (!Up && !Down && !Left && !Right))
+                MoveVec = new Vector3(0, 0, 0);
+
+            FinalVel = MoveVec;
         }
         //If we are grounded and we didn't just jump move along slope of surface we are on.
         else if (IsGrounded() && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
@@ -798,6 +817,11 @@ public class SCR_CharacterManager : MonoBehaviour
             if (IsClimbing)
             {
                 AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
+                AnimManager.AnimLock = true;
+            }
+            else if (swimming && !(Left || Right) && !waterJump)
+            {
+                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f); // TODO: treading water animation.
                 AnimManager.AnimLock = true;
             }
             //If the player is on the ground but not moving, play the idle animation.
