@@ -73,6 +73,11 @@ public class SCR_Ladder : MonoBehaviour {
             IkTools.StartEffectorLerp("RightHand", CurveOfEffectors[0], 1.0f);
             AmLerpingCharacter = true;
         }
+        else
+        {
+            CharacterManager.IsClimbing = false;
+            EndLerp();
+        }
     }
 
     // The listener stops paying attention.
