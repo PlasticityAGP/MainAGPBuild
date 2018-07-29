@@ -7,6 +7,7 @@ public class SCR_TiltLadder : MonoBehaviour {
     [SerializeField]
     private float StrengthOfGirl;
     private UnityAction<int> InteractListener;
+    private UnityAction<int> UpListener;
     private bool Interact;
     private Vector3 ZVec = new Vector3(0.0f, 0.0f, 1.0f);
     [SerializeField]
@@ -25,12 +26,22 @@ public class SCR_TiltLadder : MonoBehaviour {
     private float SlowDownSpeed;
     private float InitialSpeed;
     private bool PushEnabled = false;
+    [SerializeField]
+    private GameObject Anchor;
+    [SerializeField]
+    private float LeftRightOffset;
+    private int LerpDir = 0;
+    private Vector3 LeftTarget;
+    private Vector3 RightTarget;
+    [SerializeField]
+    float LerpSpeed;
 
     private void Awake()
     {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
         InteractListener = new UnityAction<int>(InteractPressed);
+        UpListener = new UnityAction<int>(UpPressed);
     }
 
 
@@ -38,11 +49,13 @@ public class SCR_TiltLadder : MonoBehaviour {
     {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("InteractKey", InteractListener);
+        SCR_EventManager.StartListening("UpKey", UpListener);
     }
 
     private void OnDisable()
     {
         SCR_EventManager.StopListening("InteractKey", InteractListener);
+        SCR_EventManager.StopListening("UpKey", UpListener);
     }
 
     private void InteractPressed(int value)
@@ -66,6 +79,35 @@ public class SCR_TiltLadder : MonoBehaviour {
         }
     }
 
+    private void UpPressed(int value)
+    {
+        if (value == 1 && Inside)
+        {
+            if(transform.up.x > 0.0f && CharacterManager.MoveDir)
+            {
+                CharacterManager.FreezeVelocity();
+                LerpDir = 1;
+                Vector3 FirstTarget = new Vector3();
+                FirstTarget.x = Anchor.transform.position.x - LeftRightOffset;
+                FirstTarget.y = CharacterManager.gameObject.transform.position.y;
+                FirstTarget.z = CharacterManager.gameObject.transform.position.z;
+                LeftTarget = FirstTarget;
+            }
+            if(transform.up.x < 0.0f && !CharacterManager.MoveDir)
+            {
+                CharacterManager.FreezeVelocity();
+                LerpDir = 2;
+                Vector3 FirstTarget = new Vector3();
+                FirstTarget.x = Anchor.transform.position.x + LeftRightOffset;
+                FirstTarget.y = CharacterManager.gameObject.transform.position.y;
+                FirstTarget.z = CharacterManager.gameObject.transform.position.z;
+                RightTarget = FirstTarget;
+            }    
+
+        }
+
+    }
+
     // Use this for initialization
     void Start () {
 		
@@ -73,12 +115,15 @@ public class SCR_TiltLadder : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(LerpDir != 0)
+        {
+            DoLerp(Time.deltaTime);
+        }
 	}
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Character")
+        if (other.tag == "Character")
         {
             Inside = true;
             Character = other.gameObject;
@@ -94,7 +139,7 @@ public class SCR_TiltLadder : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Character" && PushEnabled)
+        if (other.tag == "Character" && PushEnabled)
         {
             if (CharacterManager.MoveDir)
             {
@@ -109,7 +154,7 @@ public class SCR_TiltLadder : MonoBehaviour {
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.tag == "Character")
+        if (other.tag == "Character")
         {
             Inside = false;
             if (Interact)
@@ -123,7 +168,7 @@ public class SCR_TiltLadder : MonoBehaviour {
 
     private void GrabLadder()
     {
-        if(CharacterManager.InteractingWith == null)
+        if (CharacterManager.InteractingWith == null)
         {
             IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
             IkTools.SetEffectorTarget("RightHand", RightHandEffector);
@@ -146,6 +191,56 @@ public class SCR_TiltLadder : MonoBehaviour {
             CharacterManager.MoveSpeed = InitialSpeed;
             CharacterManager.InteractingWith = null;
             PushEnabled = false;
+        }
+    }
+
+    private void DoLerp(float DeltaTime)
+    {
+        if(LerpDir == 1)
+        {
+            if(CharacterManager.gameObject.transform.position.x <= LeftTarget.x)
+            {
+                if (CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
+                {
+                    CharacterManager.UnfreezeVelocity();
+                    LerpDir = 0;
+                }
+                else
+                {
+                    Vector3 NewPos = CharacterManager.gameObject.transform.position;
+                    NewPos.z += LerpSpeed * DeltaTime;
+                    CharacterManager.gameObject.transform.position = NewPos;
+                }
+            }
+            else
+            {
+                Vector3 NewPos = CharacterManager.gameObject.transform.position;
+                NewPos.x -= LerpSpeed * DeltaTime;
+                CharacterManager.gameObject.transform.position = NewPos;
+            }
+        }
+        else
+        {
+            if (CharacterManager.gameObject.transform.position.x >= RightTarget.x)
+            {
+                if(CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
+                {
+                    CharacterManager.UnfreezeVelocity();
+                    LerpDir = 0;
+                }
+                else
+                {
+                    Vector3 NewPos = CharacterManager.gameObject.transform.position;
+                    NewPos.z += LerpSpeed * DeltaTime;
+                    CharacterManager.gameObject.transform.position = NewPos;
+                }
+            }
+            else
+            {
+                Vector3 NewPos = CharacterManager.gameObject.transform.position;
+                NewPos.x += LerpSpeed * DeltaTime;
+                CharacterManager.gameObject.transform.position = NewPos;
+            }
         }
     }
 }

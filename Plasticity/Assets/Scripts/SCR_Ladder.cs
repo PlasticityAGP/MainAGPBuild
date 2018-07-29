@@ -21,6 +21,8 @@ public class SCR_Ladder : MonoBehaviour {
     private bool reaching;
     private bool ClamberDir;
     private bool AmLerpingCharacter;
+    [SerializeField]
+    private bool ClamberEnabled;
 
     // Sets up a listener which calls Up() and Side() when the respective keys are pressed.
     private void Awake()
@@ -50,24 +52,27 @@ public class SCR_Ladder : MonoBehaviour {
 
     public void Clamber(int direction)
     {
-        CharacterManager.AmClambering = true;
-        CharacterManager.FreezeVelocity();
-        CharacterManager.IsClimbing = false;
-        if (direction == 1)
+        if (ClamberEnabled)
         {
-            ClamberDir = true;
-            IkTools.SetEffectorTarget("LeftHand", EffectorTargets[0]);
-            IkTools.SetEffectorTarget("RightHand", EffectorTargets[1]);
+            CharacterManager.AmClambering = true;
+            CharacterManager.FreezeVelocity();
+            CharacterManager.IsClimbing = false;
+            if (direction == 1)
+            {
+                ClamberDir = true;
+                IkTools.SetEffectorTarget("LeftHand", EffectorTargets[0]);
+                IkTools.SetEffectorTarget("RightHand", EffectorTargets[1]);
+            }
+            else
+            {
+                ClamberDir = false;
+                IkTools.SetEffectorTarget("LeftHand", EffectorTargets[2]);
+                IkTools.SetEffectorTarget("RightHand", EffectorTargets[3]);
+            }
+            IkTools.StartEffectorLerp("LeftHand", CurveOfEffectors[0], 1.0f);
+            IkTools.StartEffectorLerp("RightHand", CurveOfEffectors[0], 1.0f);
+            AmLerpingCharacter = true;
         }
-        else
-        {
-            ClamberDir = false;
-            IkTools.SetEffectorTarget("LeftHand", EffectorTargets[2]);
-            IkTools.SetEffectorTarget("RightHand", EffectorTargets[3]);
-        }
-        IkTools.StartEffectorLerp("LeftHand", CurveOfEffectors[0], 1.0f);
-        IkTools.StartEffectorLerp("RightHand", CurveOfEffectors[0], 1.0f);
-        AmLerpingCharacter = true;
     }
 
     // The listener stops paying attention.
@@ -110,8 +115,8 @@ public class SCR_Ladder : MonoBehaviour {
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
         //Debug.Log("started climbing");
-        float maxclimb = ((transform.position.y + transform.localScale.y/2) * transform.up.normalized).y;
-        float minclimb = ((transform.position.y - transform.localScale.y/2) * transform.up.normalized).y;
+        float maxclimb = ((transform.position.y + transform.localScale.y) * transform.up.normalized).y;
+        float minclimb = ((transform.position.y - transform.localScale.y) * transform.up.normalized).y;
         CharacterManager.OnClimbable(maxclimb, minclimb);
     }
 

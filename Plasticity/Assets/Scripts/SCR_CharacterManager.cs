@@ -418,7 +418,7 @@ public class SCR_CharacterManager : MonoBehaviour
     /// <param name="low"></param>
     public void OnClimbable(float high, float low)
     {
-        HighClimb = high- 1.5f;
+        HighClimb = high;
         LowClimb = low;
         IsClimbing = true;
         MoveVec.x = 0;
