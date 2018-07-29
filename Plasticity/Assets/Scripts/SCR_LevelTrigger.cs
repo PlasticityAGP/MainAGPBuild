@@ -21,10 +21,8 @@ public class SCR_LevelTrigger : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.tag);
         if (other.tag == TagOfTriggeringObject)
         {
-            Debug.Log("Overlapping");
             SCR_EventManager.TriggerEvent("LevelTrigger", TriggerID);
         }
     }
