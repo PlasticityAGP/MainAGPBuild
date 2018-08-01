@@ -6,41 +6,70 @@ using Sirenix.OdinInspector;
 
 public class SCR_TiltLadder : MonoBehaviour {
     [SerializeField]
+    [Tooltip("How quickly the girl can apply torque to the ladder that she is pushing")]
     private float StrengthOfGirl;
-    private UnityAction<int> InteractListener;
-    private UnityAction<int> UpListener;
-    private bool Interact;
-    private Vector3 ZVec = new Vector3(0.0f, 0.0f, 1.0f);
     [SerializeField]
+    [Tooltip("The animation curve that defines how FinalIK will drag the character's left hand to the ladder")]
     private AnimationCurve[] LeftHandCurves;
     [SerializeField]
+    [Tooltip("The nimation curve that defines how FinalIK will drag the character's right hand to the ladder")]
     private AnimationCurve[] RightHandCurves;
-    private GameObject Character;
-    private SCR_IKToolset IkTools;
-    private SCR_CharacterManager CharacterManager;
     [SerializeField]
+    [Tooltip("A game object defining the location that the character will place their left hand on the ladder")]
     private GameObject LeftHandEffector;
     [SerializeField]
+    [Tooltip("A game object defining the location that the character will place their right hand on the ladder")]
     private GameObject RightHandEffector;
-    private bool Inside;
     [SerializeField]
+    [Tooltip("The movement speed the player will be capped at once they start tilting the ladder")]
     private float SlowDownSpeed;
-    private float InitialSpeed;
-    private bool PushEnabled = false;
     [SerializeField]
+    [Tooltip("The game object located at the position of the anchor of the ladder's hinge joint")]
     private GameObject Anchor;
     [SerializeField]
-    private float LeftRightOffset;
-    private int LerpDir = 0;
-    private Vector3 LeftTarget;
-    private Vector3 RightTarget;
-    [SerializeField]
+    [Tooltip("How fast the player will shift into position when changing z plane")]
     private float LerpSpeed;
     [SerializeField]
+    [Tooltip("How far the player will slide to the left and right before changing z plane")]
+    private float LeftRightOffset;
+    [SerializeField]
+    [Tooltip("Specifies whether or not we want to fire an event when the player begins changing plane")]
     private bool TriggerOnLerping;
+    [SerializeField]
     [ShowIf("TriggerOnLerping")]
-    public int LerpingTriggerID;
+    [Tooltip("This is the ID of the setting in the SceneLoader that we would like to load")]
+    private int LerpingTriggerID;
+
+    //Input event listeners
+    private UnityAction<int> InteractListener;
+    private UnityAction<int> UpListener;
+
+    //Is true while the player has the interact key pressed down
+    private bool Interact;
+    //Is true while the player is in the side grabbing trigger
+    private bool Inside;
+    //Is true while the player is physically moving the ladder
+    private bool PushEnabled = false;
+
+    //Zvec defines the axis around which to add torque
+    private Vector3 ZVec = new Vector3(0.0f, 0.0f, 1.0f);
+    //Vectors defining how far left and right the player will move when shifting
+    private Vector3 LeftTarget;
+    private Vector3 RightTarget;
+
+    //Reference to character
+    private GameObject Character;
+    //Reference to our IkToolset
+    private SCR_IKToolset IkTools;
+    //Reference to the character managers
+    private SCR_CharacterManager CharacterManager;
+
+    //How fast was the player moving before slowing down to grab
+    private float InitialSpeed;
+    //When we trigger an event, we need to store the ID of the event that the Ladder script triggers
     private int LadderTriggerValue;
+    //Which direction are we currently lerping the player
+    private int LerpDir = 0;
 
     private void Awake()
     {
@@ -89,6 +118,7 @@ public class SCR_TiltLadder : MonoBehaviour {
     {
         if (value == 1 && Inside)
         {
+            //When we begin shifting the player, we need to check if we are supposed to fire an event, and then tell ladder to fire our event
             if (TriggerOnLerping)
             {
                 SCR_Ladder temp = gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>();
@@ -96,6 +126,8 @@ public class SCR_TiltLadder : MonoBehaviour {
                 temp.ReleaseTriggerID = LerpingTriggerID;
                 temp.ReleaseTrigger();
             }
+            //If the character is moving to the right or left , define where we need to lerp to relative to the anchor, and then define Lerp dir
+            //to allow lerp to be called in update
             if(transform.up.x > 0.0f && CharacterManager.MoveDir)
             {
                 CharacterManager.FreezeVelocity();
@@ -120,11 +152,6 @@ public class SCR_TiltLadder : MonoBehaviour {
         }
 
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -143,6 +170,7 @@ public class SCR_TiltLadder : MonoBehaviour {
             IkTools = Character.GetComponent<SCR_IKToolset>();
             CharacterManager = Character.GetComponent<SCR_CharacterManager>();
             InitialSpeed = CharacterManager.MoveSpeed;
+            //Need to structure it this way in case interact is held down by the player before entering trigger
             if (Interact)
             {
                 GrabLadder();
@@ -152,6 +180,7 @@ public class SCR_TiltLadder : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
+        //If the character is pushing the ladder every tick, add torque in the appropriate direction
         if (other.tag == "Character" && PushEnabled)
         {
             if (CharacterManager.MoveDir)
@@ -169,6 +198,7 @@ public class SCR_TiltLadder : MonoBehaviour {
     {
         if (other.tag == "Character")
         {
+            //Make suer the hand effectors are freed for other interactions
             Inside = false;
             if (Interact)
             {
@@ -181,6 +211,7 @@ public class SCR_TiltLadder : MonoBehaviour {
 
     private void GrabLadder()
     {
+        //Move hands to the ladder, slow the player, and make sure they can interact with nothing else
         if (CharacterManager.InteractingWith == null)
         {
             IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
@@ -195,6 +226,7 @@ public class SCR_TiltLadder : MonoBehaviour {
 
     private void ReleaseLadder()
     {
+        //Interpolate hands back from their weighted locations and free the character to interact with other objects
         if (CharacterManager.InteractingWith == gameObject)
         {
             IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
@@ -207,6 +239,7 @@ public class SCR_TiltLadder : MonoBehaviour {
         }
     }
 
+    //Actually calculate every tick where the player's position should be as they slide across z planes.
     private void DoLerp(float DeltaTime)
     {
         if(LerpDir == 1)
