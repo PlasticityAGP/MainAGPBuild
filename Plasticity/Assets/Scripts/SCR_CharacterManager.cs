@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-public class SCR_CharacterManager : MonoBehaviour
+public class SCR_CharacterManager : SCR_GameplayStatics
 {
 
     //Event listeners per action for receiving events fired by the Input Manager
@@ -135,16 +135,20 @@ public class SCR_CharacterManager : MonoBehaviour
     //Reference to the character's rigidbody
     [HideInInspector]
     public Rigidbody RBody;
-    //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
 
+    //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
     private bool DidAJump = false;
+    //Boolean used to shut off velocity calculations 
     private bool VelocityAllowed = true;
+    //Dictates whether the Character manager should behave like the player is climbing
     [HideInInspector]
     public bool IsClimbing = false;
     private bool JumpingOff = false;
     private bool FallingOff = false;
+    //Defines if the player is in the process of hanging from a ledge
     private bool CurrentlyLedging = false;
     public float ClimbSpeed = 3.0f;
+    //Defines how high or low a player can climb up a ladder relative to the ladder's scale
     private float HighClimb;
     private float LowClimb;
     [HideInInspector]
@@ -153,27 +157,6 @@ public class SCR_CharacterManager : MonoBehaviour
     private float LedgeYTarget;
     private float LedgeXTarget;
     private bool InAnimationOverride = false;
-
-    private bool NotEmpty(string[] array)
-    {
-        if (array.Length == 0) return false;
-        else return true;
-    }
-    private bool LessThanZero(float input)
-    {
-        return input > 0.0f;
-    }
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
 
     private void Awake()
     {

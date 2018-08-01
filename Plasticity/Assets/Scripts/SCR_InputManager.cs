@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
-public class SCR_InputManager : MonoBehaviour
+public class SCR_InputManager : SCR_GameplayStatics
 {
 
     /*
@@ -18,18 +19,23 @@ public class SCR_InputManager : MonoBehaviour
 
     [SerializeField]
     [Tooltip("Keys that will be bound to the move up action")]
+    [ValidateInput("NotEmpty", "We must have at least one key specified for moving the player up")]
     private KeyCode[] MoveUp;
     [SerializeField]
     [Tooltip("Keys that will be bound to the move left action")]
+    [ValidateInput("NotEmpty", "We must have at least one key specified for moving the player left")]
     private KeyCode[] MoveLeft;
     [SerializeField]
     [Tooltip("Keys that will be bound to the move right action")]
+    [ValidateInput("NotEmpty", "We must have at least one key specified for moving the player right")]
     private KeyCode[] MoveRight;
     [SerializeField]
     [Tooltip("Keys that will be bound to the move down action")]
+    [ValidateInput("NotEmpty", "We must have at least one key specified for moving the player down")]
     private KeyCode[] MoveDown;
     [SerializeField]
     [Tooltip("Keys that will be bound to the interact action")]
+    [ValidateInput("NotEmpty", "We must have at least one key specified for player interaction")]
     private KeyCode[] Interact;
 
     /*
@@ -45,6 +51,10 @@ public class SCR_InputManager : MonoBehaviour
     private int InteractPresses = 0;
 
     // Singleton reference accessor
+    /// <summary>
+    /// Returns an instance of the InputManager in the scene
+    /// </summary>
+    /// <returns>Instance of the InputManager</returns>
     public static SCR_InputManager GetInstance() { return instance; }
 
     void Start()

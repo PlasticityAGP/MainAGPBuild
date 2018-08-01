@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
 
-public class SCR_ZJump : MonoBehaviour {
+public class SCR_ZJump : SCR_GameplayStatics {
 
     //Listens for the up key to be pressed
     private UnityAction<int> UpListener;
@@ -38,18 +38,6 @@ public class SCR_ZJump : MonoBehaviour {
     //Reference to character and it's manager
     private GameObject Character;
     private SCR_CharacterManager CharacterManager;
-
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
 
     private void Awake()
     {

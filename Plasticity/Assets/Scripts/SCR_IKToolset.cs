@@ -76,6 +76,11 @@ public class SCR_IKToolset : MonoBehaviour {
         else Debug.LogError("We could not find the specified effector!");
     }
 
+    /// <summary>
+    /// Forces a specific effector to snap to a specific IK weight instantly instead of interpolating along an animation curve
+    /// </summary>
+    /// <param name="ID">The ID of the effector who's weight you need to force</param>
+    /// <param name="weight">The new weight of the effector</param>
     public void ForceEffectorWeight(string ID, float weight)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
@@ -94,6 +99,12 @@ public class SCR_IKToolset : MonoBehaviour {
         else Debug.LogError("We could not find the specified effector!");
     }
 
+    /// <summary>
+    /// Initiate the interpolation of the weight of a specific effector along an animation curve
+    /// </summary>
+    /// <param name="ID">The effector who's weight will be changed</param>
+    /// <param name="curve">The animation curve along which the effector's weight will be interpolated</param>
+    /// <param name="duration">How long the interpolation will take</param>
     public void StartEffectorLerp(string ID, AnimationCurve curve, float duration)
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))

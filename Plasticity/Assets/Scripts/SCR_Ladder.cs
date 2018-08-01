@@ -4,16 +4,37 @@ using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-public class SCR_Ladder : MonoBehaviour {
-    private SCR_CharacterManager CharacterManager;
-    private GameObject Character;
+public class SCR_Ladder : SCR_GameplayStatics {
 
     [SerializeField]
+    [Tooltip("Flags whether or not the player will clamber at the top of the ladder")]
+    private bool ClamberEnabled;
+    [SerializeField]
+    [Tooltip("The effectors the players will reach towards as they clamber at the top of the ladder")]
+    [ValidateInput("NotEmpty", "We need to have a nonzero number of effectors defined")]
+    [ShowIf("ClamberEnabled")]
     private GameObject[] EffectorTargets;
     [SerializeField]
+    [Tooltip("The animation curves defining IK behavior while clambering")]
+    [ValidateInput("NotEmpty", "We need to have a nonzero number of animation curves defined")]
+    [ShowIf("ClamberEnabled")]
     private AnimationCurve[] CurveOfEffectors;
     [SerializeField]
+    [Tooltip("The Speed the player will Lerp upwards while clambering")]
+    [ValidateInput("GreaterThanZero", "Clamber Speed needs to be greater than zero")]
+    [ShowIf("ClamberEnabled")]
     private float ClamberSpeed;
+    [SerializeField]
+    [Tooltip("Determines if we will fire an event after letting go of the ladder")]
+    private bool ReleaseLadderDoTrigger;
+    [Tooltip("The event ID we are going to fire")]
+    [ValidateInput("GreaterThanOrEqualZero", "Clamber Speed needs to be greater than zero")]
+    [ShowIf("ReleaseLadderDoTrigger")]
+    public int ReleaseTriggerID;
+
+
+    private SCR_CharacterManager CharacterManager;
+    private GameObject Character;
     private SCR_IKToolset IkTools;
     private UnityAction<int> UpListener;
     private UnityAction<int> HorizontalListener;
@@ -22,12 +43,8 @@ public class SCR_Ladder : MonoBehaviour {
     private bool reaching;
     private bool ClamberDir;
     private bool AmLerpingCharacter;
-    [SerializeField]
-    private bool ClamberEnabled;
-    [SerializeField]
-    private bool ReleaseLadderDoTrigger;
-    [ShowIf("ReleaseLadderDoTrigger")]
-    public int ReleaseTriggerID;
+
+
 
     // Sets up a listener which calls Up() and Side() when the respective keys are pressed.
     private void Awake()
@@ -55,6 +72,10 @@ public class SCR_Ladder : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Initiates clambering at the top of the ladder depending on what direction the player is relative to the ladder
+    /// </summary>
+    /// <param name="direction">1 for moving to the right, 2 for moving to the left</param>
     public void Clamber(int direction)
     {
         if (ClamberEnabled)
@@ -181,6 +202,9 @@ public class SCR_Ladder : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Will fire a LevelTrigger event with the ID defined by ReleaseTriggerID
+    /// </summary>
     [HideInInspector]
     public void ReleaseTrigger()
     {

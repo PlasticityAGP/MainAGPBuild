@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using Sirenix.OdinInspector;
 using RootMotion.FinalIK;
 
-public class SCR_DragDrop : MonoBehaviour {
+public class SCR_DragDrop : SCR_GameplayStatics {
 
     //Listener to tell when character wants to interact
     private UnityAction<int> InteractListener;
@@ -44,31 +44,16 @@ public class SCR_DragDrop : MonoBehaviour {
     public GameObject Character;
     [SerializeField]
     [Tooltip("Ik animations curves for left hand effector")]
+    [ValidateInput("NotEmpty", "We need at least a couple of anim curves to define IK behavior")]
     private AnimationCurve[] LeftHandCurves;
     [SerializeField]
     [Tooltip("IK animation curves for right hand effector")]
+    [ValidateInput("NotEmpty", "We need at least a couple of anim curves to define IK behavior")]
     private AnimationCurve[] RightHandCurves;
 
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
-
-    private bool GreaterThanZero(float input)
-    {
-        return input > 0.0f;
-    }
-
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
 
     private void Awake()
     {
@@ -165,12 +150,18 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Called by SCR_ZDrag when a player has entered the trigger volume in the Z direction of the Draggable object
+    /// </summary>
     public void OnZTriggerEnter()
     {
         IsZ = true;
         if (Interact) EnteredAndInteracted();
     }
 
+    /// <summary>
+    /// Called by SCR_ZDrag when a player has exited the trigger volume in the Z direction of the Draggable object
+    /// </summary>
     public void OnZTriggerExit()
     {
         //Reset effectors when the character leaves the dragable object zone
