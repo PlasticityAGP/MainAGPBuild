@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class SCR_Ladder : MonoBehaviour {
     private SCR_CharacterManager CharacterManager;
@@ -23,6 +24,10 @@ public class SCR_Ladder : MonoBehaviour {
     private bool AmLerpingCharacter;
     [SerializeField]
     private bool ClamberEnabled;
+    [SerializeField]
+    private bool ReleaseLadderDoTrigger;
+    [ShowIf("ReleaseLadderDoTrigger")]
+    public int ReleaseTriggerID;
 
     // Sets up a listener which calls Up() and Side() when the respective keys are pressed.
     private void Awake()
@@ -57,6 +62,7 @@ public class SCR_Ladder : MonoBehaviour {
             CharacterManager.AmClambering = true;
             CharacterManager.FreezeVelocity();
             CharacterManager.IsClimbing = false;
+            ReleaseTrigger();
             if (direction == 1)
             {
                 ClamberDir = true;
@@ -116,6 +122,7 @@ public class SCR_Ladder : MonoBehaviour {
     private void OnLadder()
     {
         CharacterManager.Ladder = gameObject;
+        CharacterManager.InteractingWith = gameObject;
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -129,16 +136,20 @@ public class SCR_Ladder : MonoBehaviour {
     private void OffLadder()
     {
         climbing = false;
+        ReleaseTrigger();
         reaching = false;
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
         //Debug.Log("stopped climbing");
+        CharacterManager.InteractingWith = null;
         CharacterManager.JumpOff();
     }
 
     private void EndLerp()
     {
         climbing = false;
+        ReleaseTrigger();
+        CharacterManager.InteractingWith = null;
         reaching = false;
         IkTools.SetEffectorTarget("LeftHand", null);
         IkTools.SetEffectorTarget("RightHand", null);
@@ -167,6 +178,15 @@ public class SCR_Ladder : MonoBehaviour {
         else
         {
             EndLerp();
+        }
+    }
+
+    [HideInInspector]
+    public void ReleaseTrigger()
+    {
+        if (ReleaseLadderDoTrigger)
+        {
+            SCR_EventManager.TriggerEvent("LevelTrigger", ReleaseTriggerID);
         }
     }
 

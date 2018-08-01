@@ -117,7 +117,7 @@ public class SCR_ZJump : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.gameObject.tag == "Character" && ZTransformMethod)
+        if(other.gameObject.tag == "Character" && ZTransformMethod && CharacterManager.InteractingWith == null)
         {
             //This is a little vector math that just checks if the player is higher than the reference point in the
             //direction of the normal of the surface they will be walking on

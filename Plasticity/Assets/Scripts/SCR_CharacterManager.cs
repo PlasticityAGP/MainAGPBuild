@@ -331,8 +331,13 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         if (Up)
         {
-            if (this.transform.position.y > HighClimb)
-                MoveVec = Vector3.zero;
+            if (this.transform.position.y > HighClimb - 0.2f)
+            {
+                Ladder.GetComponent<SCR_Ladder>().climbing = false;
+                Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+                IsClimbing = false;
+                InteractingWith = null;
+            }
             else
             {
                 MoveVec = ClimbSpeed * Ladder.transform.up;
@@ -342,10 +347,12 @@ public class SCR_CharacterManager : MonoBehaviour
         }
         else if (Down)
         {
-            if (this.transform.position.y < LowClimb)
+            if (this.transform.position.y < LowClimb + 0.5f)
             {
-                MoveVec = Vector3.zero;
                 Ladder.GetComponent<SCR_Ladder>().climbing = false;
+                Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+                IsClimbing = false;
+                InteractingWith = null;
             }
             else
             {

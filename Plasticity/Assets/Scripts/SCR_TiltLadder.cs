@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class SCR_TiltLadder : MonoBehaviour {
     [SerializeField]
@@ -34,7 +35,12 @@ public class SCR_TiltLadder : MonoBehaviour {
     private Vector3 LeftTarget;
     private Vector3 RightTarget;
     [SerializeField]
-    float LerpSpeed;
+    private float LerpSpeed;
+    [SerializeField]
+    private bool TriggerOnLerping;
+    [ShowIf("TriggerOnLerping")]
+    public int LerpingTriggerID;
+    private int LadderTriggerValue;
 
     private void Awake()
     {
@@ -83,6 +89,13 @@ public class SCR_TiltLadder : MonoBehaviour {
     {
         if (value == 1 && Inside)
         {
+            if (TriggerOnLerping)
+            {
+                SCR_Ladder temp = gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>();
+                LadderTriggerValue = temp.ReleaseTriggerID;
+                temp.ReleaseTriggerID = LerpingTriggerID;
+                temp.ReleaseTrigger();
+            }
             if(transform.up.x > 0.0f && CharacterManager.MoveDir)
             {
                 CharacterManager.FreezeVelocity();
@@ -203,6 +216,7 @@ public class SCR_TiltLadder : MonoBehaviour {
                 if (CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
                 {
                     CharacterManager.UnfreezeVelocity();
+                    gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>().ReleaseTriggerID = LadderTriggerValue;
                     LerpDir = 0;
                 }
                 else
@@ -226,6 +240,7 @@ public class SCR_TiltLadder : MonoBehaviour {
                 if(CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
                 {
                     CharacterManager.UnfreezeVelocity();
+                    gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>().ReleaseTriggerID = LadderTriggerValue;
                     LerpDir = 0;
                 }
                 else
