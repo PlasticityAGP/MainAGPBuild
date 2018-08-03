@@ -23,6 +23,12 @@ public class SCR_GameplayStatics : MonoBehaviour
         else return true;
     }
 
+    public static bool NotEmpty(KeyCode[] array)
+    {
+        if (array.Length == 0) return false;
+        else return true;
+    }
+
     public static bool LessThanZero(float input)
     {
         return input > 0.0f;

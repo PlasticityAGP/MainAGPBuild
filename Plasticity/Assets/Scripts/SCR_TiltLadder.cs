@@ -38,7 +38,9 @@ public class SCR_TiltLadder : MonoBehaviour {
     [SerializeField]
     [ShowIf("TriggerOnLerping")]
     [Tooltip("This is the ID of the setting in the SceneLoader that we would like to load")]
+    [ValidateInput("GreaterThanOrEqualZero", "Must be a non negative integer")]
     private int LerpingTriggerID;
+
 
     //Input event listeners
     private UnityAction<int> InteractListener;
@@ -51,8 +53,6 @@ public class SCR_TiltLadder : MonoBehaviour {
     //Is true while the player is physically moving the ladder
     private bool PushEnabled = false;
 
-    //Zvec defines the axis around which to add torque
-    private Vector3 ZVec = new Vector3(0.0f, 0.0f, 1.0f);
     //Vectors defining how far left and right the player will move when shifting
     private Vector3 LeftTarget;
     private Vector3 RightTarget;
@@ -63,6 +63,8 @@ public class SCR_TiltLadder : MonoBehaviour {
     private SCR_IKToolset IkTools;
     //Reference to the character managers
     private SCR_CharacterManager CharacterManager;
+    private Rigidbody LadderRB;
+    private HingeJoint LadderHJ;
 
     //How fast was the player moving before slowing down to grab
     private float InitialSpeed;
@@ -91,6 +93,12 @@ public class SCR_TiltLadder : MonoBehaviour {
     {
         SCR_EventManager.StopListening("InteractKey", InteractListener);
         SCR_EventManager.StopListening("UpKey", UpListener);
+    }
+
+    private void Start()
+    {
+        LadderRB = gameObject.transform.parent.GetComponent<Rigidbody>();
+        LadderHJ = gameObject.transform.parent.GetComponent<HingeJoint>();
     }
 
     private void InteractPressed(int value)
@@ -152,14 +160,14 @@ public class SCR_TiltLadder : MonoBehaviour {
         }
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-		if(LerpDir != 0)
+
+    private void FixedUpdate()
+    {
+        if (LerpDir != 0)
         {
             DoLerp(Time.deltaTime);
         }
-	}
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -185,11 +193,11 @@ public class SCR_TiltLadder : MonoBehaviour {
         {
             if (CharacterManager.MoveDir)
             {
-                gameObject.transform.parent.GetComponent<Rigidbody>().AddTorque(ZVec * -(1.0f * StrengthOfGirl));
+                LadderRB.AddTorque(LadderHJ.axis * -(StrengthOfGirl));
             }
             else
             {
-                gameObject.transform.parent.GetComponent<Rigidbody>().AddTorque(ZVec * (1.0f * StrengthOfGirl));
+                LadderRB.AddTorque(LadderHJ.axis * (StrengthOfGirl));
             }
         }
     }

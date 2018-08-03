@@ -56,6 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4945883984273572}
   - component: {fileID: 65858094806125144}
+  - component: {fileID: 114838490068791770}
   m_Layer: 0
   m_Name: PF_TrapDoor
   m_TagString: Untagged
@@ -304,3 +305,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.69331986, y: 0.8118048, z: 2.1537974}
   m_Center: {x: 2.3381908, y: 0.7428417, z: 0.042932983}
+--- !u!114 &114838490068791770
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1359769116647214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6403a801a77c18646905d8bb6e26f121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrapDoor: {fileID: 1700729504843994}
+  Duration: 1.5
+  StrengthOfGirl: 25
+  DoOnce: 1
+  TriggerOnOpen: 1
+  OpenTriggerID: 3
