@@ -4,22 +4,26 @@ using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-public class SCR_TiltLadder : MonoBehaviour {
+public class SCR_TiltLadder : SCR_GameplayStatics {
     [SerializeField]
     [Tooltip("How quickly the girl can apply torque to the ladder that she is pushing")]
     private float StrengthOfGirl;
     [SerializeField]
-    [Tooltip("The animation curve that defines how FinalIK will drag the character's left hand to the ladder")]
-    private AnimationCurve[] LeftHandCurves;
-    [SerializeField]
-    [Tooltip("The nimation curve that defines how FinalIK will drag the character's right hand to the ladder")]
-    private AnimationCurve[] RightHandCurves;
-    [SerializeField]
     [Tooltip("A game object defining the location that the character will place their left hand on the ladder")]
+    [ValidateInput("IsNull", "We must have a Left Hand Effector Game Object")]
     private GameObject LeftHandEffector;
     [SerializeField]
     [Tooltip("A game object defining the location that the character will place their right hand on the ladder")]
+    [ValidateInput("IsNull", "We must have a Right Hand Effector Game Object")]
     private GameObject RightHandEffector;
+    [SerializeField]
+    [Tooltip("The animation curve that defines how FinalIK will drag the character's left hand to the ladder")]
+    [ValidateInput("NotEmpty", "We must have some animation curves specified")]
+    private AnimationCurve[] LeftHandCurves;
+    [SerializeField]
+    [Tooltip("The nimation curve that defines how FinalIK will drag the character's right hand to the ladder")]
+    [ValidateInput("NotEmpty", "We must have some animation curves specified")]
+    private AnimationCurve[] RightHandCurves;
     [SerializeField]
     [Tooltip("The movement speed the player will be capped at once they start tilting the ladder")]
     private float SlowDownSpeed;

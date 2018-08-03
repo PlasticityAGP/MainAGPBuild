@@ -11,16 +11,31 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
     [ValidateInput("IsNull", "We must have a reference to the trapdoor child game object")]
     private GameObject TrapDoor;
     [SerializeField]
+    [Tooltip("The animation curve that defines how much torque the player puts on the door over time")]
+    private AnimationCurve TorqueOverTime;
+    [SerializeField]
     [Tooltip("How long you want the player to push the door up")]
     [ValidateInput("GreaterThanZero", "Must be an amount of time greater than zero")]
     private float Duration;
     [SerializeField]
-    [Tooltip("A multiplier on how much torque the girl applies to the trap door")]
-    [ValidateInput("GreaterThanZero", "Must be a force multiplier that is greater than zero")]
-    private float StrengthOfGirl;
-    [SerializeField]
     [Tooltip("Determines whether or not the interaction with the trap door can only happen once")]
     private bool DoOnce;
+    [SerializeField]
+    [Tooltip("Game object defining the IK target of the Left Hand Effector")]
+    [ValidateInput("IsNull", "We must have a Left Hand Effector Game Object")]
+    private GameObject LeftHandEffector;
+    [SerializeField]
+    [Tooltip("Game object defining the IK target of the Right Hand Effector")]
+    [ValidateInput("IsNull", "We must have a Right Hand Effector Game Object")]
+    private GameObject RightHandEffector;
+    [SerializeField]
+    [Tooltip("The animation curve that defines how FinalIK will drag the character's left hand to the TrapDoor")]
+    [ValidateInput("NotEmpty", "We must have some animation curves specified")]
+    private AnimationCurve[] LeftHandCurves;
+    [SerializeField]
+    [Tooltip("The animation curve that defines how FinalIK will drag the character's right hand to the TrapDoor")]
+    [ValidateInput("NotEmpty", "We must have some animation curves specified")]
+    private AnimationCurve[] RightHandCurves;
     [SerializeField]
     [Tooltip("Specifies whether or not we want to fire an event when the player opens the trap door")]
     private bool TriggerOnOpen;
@@ -32,6 +47,7 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
     
     private bool Done;
     private float CalculationDuration;
+    private float PreDuration;
     private Rigidbody TrapDoorRB;
     private HingeJoint TrapDoorHJ;
     private UnityAction<int> InteractListener;
@@ -39,7 +55,7 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
     private bool Inside;
     private bool LiftDoor;
     private SCR_CharacterManager CharacterManager;
-    //private SCR_IKToolset IkTools;
+    private SCR_IKToolset IkTools;
 
     private void Awake()
     {
@@ -75,20 +91,29 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         {
             Inside = true;
             CharacterManager = other.gameObject.GetComponent<SCR_CharacterManager>();
-            //IkTools = other.gameObject.GetComponent<SCR_IKToolset>();
+            IkTools = other.gameObject.GetComponent<SCR_IKToolset>();
             if (Interact && CharacterManager.InteractingWith == null && !Done) BeginLift();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.tag == "Character") Inside = false;
+        if (other.tag == "Character")
+        {
+            Inside = false;
+            IkTools.SetEffectorTarget("LeftHand", null);
+            IkTools.SetEffectorTarget("RightHand", null);
+        }
     }
 
     private void BeginLift()
     {
         CharacterManager.InteractingWith = gameObject;
         CharacterManager.FreezeVelocity();
+        IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
+        IkTools.SetEffectorTarget("RightHand", RightHandEffector);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
+        IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
         LiftDoor = true;
 
         //Do effector calculations
@@ -96,11 +121,15 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
 
     private void EndLift()
     {
+        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
+        IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
         CharacterManager.InteractingWith = null;
         CharacterManager.UnfreezeVelocity();
         LiftDoor = false;
         if (TriggerOnOpen) SCR_EventManager.TriggerEvent("LevelTrigger", OpenTriggerID);
         if (DoOnce) Done = true;
+        CalculationDuration = Duration;
+        PreDuration = 0.5f;
         //Do effector calculations
     }
 
@@ -109,6 +138,7 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         TrapDoorRB = TrapDoor.GetComponent<Rigidbody>();
         TrapDoorHJ = TrapDoor.GetComponent<HingeJoint>();
         CalculationDuration = Duration;
+        PreDuration = 0.5f;
 	}
 
     private void FixedUpdate()
@@ -118,11 +148,15 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
 
     private void TorqueCalculations(float DeltaTime)
     {
-        CalculationDuration -= DeltaTime;
-        if (CalculationDuration <= 0.0f) EndLift();
-        else
+        if (PreDuration <= 0.0f)
         {
-            TrapDoorRB.AddTorque(TrapDoorHJ.axis * (StrengthOfGirl));
+            if (CalculationDuration <= 0.0f) EndLift();
+            else
+            {
+                CalculationDuration -= DeltaTime;
+                TrapDoorRB.AddTorque(TrapDoorHJ.axis * (TorqueOverTime.Evaluate(Duration-CalculationDuration)));
+            }
         }
+        else PreDuration -= DeltaTime;
     }
 }
