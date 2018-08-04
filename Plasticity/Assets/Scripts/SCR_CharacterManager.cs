@@ -390,20 +390,10 @@ public class SCR_CharacterManager : MonoBehaviour
         else
             timeUnderWater += Time.deltaTime;
 
-        // Forces the player to return to the surface if they've been underwater for too long.
-        if (timeUnderWater > maxTimeUnderWater && underWater)
-        {
-            MoveVec.y += maxSwimSpeed * Time.deltaTime;
-            if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
-            swimspeed = new Vector3(0, MoveVec.y, 0);
-            RBody.velocity = new Vector3(0, 2.5f, 0);
-            return;
-        }
-
         // Calculates swimming movement under normal conditions.
         maxSwimSpeed *= swimAcceleration;
 
-        if (!DidAJump)
+        if (!DidAJump && !(timeUnderWater > maxTimeUnderWater && underWater))
         {
             if (Up && !Down)
                 MoveVec.y += maxSwimSpeed * Time.deltaTime;
@@ -433,8 +423,15 @@ public class SCR_CharacterManager : MonoBehaviour
             else if (MoveVec.x > (0 + maxSwimSpeed / swimAcceleration * Time.deltaTime))
                 MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
         }
-        
+
         maxSwimSpeed /= swimAcceleration;
+
+        // Forces the player to return to the surface if they've been underwater for too long.
+        if (timeUnderWater > maxTimeUnderWater && underWater)
+        {
+            MoveVec.y += maxSwimSpeed * Time.deltaTime;
+            if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
+        }
     }
 
     // Controls for a player that is climbing a ladder.
