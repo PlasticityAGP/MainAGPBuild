@@ -7,6 +7,7 @@ TagManager:
   - Character
   - ReferencePoint
   - PuzzleBox
+  - PuzzleBox1
   layers:
   - Default
   - TransparentFX

@@ -24,6 +24,7 @@ public class SCR_SceneLoader : MonoBehaviour {
     private SCR_LevelStates LevelData; 
     private string[] LevelArray;
     private UnityAction<int> TriggerListener;
+    private UnityAction<int> LevelStateListener;
     [SerializeField]
     private SettingsArray[] LevelSettings;
 
@@ -32,16 +33,25 @@ public class SCR_SceneLoader : MonoBehaviour {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
         TriggerListener = new UnityAction<int>(TriggerEntered);
+        LevelStateListener = new UnityAction<int>(LevelStateChange);
     }
     private void OnEnable()
     {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("LevelTrigger", TriggerListener);
+        SCR_EventManager.StartListening("SceneStateTrigger", LevelStateListener);
     }
 
     private void OnDisable()
     {
         SCR_EventManager.StopListening("LevelTrigger", TriggerListener);
+        SCR_EventManager.StopListening("SceneStateTrigger", LevelStateListener);
+    }
+
+    private void LevelStateChange (int ID)
+    {
+        int[] PuzzleStates = LevelData.PuzzleStates;
+        ActivateOnTrigger(LevelSettings[PuzzleStates[ID]]);
     }
 
     private void TriggerEntered(int ID)
