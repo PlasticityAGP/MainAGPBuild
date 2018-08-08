@@ -277,13 +277,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1807902792200920}
   m_LocalRotation: {x: -0, y: -0, z: -0.25212458, w: 0.9676948}
-  m_LocalPosition: {x: 3.68, y: 2.47, z: 1.64}
-  m_LocalScale: {x: 1, y: 2.2952893, z: 1}
+  m_LocalPosition: {x: 3.7391, y: 1.97, z: 1.64}
+  m_LocalScale: {x: 1, y: 2.0428638, z: 1}
   m_Children:
   - {fileID: 4055711914537010}
   - {fileID: 4888908624926770}
-  - {fileID: 4981457121537338}
   - {fileID: 4386962412343494}
+  - {fileID: 4981457121537338}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -29.207}
@@ -314,7 +314,7 @@ Transform:
   - {fileID: 4740801230880170}
   - {fileID: 4824342489538176}
   m_Father: {fileID: 4215426426832026}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4516042085778882
 Transform:
@@ -424,7 +424,7 @@ Transform:
   - {fileID: 4078041656775672}
   - {fileID: 4763410844092386}
   m_Father: {fileID: 4215426426832026}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &23180799995946690
 MeshRenderer:
@@ -500,7 +500,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: -2.5, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.8799808, y: -2.5387022, z: 1.64}
+  m_ConnectedAnchor: {x: 1.247014, y: -2.487868, z: 1.64}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -546,8 +546,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.973102, z: 1}
-  m_Center: {x: -0.00000003256729, y: -0.013449167, z: 0}
+  m_Size: {x: 1, y: 0.97276807, z: 1}
+  m_Center: {x: -0.000000044896233, y: -0.013282125, z: 0}
 --- !u!65 &65937553688734816
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -572,6 +572,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StrengthOfGirl: 20
+  LeftHandEffector: {fileID: 1712780347047002}
+  RightHandEffector: {fileID: 1909757384236316}
   LeftHandCurves:
   - serializedVersion: 2
     m_Curve:
@@ -666,12 +668,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  LeftHandEffector: {fileID: 1712780347047002}
-  RightHandEffector: {fileID: 1909757384236316}
   SlowDownSpeed: 0.5
   Anchor: {fileID: 1439163604181086}
-  LeftRightOffset: 1
   LerpSpeed: 5
+  LeftRightOffset: 1
+  TriggerOnLerping: 1
+  LerpingTriggerName: DeactivateLadderTrigger
 --- !u!114 &114755656435931972
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -683,6 +685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eefce2f9c6b1e6b44bf27183a83e502b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ClamberEnabled: 0
   EffectorTargets:
   - {fileID: 1562423901397204}
   - {fileID: 1160468940471986}
@@ -731,5 +734,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   ClamberSpeed: 1.5
+  ReleaseLadderDoTrigger: 1
+  ReleaseTriggerName: ActivateLadderTrigger
   climbing: 0
-  ClamberEnabled: 0

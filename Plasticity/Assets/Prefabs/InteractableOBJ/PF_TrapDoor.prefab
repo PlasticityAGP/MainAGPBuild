@@ -144,8 +144,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1700729504843994}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.007, y: 0, z: 0}
+  m_LocalScale: {x: 0.7063212, y: 1, z: 1}
   m_Children:
   - {fileID: 4971665359099678}
   - {fileID: 4998200650239664}
@@ -159,8 +159,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1359769116647214}
   m_LocalRotation: {x: -0, y: 0.025715968, z: -0, w: 0.9996693}
-  m_LocalPosition: {x: -12.61, y: 6.3, z: 2.01}
-  m_LocalScale: {x: 0.71168023, y: 1, z: 1}
+  m_LocalPosition: {x: -12.61, y: 4.3500004, z: 2.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4834847228911640}
   m_Father: {fileID: 0}
@@ -173,7 +173,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1186600307601632}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.116, y: 0, z: -0}
   m_LocalScale: {x: 3.3867872, y: 0.12368797, z: 2.2995124}
   m_Children: []
   m_Father: {fileID: 4834847228911640}
@@ -302,8 +302,8 @@ HingeJoint:
   m_ConnectedBody: {fileID: 0}
   m_Anchor: {x: -1.7, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
-  m_AutoConfigureConnectedAnchor: 0
-  m_ConnectedAnchor: {x: -13.85, y: 4.3500004, z: 2.0722046}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: -13.816149, y: 4.3500004, z: 2.072096}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -314,7 +314,7 @@ HingeJoint:
     targetVelocity: 0
     force: 0
     freeSpin: 0
-  m_UseLimits: 0
+  m_UseLimits: 1
   m_Limits:
     min: 0
     max: 120
@@ -361,8 +361,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.69331986, y: 0.8118048, z: 2.1537974}
-  m_Center: {x: 2.3381908, y: 0.7428417, z: 0.042932983}
+  m_Size: {x: 0.76032674, y: 0.8118048, z: 2.1537974}
+  m_Center: {x: 1.7603748, y: 0.7428417, z: 0.04293299}
 --- !u!114 &114838490068791770
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -498,4 +498,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   TriggerOnOpen: 1
-  OpenTriggerID: 3
+  OpenTriggerName: ActivateGoodBox
