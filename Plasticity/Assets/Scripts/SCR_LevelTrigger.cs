@@ -8,7 +8,7 @@ public struct DataPair
 {
     public string Tag;
     public int IndexToWrite;
-    public int Value;
+    public string Value;
 };
 
 public class SCR_LevelTrigger : MonoBehaviour {
@@ -18,8 +18,11 @@ public class SCR_LevelTrigger : MonoBehaviour {
     private TypeOfTrigger ThisTrigger;
 
     [SerializeField]
-    [HideIf("ThisTrigger", TypeOfTrigger.CharacterTransform)]
-    private int TriggerID;
+    [ShowIf("ThisTrigger", TypeOfTrigger.Loader)]
+    private string TriggerName;
+    [SerializeField]
+    [ShowIf("ThisTrigger", TypeOfTrigger.StateChange)]
+    private int PuzzleNumber;
     [SerializeField]
     [HideIf("ThisTrigger", TypeOfTrigger.CharacterTransform)]
     private string[] TagsOfTriggeringObject;
@@ -57,14 +60,14 @@ public class SCR_LevelTrigger : MonoBehaviour {
         {
             if (IsIn(other.tag, TagsOfTriggeringObject))
             {
-                SCR_EventManager.TriggerEvent("LevelTrigger", TriggerID);
+                SCR_EventManager.TriggerEvent("LevelTrigger", TriggerName);
             }
         }
         else if(ThisTrigger == TypeOfTrigger.StateChange)
         {
             if (IsIn(other.tag, TagsOfTriggeringObject))
             {
-                SCR_EventManager.TriggerEvent("SceneStateTrigger", TriggerID);
+                SCR_EventManager.TriggerEvent("SceneStateTrigger", PuzzleNumber);
             }
         }
 
@@ -76,6 +79,5 @@ public class SCR_LevelTrigger : MonoBehaviour {
                     LevelData.PuzzleStates[StatesToChange[i].IndexToWrite] = StatesToChange[i].Value;
             }
         }
-
     }
 }

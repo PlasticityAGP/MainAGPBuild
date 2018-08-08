@@ -28,9 +28,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
     [Tooltip("Determines if we will fire an event after letting go of the ladder")]
     private bool ReleaseLadderDoTrigger;
     [Tooltip("The event ID we are going to fire")]
-    [ValidateInput("GreaterThanOrEqualZero", "Clamber Speed needs to be greater than zero")]
     [ShowIf("ReleaseLadderDoTrigger")]
-    public int ReleaseTriggerID;
+    public string ReleaseTriggerName;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -210,7 +209,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         if (ReleaseLadderDoTrigger)
         {
-            SCR_EventManager.TriggerEvent("LevelTrigger", ReleaseTriggerID);
+            SCR_EventManager.TriggerEvent("LevelTrigger", ReleaseTriggerName);
         }
     }
 

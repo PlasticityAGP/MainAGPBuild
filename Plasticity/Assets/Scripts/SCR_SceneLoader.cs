@@ -14,6 +14,7 @@ public class PairObject
 [System.Serializable]
 public class SettingsArray
 {
+    public string SettingName;
     public PairObject[] Settings;
 }
 
@@ -23,7 +24,7 @@ public class SCR_SceneLoader : MonoBehaviour {
     [Tooltip("What level state data we want the scene loader to operate based on")]
     private SCR_LevelStates LevelData; 
     private string[] LevelArray;
-    private UnityAction<int> TriggerListener;
+    private UnityAction<string> TriggerListener;
     private UnityAction<int> LevelStateListener;
     [SerializeField]
     private SettingsArray[] LevelSettings;
@@ -32,7 +33,7 @@ public class SCR_SceneLoader : MonoBehaviour {
     {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
-        TriggerListener = new UnityAction<int>(TriggerEntered);
+        TriggerListener = new UnityAction<string>(TriggerEntered);
         LevelStateListener = new UnityAction<int>(LevelStateChange);
     }
     private void OnEnable()
@@ -50,13 +51,13 @@ public class SCR_SceneLoader : MonoBehaviour {
 
     private void LevelStateChange (int ID)
     {
-        int[] PuzzleStates = LevelData.PuzzleStates;
-        ActivateOnTrigger(LevelSettings[PuzzleStates[ID]]);
+        string[] PuzzleStates = LevelData.PuzzleStates;
+        ActivateOnTrigger(LevelSettings[FindByName(PuzzleStates[ID])]);
     }
 
-    private void TriggerEntered(int ID)
+    private void TriggerEntered(string ID)
     {
-        ActivateOnTrigger(LevelSettings[ID]);
+        ActivateOnTrigger(LevelSettings[FindByName(ID)]);
     }
 
     private void ActivateOnTrigger(SettingsArray Data)
@@ -72,6 +73,16 @@ public class SCR_SceneLoader : MonoBehaviour {
                 Data.Settings[i].ObjToSet.SetActive(false);
             }
         }
+    }
+
+    private int FindByName(string Name)
+    {
+        for(int i = 0; i < LevelSettings.Length; ++i)
+        {
+            if (LevelSettings[i].SettingName == Name) return i;
+        }
+        Debug.LogError("Setting name not found");
+        return -1;
     }
 
     void Start () {

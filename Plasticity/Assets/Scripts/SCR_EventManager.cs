@@ -13,11 +13,18 @@ public class InputEvent : UnityEvent<int>
 
 }
 
+[System.Serializable]
+public class SceneEvent : UnityEvent<string>
+{
+
+}
+
 
 public class SCR_EventManager : MonoBehaviour
 {
     //Event dictionary will associate a string name with a specific InputEvent object
-    private Dictionary<string, InputEvent> EventDictionary;
+    private Dictionary<string, InputEvent> InputDictionary;
+    private Dictionary<string, SceneEvent> SceneDictionary;
 
     //CurrentManager is an instance of the event manager script
     private static SCR_EventManager CurrentManager;
@@ -49,10 +56,15 @@ public class SCR_EventManager : MonoBehaviour
 
     void Init()
     {
-        if(EventDictionary == null)
+        if(InputDictionary == null)
         {
             //If we don't have a dictionary defined in EventDictionary, create a new one
-            EventDictionary = new Dictionary<string, InputEvent>();
+            InputDictionary = new Dictionary<string, InputEvent>();
+        }
+        if (SceneDictionary == null)
+        {
+            //If we don't have a dictionary defined in EventDictionary, create a new one
+            SceneDictionary = new Dictionary<string, SceneEvent>();
         }
     }
 
@@ -60,7 +72,7 @@ public class SCR_EventManager : MonoBehaviour
     {
         InputEvent ThisEvent = null;
         //If the we are looking for exists within our dictionary, put it in the variable ThisEvent
-        if (instance.EventDictionary.TryGetValue(EventName, out ThisEvent))
+        if (instance.InputDictionary.TryGetValue(EventName, out ThisEvent))
         {
             //Add the new listener to the event
             ThisEvent.AddListener(Listener);
@@ -71,7 +83,26 @@ public class SCR_EventManager : MonoBehaviour
             //Create a new event, add a listener, and place it in our EventDictionary
             ThisEvent = new InputEvent();
             ThisEvent.AddListener(Listener);
-            instance.EventDictionary.Add(EventName, ThisEvent);
+            instance.InputDictionary.Add(EventName, ThisEvent);
+        }
+    }
+
+    public static void StartListening(string EventName, UnityAction<string> Listener)
+    {
+        SceneEvent ThisEvent = null;
+        //If the we are looking for exists within our dictionary, put it in the variable ThisEvent
+        if (instance.SceneDictionary.TryGetValue(EventName, out ThisEvent))
+        {
+            //Add the new listener to the event
+            ThisEvent.AddListener(Listener);
+        }
+        //If the event we are looking for does not yet exist in our dictionary...
+        else
+        {
+            //Create a new event, add a listener, and place it in our EventDictionary
+            ThisEvent = new SceneEvent();
+            ThisEvent.AddListener(Listener);
+            instance.SceneDictionary.Add(EventName, ThisEvent);
         }
     }
 
@@ -80,7 +111,19 @@ public class SCR_EventManager : MonoBehaviour
         //If the current instance of the manager doesn't exist we don't need to do anything
         if (CurrentManager == null) return;
         InputEvent ThisEvent = null;
-        if (instance.EventDictionary.TryGetValue(EventName, out ThisEvent))
+        if (instance.InputDictionary.TryGetValue(EventName, out ThisEvent))
+        {
+            //Need to remove listener from event in dictionary if we find it 
+            ThisEvent.RemoveListener(Listener);
+        }
+    }
+
+    public static void StopListening(string EventName, UnityAction<string> Listener)
+    {
+        //If the current instance of the manager doesn't exist we don't need to do anything
+        if (CurrentManager == null) return;
+        SceneEvent ThisEvent = null;
+        if (instance.SceneDictionary.TryGetValue(EventName, out ThisEvent))
         {
             //Need to remove listener from event in dictionary if we find it 
             ThisEvent.RemoveListener(Listener);
@@ -90,7 +133,17 @@ public class SCR_EventManager : MonoBehaviour
     public static void TriggerEvent(string EventName, int value)
     {
         InputEvent ThisEvent = null;
-        if (instance.EventDictionary.TryGetValue(EventName, out ThisEvent))
+        if (instance.InputDictionary.TryGetValue(EventName, out ThisEvent))
+        {
+            //If the event exists in our dictionary, invoke it
+            ThisEvent.Invoke(value);
+        }
+    }
+
+    public static void TriggerEvent(string EventName, string value)
+    {
+        SceneEvent ThisEvent = null;
+        if (instance.SceneDictionary.TryGetValue(EventName, out ThisEvent))
         {
             //If the event exists in our dictionary, invoke it
             ThisEvent.Invoke(value);

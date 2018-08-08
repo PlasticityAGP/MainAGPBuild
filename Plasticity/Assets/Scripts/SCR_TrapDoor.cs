@@ -42,8 +42,7 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
     [SerializeField]
     [ShowIf("TriggerOnOpen")]
     [Tooltip("This is the ID of the setting in the SceneLoader that we would like to load")]
-    [ValidateInput("GreaterThanOrEqualZero", "Must be a non negative integer")]
-    private int OpenTriggerID;
+    private string OpenTriggerName;
     
     private bool Done;
     private float CalculationDuration;
@@ -126,7 +125,7 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         CharacterManager.InteractingWith = null;
         CharacterManager.UnfreezeVelocity();
         LiftDoor = false;
-        if (TriggerOnOpen) SCR_EventManager.TriggerEvent("LevelTrigger", OpenTriggerID);
+        if (TriggerOnOpen) SCR_EventManager.TriggerEvent("LevelTrigger", OpenTriggerName);
         if (DoOnce) Done = true;
         CalculationDuration = Duration;
         PreDuration = 0.5f;

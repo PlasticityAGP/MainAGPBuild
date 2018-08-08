@@ -42,8 +42,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     [SerializeField]
     [ShowIf("TriggerOnLerping")]
     [Tooltip("This is the ID of the setting in the SceneLoader that we would like to load")]
-    [ValidateInput("GreaterThanOrEqualZero", "Must be a non negative integer")]
-    private int LerpingTriggerID;
+    private string LerpingTriggerName;
 
 
     //Input event listeners
@@ -73,7 +72,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     //How fast was the player moving before slowing down to grab
     private float InitialSpeed;
     //When we trigger an event, we need to store the ID of the event that the Ladder script triggers
-    private int LadderTriggerValue;
+    private string LadderTriggerName;
     //Which direction are we currently lerping the player
     private int LerpDir = 0;
 
@@ -134,8 +133,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             if (TriggerOnLerping)
             {
                 SCR_Ladder temp = gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>();
-                LadderTriggerValue = temp.ReleaseTriggerID;
-                temp.ReleaseTriggerID = LerpingTriggerID;
+                LadderTriggerName = temp.ReleaseTriggerName;
+                temp.ReleaseTriggerName = LerpingTriggerName;
                 temp.ReleaseTrigger();
             }
             //If the character is moving to the right or left , define where we need to lerp to relative to the anchor, and then define Lerp dir
@@ -261,7 +260,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 if (CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
                 {
                     CharacterManager.UnfreezeVelocity();
-                    gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>().ReleaseTriggerID = LadderTriggerValue;
+                    gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>().ReleaseTriggerName = LadderTriggerName;
                     LerpDir = 0;
                 }
                 else
@@ -285,7 +284,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 if(CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
                 {
                     CharacterManager.UnfreezeVelocity();
-                    gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>().ReleaseTriggerID = LadderTriggerValue;
+                    gameObject.transform.parent.GetComponentInChildren<SCR_Ladder>().ReleaseTriggerName = LadderTriggerName;
                     LerpDir = 0;
                 }
                 else
