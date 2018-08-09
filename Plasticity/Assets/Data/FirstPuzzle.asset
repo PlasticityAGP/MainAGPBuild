@@ -13,4 +13,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelArray:
   - SCN_BirdPuzzle_Art
-  PuzzleStates: 00000000
+  PuzzleStates:
+  - 

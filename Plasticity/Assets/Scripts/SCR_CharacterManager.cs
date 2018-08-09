@@ -35,21 +35,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     [Tooltip("Pass in a reference to the Game Object representing the bottom bound of the ledging window")]
     [ValidateInput("IsNull", "There must be a reference to the Game Object representing the bottom bound of the ledging window")]
     private GameObject LedgeBottomBound;
-    [Title("Animations")]
-    [InfoBox("Each of the type of animations stores an array of Animation State names that are associated with the Character Model child Game Object. These categories of animation will randomly choose" +
-        " one of the level states in its array to play. This adds a little randomness/lifelike feeling to the way our character moves")]
-    [SerializeField]
-    [Tooltip("An array of string names for running animations for the character")]
-    [ValidateInput("NotEmpty", "There must be at least one idle animation specified")]
-    private string[] IdleAnimations;
-    [SerializeField]
-    [Tooltip("An array of string names for idle animations for the character")]
-    [ValidateInput("NotEmpty", "There must be at least one run animation specified")]
-    private string[] RunAnimations;
-    [SerializeField]
-    [Tooltip("An array of string names for jumping animations for the character")]
-    [ValidateInput("NotEmpty", "There must be at least one jump animation specified")]
-    private string[] JumpAnimations;
     [Title("Movement")]
     [Tooltip("Determines the maximum speed our character can move.")]
     [ValidateInput("LessThanZero", "We cannot have a max move speed <= 0.0")]
@@ -131,7 +116,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private RaycastHit LedgingWall;
     //CharacterAnimator will store a reference to the Animator of our Character.
     private Animator CharacterAnimator;
-    private SCR_AnimEventManager AnimManager;
     private SCR_IKToolset IkTools;
 
     //Reference to the character's rigidbody
@@ -159,6 +143,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private float LedgeYTarget;
     private float LedgeXTarget;
     private bool InAnimationOverride = false;
+    private string LastAnim;
 
     private void Awake()
     {
@@ -190,11 +175,45 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void ChangePlayerState(CharacterStates state)
     {
-        if(PlayerState != state)
+        if (PlayerState != state)
         {
+            if (LastAnim != null) ResetAnim();
+            if (PlayerState == CharacterStates.Running)
+            {
+                if (state == CharacterStates.Idling) SetAnim("RunningToIdle");
+                else if (state == CharacterStates.Falling) SetAnim("RunningToFalling");
+                else if (state == CharacterStates.Jumping) SetAnim("RunningToJump");
+            }
+            else if (PlayerState == CharacterStates.Falling)
+            {
+                if (state == CharacterStates.Idling) SetAnim("FallingToIdle");
+                else if (state == CharacterStates.Running) SetAnim("FallingToRunning");
+            }
+            else if (PlayerState == CharacterStates.Jumping)
+            {
+                if (state == CharacterStates.Falling) SetAnim("JumpToFalling");
+                else if (state == CharacterStates.Idling) SetAnim("JumpToIdle");
+                else if (state == CharacterStates.Running) SetAnim("JumpToRunning");
+            }
+            else if (PlayerState == CharacterStates.Idling)
+            {
+                if (state == CharacterStates.Running) SetAnim("IdleToRunning");
+                else if (state == CharacterStates.Falling) SetAnim("IdleToFalling");
+                else if (state == CharacterStates.Jumping) SetAnim("IdleToJump");
+            }
             PlayerState = state;
-            Debug.Log(PlayerState);
         }
+    }
+
+    private void SetAnim(string input)
+    {
+        LastAnim = input;
+        CharacterAnimator.SetTrigger(input);
+    }
+
+    private void ResetAnim()
+    {
+        CharacterAnimator.ResetTrigger(LastAnim);
     }
 
     //The following 5 functions are callbacks that get called by the event listeners
@@ -243,7 +262,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (CanSendRunAnimations())
             {
                 //Tell the animation manager to play a running animation is left is pressed and player is on ground.
-                AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
                 ChangePlayerState(CharacterStates.Running);
             }
 
@@ -262,7 +280,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (CanSendRunAnimations())
             {
                 //Tell the animation manager to play a running animation is left is pressed and player is on ground.
-                AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
                 ChangePlayerState(CharacterStates.Running);
             }
         }
@@ -280,24 +297,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
         else Debug.LogError("There is currently not a rigidbody attached to this character");
 
-        //Make sure the character has an animation manager
-        if (gameObject.GetComponent<SCR_AnimEventManager>()) AnimManager = gameObject.GetComponent<SCR_AnimEventManager>();
-        else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
-
         if (gameObject.GetComponent<SCR_IKToolset>()) IkTools = gameObject.GetComponent<SCR_IKToolset>();
         else Debug.LogError("We need a SCR_IKToolset script attached to one of the Character's child Game Objects");
 
         //Make sure the model has an animator component
         if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
         else Debug.LogError("There is currently not an animator attached to this character's model");
-        //Pass the instance of the CharacterAnimator obtained in the CharacterManager to the AnimManager.
-        AnimManager.CharacterAnimator = CharacterAnimator;
-
-        //Make sure we have at least one of each type of animation specified.
-        if (RunAnimations.Length == 0) Debug.LogError("You need at least one run animation specified in the CharacterManager");
-        if (IdleAnimations.Length == 0) Debug.LogError("You need at least one idle animation specified in the CharacterManager");
-        if (JumpAnimations.Length == 0) Debug.LogError("You need at least one jump animation specified in the CharacterManager");
-
 
         //Our first move direction will just be the forward vector of the player
         InitialDir = transform.forward;
@@ -573,7 +578,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         {
             MoveVec.y = JumpForce;
             //Tell anim manager to play a jump animation.
-            AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
             ChangePlayerState(CharacterStates.Jumping);
             OnBeginJump();
             IsClimbing = false;
@@ -596,7 +600,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
                 else MoveVec.y = JumpForce;
                 //Tell anim manager to play a jump animation.
-                AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
                 ChangePlayerState(CharacterStates.Jumping);
                 OnBeginJump();
             }
@@ -635,9 +638,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
         if (!JumpWhileHeld) Up = false;
-
-        AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
-        if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.05f);
+        if (Left || Right) ChangePlayerState(CharacterStates.Running);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -714,28 +715,25 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private void PerTickAnimations()
     {
         //This lock allows crossfadeing of animations to only be called once per transition
-        if (!AnimManager.AnimLock)
+        if (IsClimbing)
         {
-            if (IsClimbing)
-            {
-                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
-                ChangePlayerState(CharacterStates.Idling);
-                AnimManager.AnimLock = true;
-            }
-            //If the player is on the ground but not moving, play the idle animation.
-            else if (IsGrounded() && !(Left || Right) && !DidAJump)
-            {
-                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
-                ChangePlayerState(CharacterStates.Idling);
-                AnimManager.AnimLock = true;
-            }
-            //If the player is falling, play the falling animation
-            else if (!IsGrounded() && MoveVec.y < 0.0f)
-            {
-                AnimManager.NewAnimEvent("Falling", 0.45f, 0.0f);
-                ChangePlayerState(CharacterStates.Falling);
-                AnimManager.AnimLock = true;
-            }
+            ChangePlayerState(CharacterStates.Idling);
+
+        }
+        //If the player is on the ground but not moving, play the idle animation.
+        else if (IsGrounded() && !(Left || Right) && !DidAJump)
+        {
+            ChangePlayerState(CharacterStates.Idling);
+        }
+        else if (IsGrounded() && (Left || Right) && !DidAJump)
+        {
+            ChangePlayerState(CharacterStates.Running);
+        }
+        //If the player is falling, play the falling animation
+        else if (!IsGrounded() && MoveVec.y < 0.0f)
+        {
+            ChangePlayerState(CharacterStates.Falling);
+
         }
     }
 
