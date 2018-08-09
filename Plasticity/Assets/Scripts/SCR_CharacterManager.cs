@@ -6,6 +6,8 @@ using Sirenix.OdinInspector;
 
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
+    private enum CharacterStates {Running, Falling, Jumping, Idling}
+    private CharacterStates PlayerState;
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -186,6 +188,15 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         SCR_EventManager.StopListening("RightKey", RightListener);
     }
 
+    private void ChangePlayerState(CharacterStates state)
+    {
+        if(PlayerState != state)
+        {
+            PlayerState = state;
+            Debug.Log(PlayerState);
+        }
+    }
+
     //The following 5 functions are callbacks that get called by the event listeners
     private void UpPressed(int value)
     {
@@ -233,6 +244,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 //Tell the animation manager to play a running animation is left is pressed and player is on ground.
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
+                ChangePlayerState(CharacterStates.Running);
             }
 
         }
@@ -251,6 +263,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 //Tell the animation manager to play a running animation is left is pressed and player is on ground.
                 AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
+                ChangePlayerState(CharacterStates.Running);
             }
         }
         else Right = false;
@@ -561,7 +574,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             MoveVec.y = JumpForce;
             //Tell anim manager to play a jump animation.
             AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
-
+            ChangePlayerState(CharacterStates.Jumping);
             OnBeginJump();
             IsClimbing = false;
             return;
@@ -584,6 +597,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else MoveVec.y = JumpForce;
                 //Tell anim manager to play a jump animation.
                 AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
+                ChangePlayerState(CharacterStates.Jumping);
                 OnBeginJump();
             }
 
@@ -705,18 +719,21 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (IsClimbing)
             {
                 AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
+                ChangePlayerState(CharacterStates.Idling);
                 AnimManager.AnimLock = true;
             }
             //If the player is on the ground but not moving, play the idle animation.
             else if (IsGrounded() && !(Left || Right) && !DidAJump)
             {
                 AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
+                ChangePlayerState(CharacterStates.Idling);
                 AnimManager.AnimLock = true;
             }
             //If the player is falling, play the falling animation
             else if (!IsGrounded() && MoveVec.y < 0.0f)
             {
                 AnimManager.NewAnimEvent("Falling", 0.45f, 0.0f);
+                ChangePlayerState(CharacterStates.Falling);
                 AnimManager.AnimLock = true;
             }
         }
