@@ -181,6 +181,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             IkTools = Character.GetComponent<SCR_IKToolset>();
             CharacterManager = Character.GetComponent<SCR_CharacterManager>();
             InitialSpeed = CharacterManager.MoveSpeed;
+            CharacterManager.StateChangeLocked = true;
             //Need to structure it this way in case interact is held down by the player before entering trigger
             if (Interact)
             {
@@ -209,8 +210,9 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     {
         if (other.tag == "Character")
         {
-            //Make suer the hand effectors are freed for other interactions
+            //Make sure the hand effectors are freed for other interactions
             Inside = false;
+            CharacterManager.StateChangeLocked = false;
             if (Interact)
             {
                 IkTools.SetEffectorTarget("LeftHand", null);

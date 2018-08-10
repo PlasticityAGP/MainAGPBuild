@@ -143,6 +143,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private float LedgeYTarget;
     private float LedgeXTarget;
     private bool InAnimationOverride = false;
+    [HideInInspector]
+    public bool StateChangeLocked = false;
     private string LastAnim;
 
     private void Awake()
@@ -590,7 +592,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
 
         //If the player has pressed an UP key and the player is currently standing on the ground
-        if (Up && IsGrounded())
+        if (Up && IsGrounded() && !StateChangeLocked)
         {
             if (CanJump)
             {
