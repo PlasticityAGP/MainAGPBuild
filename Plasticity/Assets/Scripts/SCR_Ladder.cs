@@ -30,6 +30,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
     [Tooltip("The event ID we are going to fire")]
     [ShowIf("ReleaseLadderDoTrigger")]
     public string ReleaseTriggerName;
+    [SerializeField]
+    private GameObject LowerBarrier;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -141,6 +143,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
 
             else if (val == 1 && !climbing)
             {
+                LowerBarrier.SetActive(false); 
                 OnLadder();
             }
         }
@@ -172,6 +175,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
+        LowerBarrier.SetActive(true);
         ReleaseTrigger();
         climbing = false;
         reaching = false;

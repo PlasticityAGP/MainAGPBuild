@@ -332,6 +332,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void Climb()
     {
+        ChangePlayerState(CharacterStates.Idling);
         if (Up)
         {
             if (this.transform.position.y > HighClimb - 0.2f)

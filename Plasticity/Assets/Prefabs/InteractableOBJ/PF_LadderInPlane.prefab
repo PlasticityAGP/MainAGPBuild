@@ -169,6 +169,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1704069486527436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4906383374612958}
+  - component: {fileID: 65871902220798850}
+  m_Layer: 10
+  m_Name: LowerBarrier
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1712780347047002
 GameObject:
   m_ObjectHideFlags: 1
@@ -284,6 +300,7 @@ Transform:
   - {fileID: 4888908624926770}
   - {fileID: 4386962412343494}
   - {fileID: 4981457121537338}
+  - {fileID: 4906383374612958}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -29.207}
@@ -411,6 +428,19 @@ Transform:
   m_Father: {fileID: 4215426426832026}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4906383374612958
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1704069486527436}
+  m_LocalRotation: {x: -0, y: -0, z: 0.23684901, w: 0.97154653}
+  m_LocalPosition: {x: -0.28, y: -2.11, z: 0}
+  m_LocalScale: {x: 0.5957087, y: 1, z: 0.6694148}
+  m_Children: []
+  m_Father: {fileID: 4215426426832026}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 27.401001}
 --- !u!4 &4981457121537338
 Transform:
   m_ObjectHideFlags: 1
@@ -548,6 +578,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.4351246, y: 0.97276807, z: 1}
   m_Center: {x: 0.012321068, y: -0.013282105, z: 0}
+--- !u!65 &65871902220798850
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1704069486527436}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65937553688734816
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -736,4 +778,5 @@ MonoBehaviour:
   ClamberSpeed: 1.5
   ReleaseLadderDoTrigger: 1
   ReleaseTriggerName: ActivateLadderTrigger
+  LowerBarrier: {fileID: 1704069486527436}
   climbing: 0
