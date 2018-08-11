@@ -406,6 +406,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// </summary>
     public void JumpOff()
     {
+        if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
         if (Up)
         {
             MoveVec.y = JumpForce;
@@ -415,7 +416,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 //Debug.Log("Jumped off Leftwards");
             }
             else if (!Left && Right) MoveVec.x = JumpForce / 2;
-            //else Debug.Log("freaky stuff");
             JumpingOff = true;
             Jump(Time.deltaTime);
         }
@@ -431,6 +431,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         HighClimb = high;
         LowClimb = low;
         IsClimbing = true;
+        ChangePlayerState(CharacterStates.Idling);
         MoveVec.x = 0;
         // TODO: have to change the player's x velocity accordingly.
     }

@@ -26,7 +26,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private float ClamberSpeed;
     [SerializeField]
     [Tooltip("Determines if we will fire an event after letting go of the ladder")]
-    private bool ReleaseLadderDoTrigger;
+    public bool ReleaseLadderDoTrigger;
     [Tooltip("The event ID we are going to fire")]
     [ShowIf("ReleaseLadderDoTrigger")]
     public string ReleaseTriggerName;
@@ -42,6 +42,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool reaching;
     private bool ClamberDir;
     private bool AmLerpingCharacter;
+    private bool Inside;
 
 
 
@@ -50,6 +51,16 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         UpListener = new UnityAction<int>(Up);
         HorizontalListener = new UnityAction<int>(Side);
+    }
+
+    private void OnEnable()
+    {
+        SCR_EventManager.StartListening("UpKey", UpListener);
+    }
+
+    private void OnDisable()
+    {
+        SCR_EventManager.StopListening("UpKey", UpListener);
     }
 
     // Use this for initialization.
@@ -64,10 +75,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         if(other.tag == "Character")
         {
+            Inside = true;
             Character = other.gameObject;
             if (IkTools == null) IkTools = other.GetComponentInChildren<SCR_IKToolset>();
             if (CharacterManager == null) CharacterManager = other.GetComponent<SCR_CharacterManager>();
-            SCR_EventManager.StartListening("UpKey", UpListener);
         }
     }
 
@@ -111,7 +122,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         if (other.tag == "Character")
         {
-            SCR_EventManager.StopListening("UpKey", UpListener);
+            Inside = false;
             CharacterManager.AmClambering = false;
         }
             
@@ -120,12 +131,17 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The "up" key is pressed while the player is inside the ladder's trigger.
     private void Up(int val)
     {
-        
-        if (reaching)
-            OffLadder();
-        else if (val == 1 && !climbing)
+        if (Inside)
         {
-            OnLadder();
+            if (reaching)
+            {
+                OffLadder();
+            }
+
+            else if (val == 1 && !climbing)
+            {
+                OnLadder();
+            }
         }
     }
 
