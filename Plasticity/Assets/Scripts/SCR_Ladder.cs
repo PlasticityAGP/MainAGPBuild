@@ -122,6 +122,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         if (other.tag == "Character")
         {
+            ReleaseTrigger();
             Inside = false;
             CharacterManager.AmClambering = false;
         }
@@ -171,8 +172,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
-        climbing = false;
         ReleaseTrigger();
+        climbing = false;
         reaching = false;
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
