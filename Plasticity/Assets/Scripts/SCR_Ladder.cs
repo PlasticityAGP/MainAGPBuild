@@ -32,6 +32,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     public string ReleaseTriggerName;
     [SerializeField]
     private GameObject LowerBarrier;
+    [SerializeField]
+    private float OffTheTop;
+    [SerializeField]
+    private float OffTheBottom;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -167,8 +171,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
         //Debug.Log("started climbing");
-        float maxclimb = ((transform.position.y + transform.localScale.y) * transform.up.normalized).y;
-        float minclimb = ((transform.position.y - transform.localScale.y) * transform.up.normalized).y;
+        float maxclimb = ((transform.position.y + transform.localScale.y) * transform.up.normalized).y - OffTheTop;
+        float minclimb = ((transform.position.y - transform.localScale.y) * transform.up.normalized).y + OffTheBottom;
         CharacterManager.OnClimbable(maxclimb, minclimb);
     }
 

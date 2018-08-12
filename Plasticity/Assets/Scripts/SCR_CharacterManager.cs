@@ -335,7 +335,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         ChangePlayerState(CharacterStates.Idling);
         if (Up)
         {
-            if (this.transform.position.y > HighClimb - 0.2f)
+            if (this.transform.position.y > HighClimb)
             {
                 Ladder.GetComponent<SCR_Ladder>().climbing = false;
                 Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
@@ -351,7 +351,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         }
         else if (Down)
         {
-            if (this.transform.position.y < LowClimb + 0.5f)
+            if (this.transform.position.y < LowClimb)
             {
                 Ladder.GetComponent<SCR_Ladder>().climbing = false;
                 Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
