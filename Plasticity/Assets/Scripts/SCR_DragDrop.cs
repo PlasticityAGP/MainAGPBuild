@@ -272,13 +272,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     /// <param name="Other">Other should be whatever GameObject is overlapping the trigger</param>
     public void InTrigger(GameObject Other)
     {
-        if (CharacterManager.IsGrounded())
+        if (!CharacterManager.IsGrounded())
         {
-
-        }
-        else
-        {
-            //In all other cases we want the character to be still
             FreezeAll();
         }
     }
