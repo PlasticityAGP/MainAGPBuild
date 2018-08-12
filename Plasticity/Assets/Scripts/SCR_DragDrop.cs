@@ -50,10 +50,27 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [Tooltip("IK animation curves for right hand effector")]
     [ValidateInput("NotEmpty", "We need at least a couple of anim curves to define IK behavior")]
     private AnimationCurve[] RightHandCurves;
+    [SerializeField]
+    [Tooltip("Trace distance for determining if the player has landed.")]
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float GroundTraceDistance;
+    [SerializeField]
+    [Tooltip("How much higher above origin IsGrounded trace should occur")]
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float YTraceOffset;
+    [SerializeField]
+    [Tooltip("The maximum angle between player and ground that is walkable by player")]
+    private float MaxGroundAngle;
+    [SerializeField]
+    [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
+    private LayerMask GroundLayer;
+    [SerializeField]
 
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
+    private bool LockedOut;
+    private bool Moving;
 
     private void Awake()
     {
@@ -213,6 +230,42 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }
     }
 
+    private void CalculateDir()
+    {
+        if (CharacterManager.IsGrounded())
+        {
+            RaycastHit Output = FireTrace();
+            Vector3 VelocityDir;
+            float GroundAngle;
+            if (CharacterManager.MoveDir)
+            {
+                VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude;
+                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+            }
+            else
+            {
+                VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude * -1.0f;
+                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+            }
+            gameObject.transform.parent.localEulerAngles = new Vector3(0.0f, 0.0f, -(GroundAngle - 90.0f));
+            RBody.velocity = VelocityDir;
+        }
+    }
+
+    public RaycastHit FireTrace()
+    {
+        //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
+        //or not the character is on an object.
+        Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
+        Vector3 CenterPosition = transform.position + YOffset;
+        RaycastHit Result;
+        Vector3 End = CenterPosition;
+        End.y -= GroundTraceDistance;
+        Physics.Raycast(CenterPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer);
+        return Result;
+    }
+
     /// <summary>
     /// Should be called when the character is overlapping a trigger to pull a DragOBJ
     /// </summary>
@@ -221,16 +274,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (CharacterManager.IsGrounded())
         {
-            if (Interact)
-            {
-                //Debug.Log("Entered + interacted");
-                Vector3 Vel = new Vector3();
-                Vector3 OtherBody = Other.GetComponent<Rigidbody>().velocity;
-                Vel.x = OtherBody.x;
-                Vel.y = RBody.velocity.y;
-                Vel.z = RBody.velocity.z;
-                RBody.velocity = Vel;
-            }
+
         }
         else
         {
@@ -245,6 +289,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [HideInInspector]
     public void FreezeAll()
     {
+        Moving = false;
         if (!IsZ && Interact)
         {
             IkTools.ForceEffectorWeight("LeftHand", 0.0f);
@@ -268,14 +313,26 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
         //Freeze rigidbody via constraints, and return the player to their original speed
         CharacterManager.MoveSpeed = InitialSpeed;
-        RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ) | 
-            (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY);
+        RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) | 
+            (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
+    }
+
+    public void Lockout()
+    {
+        LockedOut = true;
+        RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+        FreezeAll();
     }
 
     private void UnfreezeXY()
     {
-        //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
-        RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationZ);
+        if (!LockedOut)
+        {
+            //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
+            RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY)
+                | (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ); ;
+            Moving = true;
+        }
     }
     
     //Calculate where effectors should be whenever the character is within the z trigger
@@ -324,5 +381,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private void FixedUpdate()
     {
         EffectorCalculations();
+        if(Moving && !LockedOut) CalculateDir();
     }
 }

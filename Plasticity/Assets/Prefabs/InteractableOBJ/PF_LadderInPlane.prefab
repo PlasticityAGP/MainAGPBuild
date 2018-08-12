@@ -280,7 +280,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1712780347047002}
   m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: -0.37, y: -1.903, z: -0.5}
+  m_LocalPosition: {x: -0.72, y: -1.499, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4981457121537338}
@@ -293,8 +293,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1807902792200920}
   m_LocalRotation: {x: -0, y: -0, z: -0.25212458, w: 0.9676948}
-  m_LocalPosition: {x: 3.7391, y: 1.97, z: 1.64}
-  m_LocalScale: {x: 1, y: 2.0428638, z: 1}
+  m_LocalPosition: {x: -0.01, y: 1, z: 1.27}
+  m_LocalScale: {x: 0.78999996, y: 1.6138624, z: 0.78999996}
   m_Children:
   - {fileID: 4055711914537010}
   - {fileID: 4888908624926770}
@@ -368,7 +368,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1909757384236316}
   m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 0.3790002, y: -1.9030001, z: -0.5}
+  m_LocalPosition: {x: 0.87, y: -1.499, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4981457121537338}
@@ -436,7 +436,7 @@ Transform:
   m_GameObject: {fileID: 1704069486527436}
   m_LocalRotation: {x: -0, y: -0, z: 0.23684901, w: 0.97154653}
   m_LocalPosition: {x: -0.28, y: -2.11, z: 0}
-  m_LocalScale: {x: 0.72053677, y: 1, z: 0.6694148}
+  m_LocalScale: {x: 0.94831896, y: 1, z: 0.6694148}
   m_Children: []
   m_Father: {fileID: 4215426426832026}
   m_RootOrder: 4
@@ -530,7 +530,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: -2.5, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 1.247014, y: -2.487868, z: 1.64}
+  m_ConnectedAnchor: {x: -1.978748, y: -2.5217156, z: 1.27}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -713,7 +713,7 @@ MonoBehaviour:
   SlowDownSpeed: 0.5
   Anchor: {fileID: 1439163604181086}
   LerpSpeed: 5
-  LeftRightOffset: 1
+  LeftRightOffset: 0.75
   TriggerOnLerping: 1
   LerpingTriggerName: DeactivateLadderTrigger
 --- !u!114 &114755656435931972
@@ -779,4 +779,6 @@ MonoBehaviour:
   ReleaseLadderDoTrigger: 1
   ReleaseTriggerName: ActivateLadderTrigger
   LowerBarrier: {fileID: 1704069486527436}
+  OffTheTop: 1
+  OffTheBottom: 2
   climbing: 0

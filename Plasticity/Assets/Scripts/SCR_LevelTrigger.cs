@@ -89,8 +89,9 @@ public class SCR_LevelTrigger : MonoBehaviour {
             {
                 SCR_EventManager.TriggerEvent("LevelTrigger", TriggerName);
                 if (ShouldFreezeBoxOnEnter && other.gameObject.GetComponent<SCR_DragDrop>())
-                    other.gameObject.GetComponentInChildren<SCR_DragDrop>().FreezeAll();
-
+                {
+                    other.gameObject.GetComponentInChildren<SCR_DragDrop>().Lockout();
+                }
             }
         }
         else if(ThisTrigger == TypeOfTrigger.StateChange)

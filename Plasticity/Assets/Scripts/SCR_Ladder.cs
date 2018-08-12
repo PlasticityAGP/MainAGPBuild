@@ -128,7 +128,6 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         if (other.tag == "Character")
         {
-            ReleaseTrigger();
             Inside = false;
             CharacterManager.AmClambering = false;
         }
