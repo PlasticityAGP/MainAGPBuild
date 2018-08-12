@@ -224,7 +224,12 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             if (Interact)
             {
                 //Debug.Log("Entered + interacted");
-                RBody.velocity = Other.GetComponent<Rigidbody>().velocity;
+                Vector3 Vel = new Vector3();
+                Vector3 OtherBody = Other.GetComponent<Rigidbody>().velocity;
+                Vel.x = OtherBody.x;
+                Vel.y = RBody.velocity.y;
+                Vel.z = RBody.velocity.z;
+                RBody.velocity = Vel;
             }
         }
         else
@@ -263,13 +268,14 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
         //Freeze rigidbody via constraints, and return the player to their original speed
         CharacterManager.MoveSpeed = InitialSpeed;
-        RBody.constraints = RigidbodyConstraints.FreezeAll;
+        RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ) | 
+            (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY);
     }
 
     private void UnfreezeXY()
     {
         //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
-        RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
+        RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationZ);
     }
     
     //Calculate where effectors should be whenever the character is within the z trigger

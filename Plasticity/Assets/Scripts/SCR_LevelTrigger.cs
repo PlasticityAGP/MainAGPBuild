@@ -21,6 +21,9 @@ public class SCR_LevelTrigger : MonoBehaviour {
     [ShowIf("ThisTrigger", TypeOfTrigger.Loader)]
     private string TriggerName;
     [SerializeField]
+    [ShowIf("ThisTrigger", TypeOfTrigger.Loader)]
+    private bool ShouldFreezeBoxOnEnter;
+    [SerializeField]
     [ShowIf("ThisTrigger", TypeOfTrigger.StateChange)]
     private int PuzzleNumber;
     [SerializeField]
@@ -85,6 +88,9 @@ public class SCR_LevelTrigger : MonoBehaviour {
             if (IsIn(other.tag, TagsOfTriggeringObject))
             {
                 SCR_EventManager.TriggerEvent("LevelTrigger", TriggerName);
+                if (ShouldFreezeBoxOnEnter && other.gameObject.GetComponent<SCR_DragDrop>())
+                    other.gameObject.GetComponentInChildren<SCR_DragDrop>().FreezeAll();
+
             }
         }
         else if(ThisTrigger == TypeOfTrigger.StateChange)
