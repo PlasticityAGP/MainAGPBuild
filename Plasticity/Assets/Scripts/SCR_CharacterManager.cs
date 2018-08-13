@@ -407,20 +407,16 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// </summary>
     public void JumpOff()
     {
-        Debug.Log("Called Jump Off Ladder");
         if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
-        if (Up)
+        MoveVec.y = JumpForce;
+        if (Left && !Right)
         {
-            MoveVec.y = JumpForce;
-            if (Left && !Right)
-            {
-                MoveVec.x = JumpForce / 2 * -1;
-                //Debug.Log("Jumped off Leftwards");
-            }
-            else if (!Left && Right) MoveVec.x = JumpForce / 2;
-            JumpingOff = true;
-            Jump(Time.deltaTime);
+            MoveVec.x = JumpForce / 2 * -1;
+            //Debug.Log("Jumped off Leftwards");
         }
+        else if (!Left && Right) MoveVec.x = JumpForce / 2;
+        JumpingOff = true;
+        Jump(Time.deltaTime);
     }
 
     /// <summary>
