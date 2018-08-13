@@ -146,10 +146,15 @@ public class SCR_Ladder : SCR_GameplayStatics {
 
             else if (val == 1 && !climbing)
             {
-                LowerBarrier.SetActive(false); 
-                OnLadder();
+                InitiateClimb();
             }
         }
+    }
+
+    public void InitiateClimb()
+    {
+        LowerBarrier.SetActive(false);
+        OnLadder();
     }
 
     // Either the "Left" or "Right" keys are pressed while the player is on the ladder.
@@ -169,7 +174,6 @@ public class SCR_Ladder : SCR_GameplayStatics {
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
-        //Debug.Log("started climbing");
         float maxclimb = ((transform.position.y + transform.localScale.y) * transform.up.normalized).y - OffTheTop;
         float minclimb = ((transform.position.y - transform.localScale.y) * transform.up.normalized).y + OffTheBottom;
         CharacterManager.OnClimbable(maxclimb, minclimb);

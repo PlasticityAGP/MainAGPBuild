@@ -37,6 +37,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     [Tooltip("How far the player will slide to the left and right before changing z plane")]
     private float LeftRightOffset;
     [SerializeField]
+    private float TimerLength;
+    [SerializeField]
     [Tooltip("Specifies whether or not we want to fire an event when the player begins changing plane")]
     private bool TriggerOnLerping;
     [SerializeField]
@@ -75,6 +77,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     private string LadderTriggerName;
     //Which direction are we currently lerping the player
     private int LerpDir = 0;
+    private float Timer = 0.0f;
+    private int Up;
 
     private void Awake()
     {
@@ -127,6 +131,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
 
     private void UpPressed(int value)
     {
+        Up = value;
         if (value == 1 && Inside)
         {
             //When we begin shifting the player, we need to check if we are supposed to fire an event, and then tell ladder to fire our event
@@ -134,7 +139,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
 
             //If the character is moving to the right or left , define where we need to lerp to relative to the anchor, and then define Lerp dir
             //to allow lerp to be called in update
-            if(transform.up.x > 0.0f && CharacterManager.MoveDir)
+            if (transform.up.x > 0.0f && CharacterManager.MoveDir)
             {
                 CharacterManager.FreezeVelocity();
                 LerpDir = 1;
@@ -144,7 +149,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 FirstTarget.z = CharacterManager.gameObject.transform.position.z;
                 LeftTarget = FirstTarget;
             }
-            if(transform.up.x < 0.0f && !CharacterManager.MoveDir)
+            if (transform.up.x < 0.0f && !CharacterManager.MoveDir)
             {
                 CharacterManager.FreezeVelocity();
                 LerpDir = 2;
@@ -153,17 +158,17 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 FirstTarget.y = CharacterManager.gameObject.transform.position.y;
                 FirstTarget.z = CharacterManager.gameObject.transform.position.z;
                 RightTarget = FirstTarget;
-            }    
-
+            }
         }
-
     }
 
     private void FixedUpdate()
     {
+        ManageTimer(Time.deltaTime);
         if (LerpDir != 0)
         {
             DoLerp(Time.deltaTime);
+            
         }
     }
 
@@ -255,6 +260,39 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         }
     }
 
+    private void EndLerp()
+    {
+        CharacterManager.UnfreezeVelocity();
+        LerpDir = 0;
+        Timer = TimerLength;
+        if(Up == 0)
+        {
+            SCR_EventManager.TriggerEvent("UpKey", 1);
+            Up = 0;
+        }
+        else SCR_EventManager.TriggerEvent("UpKey", 1);
+
+
+    }
+
+    private void ManageTimer(float DeltaTime)
+    {
+        if (Timer < 0.0f)
+        {
+            if(Up == 0) SCR_EventManager.TriggerEvent("UpKey", 0);
+            Timer = 0.0f;
+        }
+        else if (Timer > 0.0f)
+        {
+            Timer -= DeltaTime;
+            if (Timer == 0.0f) Timer -= 0.1f;
+        }
+        else
+        {
+            return;
+        }
+    }
+
     //Actually calculate every tick where the player's position should be as they slide across z planes.
     private void DoLerp(float DeltaTime)
     {
@@ -262,12 +300,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         {
             if (CharacterManager.gameObject.transform.position.x <= LeftTarget.x)
             {
-                if (CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
-                {
-                    CharacterManager.UnfreezeVelocity();
-                    
-                    LerpDir = 0;
-                }
+                if (CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z) EndLerp();
                 else
                 {
                     Vector3 NewPos = CharacterManager.gameObject.transform.position;
@@ -286,11 +319,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         {
             if (CharacterManager.gameObject.transform.position.x >= RightTarget.x)
             {
-                if(CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z)
-                {
-                    CharacterManager.UnfreezeVelocity();
-                    LerpDir = 0;
-                }
+                if (CharacterManager.gameObject.transform.position.z >= Anchor.transform.position.z) EndLerp();
                 else
                 {
                     Vector3 NewPos = CharacterManager.gameObject.transform.position;
