@@ -24,9 +24,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     [ValidateInput("GreaterThanZero", "Clamber Speed needs to be greater than zero")]
     [ShowIf("ClamberEnabled")]
     private float ClamberSpeed;
-    [SerializeField]
     [Tooltip("Determines if we will fire an event after letting go of the ladder")]
     public bool ReleaseLadderDoTrigger;
+    [SerializeField]
+    private bool UsingLowerBarrier;
     [Tooltip("The event ID we are going to fire")]
     [ShowIf("ReleaseLadderDoTrigger")]
     public string ReleaseTriggerName;
@@ -153,7 +154,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
 
     public void InitiateClimb()
     {
-        LowerBarrier.SetActive(false);
+        if (UsingLowerBarrier) LowerBarrier.SetActive(false);
         OnLadder();
     }
 
@@ -182,13 +183,12 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
-        LowerBarrier.SetActive(true);
+        if (UsingLowerBarrier) LowerBarrier.SetActive(true);
         ReleaseTrigger();
         climbing = false;
         reaching = false;
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
-        //Debug.Log("stopped climbing");
         CharacterManager.InteractingWith = null;
         CharacterManager.JumpOff();
     }
