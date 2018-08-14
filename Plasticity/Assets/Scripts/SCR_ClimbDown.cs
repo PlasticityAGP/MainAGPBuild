@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class SCR_ClimbDown : MonoBehaviour {
 
@@ -11,6 +12,11 @@ public class SCR_ClimbDown : MonoBehaviour {
     private float SpeedOfLerpHorizontal;
     [SerializeField]
     private float SpeedOfLerpVertical;
+    [SerializeField]
+    private bool FireEventOnPressDown;
+    [SerializeField]
+    [ShowIf("FireEventOnPressDown")]
+    private string EventName; 
     private SCR_CharacterManager CharManager;
     private GameObject Character;
     private UnityAction<int> DownListener;
@@ -69,6 +75,8 @@ public class SCR_ClimbDown : MonoBehaviour {
     {
         Lerping = true;
         CharManager.FreezeVelocity();
+        if (FireEventOnPressDown)
+            SCR_EventManager.TriggerEvent("LevelTrigger", EventName);
     }
 
     private void LerpPlayer(float DeltaTime)

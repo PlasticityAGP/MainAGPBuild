@@ -26,6 +26,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1124857434093502
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4156886911831200}
+  m_Layer: 2
+  m_Name: ReferencePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1186600307601632
 GameObject:
   m_ObjectHideFlags: 1
@@ -88,13 +103,14 @@ GameObject:
   m_Component:
   - component: {fileID: 4851234606919478}
   - component: {fileID: 65884592197289934}
-  m_Layer: 0
+  - component: {fileID: 114044270932424204}
+  m_Layer: 2
   m_Name: ClimbDownTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1430959921803220
 GameObject:
   m_ObjectHideFlags: 1
@@ -127,6 +143,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4156886911831200
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1124857434093502}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.156, y: -1.98, z: -0.004}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4851234606919478}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4414647094563700
 Transform:
   m_ObjectHideFlags: 1
@@ -175,9 +204,10 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1407729889350108}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.298, y: 0.57, z: 0.007}
-  m_LocalScale: {x: 0.5234188, y: 1, z: 1}
-  m_Children: []
+  m_LocalPosition: {x: 1.4, y: 0.57, z: 0.01}
+  m_LocalScale: {x: 0.6488483, y: 1, z: 1.9823664}
+  m_Children:
+  - {fileID: 4156886911831200}
   m_Father: {fileID: 4945883984273572}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -405,6 +435,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114044270932424204
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1407729889350108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec77a64844f08047b68383c23b55f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferencePoint: {fileID: 1124857434093502}
+  SpeedOfLerpHorizontal: 2
+  SpeedOfLerpVertical: 4
+  FireEventOnPressDown: 1
+  EventName: RemoveTrapdoorTrigger
 --- !u!114 &114838490068791770
 MonoBehaviour:
   m_ObjectHideFlags: 1

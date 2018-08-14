@@ -235,9 +235,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
     public void ReleaseTrigger()
     {
         if (ReleaseLadderDoTrigger)
-        {
             SCR_EventManager.TriggerEvent("LevelTrigger", ReleaseTriggerName);
-        }
+
     }
 
     void Update()
