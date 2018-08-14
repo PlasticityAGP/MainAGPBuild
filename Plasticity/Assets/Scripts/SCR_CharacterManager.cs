@@ -368,7 +368,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
             MoveVec = Vector3.zero;
 
-        if(MoveVec == Vector3.zero)
+        if(MoveVec == Vector3.zero && Ladder.GetComponent<SCR_Ladder>().ClamberEnabled)
         {
             if (Ladder.transform.position.x - gameObject.transform.position.x < 0.0f)
             {

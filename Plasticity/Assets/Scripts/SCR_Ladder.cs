@@ -6,9 +6,8 @@ using Sirenix.OdinInspector;
 
 public class SCR_Ladder : SCR_GameplayStatics {
 
-    [SerializeField]
     [Tooltip("Flags whether or not the player will clamber at the top of the ladder")]
-    private bool ClamberEnabled;
+    public bool ClamberEnabled;
     [SerializeField]
     [Tooltip("The effectors the players will reach towards as they clamber at the top of the ladder")]
     [ValidateInput("NotEmpty", "We need to have a nonzero number of effectors defined")]
@@ -161,7 +160,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // Either the "Left" or "Right" keys are pressed while the player is on the ladder.
     private void Side(int val)
     {
-        if (val == 1)
+        if (val == 1 && climbing)
             reaching = true;
         else
             reaching = false;
