@@ -8,6 +8,7 @@ TagManager:
   - ReferencePoint
   - PuzzleBox
   - PuzzleBox1
+  - AI
   layers:
   - Default
   - TransparentFX

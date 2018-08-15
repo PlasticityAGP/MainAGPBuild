@@ -421,8 +421,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.28308466, y: 1.2411671, z: 2.1537974}
-  m_Center: {x: 1.8673612, y: 0.5281606, z: 0.042932983}
+  m_Size: {x: 0.28308466, y: 1.2411671, z: 2.571873}
+  m_Center: {x: 1.8673637, y: 0.5281606, z: 0.25197026}
 --- !u!65 &65884592197289934
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -462,6 +462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6403a801a77c18646905d8bb6e26f121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TrapDoorLifter: 1
   TrapDoor: {fileID: 1700729504843994}
   TorqueOverTime:
     serializedVersion: 2

@@ -6,6 +6,11 @@ using Sirenix.OdinInspector;
 
 public class SCR_TrapDoor : SCR_GameplayStatics {
 
+    private enum ThingLiftingTrapDoor { Character, AI, Both };
+    [SerializeField]
+    private ThingLiftingTrapDoor TrapDoorLifter;
+    private ThingLiftingTrapDoor WhoLifted;
+
     [SerializeField]
     [Tooltip("Reference to the trapdoor object with the hinge component attached")]
     [ValidateInput("IsNull", "We must have a reference to the trapdoor child game object")]
@@ -55,6 +60,8 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
     private bool LiftDoor;
     private SCR_CharacterManager CharacterManager;
     private SCR_IKToolset IkTools;
+    private bool CharacterCanLift;
+    private bool AICanLift;
 
     private void Awake()
     {
@@ -79,19 +86,35 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         if(input == 1)
         {
             Interact = true;
-            if (Inside && CharacterManager.InteractingWith == null && !Done) BeginLift();
+            if (Inside && CharacterManager.InteractingWith == null && !Done && CharacterCanLift)
+            {
+                WhoLifted = ThingLiftingTrapDoor.Character;
+                BeginLift();
+            }
         }
         else Interact = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Character")
+        if (other.tag == "Character")
         {
             Inside = true;
             CharacterManager = other.gameObject.GetComponent<SCR_CharacterManager>();
             IkTools = other.gameObject.GetComponent<SCR_IKToolset>();
-            if (Interact && CharacterManager.InteractingWith == null && !Done) BeginLift();
+            if (Interact && CharacterManager.InteractingWith == null && !Done && CharacterCanLift)
+            {
+                WhoLifted = ThingLiftingTrapDoor.Character;
+                BeginLift();
+            }
+        }
+        else if (other.tag == "AI")
+        {
+            if (AICanLift)
+            {
+                WhoLifted = ThingLiftingTrapDoor.AI;
+                BeginLift();
+            }
         }
     }
 
@@ -107,12 +130,15 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
 
     private void BeginLift()
     {
-        CharacterManager.InteractingWith = gameObject;
-        CharacterManager.FreezeVelocity();
-        IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
-        IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
-        IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
+        if (WhoLifted == ThingLiftingTrapDoor.Character)
+        {
+            CharacterManager.InteractingWith = gameObject;
+            CharacterManager.FreezeVelocity();
+            IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
+            IkTools.SetEffectorTarget("RightHand", RightHandEffector);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
+        }
         LiftDoor = true;
 
         //Do effector calculations
@@ -120,10 +146,13 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
 
     private void EndLift()
     {
-        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
-        IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
-        CharacterManager.InteractingWith = null;
-        CharacterManager.UnfreezeVelocity();
+        if (WhoLifted == ThingLiftingTrapDoor.Character)
+        {
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
+            CharacterManager.InteractingWith = null;
+            CharacterManager.UnfreezeVelocity();
+        }
         LiftDoor = false;
         if (TriggerOnOpen) SCR_EventManager.TriggerEvent("LevelTrigger", OpenTriggerName);
         if (DoOnce) Done = true;
@@ -138,6 +167,8 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         TrapDoorHJ = TrapDoor.GetComponent<HingeJoint>();
         CalculationDuration = Duration;
         PreDuration = 0.5f;
+        if (TrapDoorLifter == ThingLiftingTrapDoor.Character || TrapDoorLifter == ThingLiftingTrapDoor.Both) CharacterCanLift = true;
+        if (TrapDoorLifter == ThingLiftingTrapDoor.AI || TrapDoorLifter == ThingLiftingTrapDoor.Both) AICanLift = true;
 	}
 
     private void FixedUpdate()

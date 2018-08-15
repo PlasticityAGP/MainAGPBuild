@@ -6,9 +6,12 @@ using UnityEngine.Playables;
 
 public class SCR_AIController : MonoBehaviour {
 
+    [SerializeField]
+    private bool OnlyTriggerOnce;
     private UnityAction<int> InteractListener;
     private bool Inside;
     private PlayableDirector AIDirector;
+    private bool CanIDo;
 
     private void Awake()
     {
@@ -17,7 +20,10 @@ public class SCR_AIController : MonoBehaviour {
 
     private void InteractPressed(int value)
     {
-        if (value == 1 && Inside) DoTimeline();
+        if (value == 1 && Inside && CanIDo)
+        {
+            DoTimeline();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -40,16 +46,23 @@ public class SCR_AIController : MonoBehaviour {
 
     private void DoTimeline()
     {
-        AIDirector.Play();
+        if (OnlyTriggerOnce)
+        {
+            Inside = false;
+            CanIDo = false;
+            gameObject.GetComponent<BoxCollider>().enabled = false;
+            AIDirector.Play();
+        }
+        else
+        {
+            AIDirector.Play();
+        }
+        
     }
 
     // Use this for initialization
     void Start () {
         AIDirector = gameObject.GetComponentInChildren<PlayableDirector>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+        CanIDo = true;
 	}
 }
