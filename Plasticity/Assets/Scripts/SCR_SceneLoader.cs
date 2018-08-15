@@ -72,6 +72,10 @@ public class SCR_SceneLoader : MonoBehaviour {
             {
                 Data.Settings[i].ObjToSet.SetActive(false);
             }
+            else if(Data.Settings[i].State == 2)
+            {
+                SCR_EventManager.TriggerEvent("Timeline", Data.Settings[i].ObjToSet.name);
+            }
         }
     }
 
