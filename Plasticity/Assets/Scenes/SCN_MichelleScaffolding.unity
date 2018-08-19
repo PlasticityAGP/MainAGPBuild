@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073993, b: 0.3587269, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2601,6 +2601,26 @@ Prefab:
     - {fileID: 54777209864763386, guid: 90cf45d819cbb5d42872352d4193de9d, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 90cf45d819cbb5d42872352d4193de9d, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &460022655 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1807902792200920, guid: 90cf45d819cbb5d42872352d4193de9d,
+    type: 2}
+  m_PrefabInternal: {fileID: 460022654}
+--- !u!54 &460022656
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 460022655}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &468151121
 GameObject:
   m_ObjectHideFlags: 0
@@ -4258,7 +4278,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: -0.005550422, y: -0.010427946, z: 0.0000008851695, w: 0.99993026}
+  m_LocalRotation: {x: -0.0057082544, y: -0.010497997, z: -0.0000023252032, w: 0.9999286}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5292,7 +5312,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: -0.010360944, y: -0.0055788346, z: 0.5448065, w: 0.8384793}
+  m_LocalRotation: {x: -0.010437001, y: -0.005684632, z: 0.5452921, w: 0.8381618}
   m_LocalPosition: {x: 36.54508, y: 5.0993357, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5363,7 +5383,7 @@ GameObject:
   - component: {fileID: 1033069012}
   - component: {fileID: 1033069011}
   - component: {fileID: 1033069010}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Raised Platform (should be able to climb onto)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6710,6 +6730,26 @@ Prefab:
     - {fileID: 54777209864763386, guid: 90cf45d819cbb5d42872352d4193de9d, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 90cf45d819cbb5d42872352d4193de9d, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1408599056 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1807902792200920, guid: 90cf45d819cbb5d42872352d4193de9d,
+    type: 2}
+  m_PrefabInternal: {fileID: 1408599055}
+--- !u!54 &1408599057
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1408599056}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1412108305
 Prefab:
   m_ObjectHideFlags: 0
@@ -8697,6 +8737,26 @@ Prefab:
     - {fileID: 54777209864763386, guid: 90cf45d819cbb5d42872352d4193de9d, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 90cf45d819cbb5d42872352d4193de9d, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1979635309 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1807902792200920, guid: 90cf45d819cbb5d42872352d4193de9d,
+    type: 2}
+  m_PrefabInternal: {fileID: 1979635308}
+--- !u!54 &1979635310
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1979635309}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2006090896
 GameObject:
   m_ObjectHideFlags: 0
