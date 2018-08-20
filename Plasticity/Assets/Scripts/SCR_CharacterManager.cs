@@ -41,7 +41,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
     [ValidateInput("LessThanZero", "We cannot have a max move speed <= 0.0")]
-    private float MoveSpeed;
+    private float MaxMoveSpeed;
     [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
     [ValidateInput("LessThanZero", "We cannot have an acceleration value <= 0.0")]
@@ -105,6 +105,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     [HideInInspector]
     public bool MoveDir = true;
+    private float MoveSpeedPercentage = 1.0f;
     private bool LastKeypress = true;
     [HideInInspector]
     public bool MovingInZ = false;
@@ -489,8 +490,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
         Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f) + YOffset;
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f) + YOffset;
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.2f) + YOffset;
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.2f) + YOffset;
         RaycastHit Result;
         float raycastExtension = 0.3f;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
@@ -596,14 +597,19 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         }
     }
 
+    public void SetSpeedPercentage(float modifier)
+    {
+        MoveSpeedPercentage = modifier;
+    }
+
     public void SetSpeed(float speed)
     {
-        MoveSpeed = speed;
+        MaxMoveSpeed = speed;
     }
 
     public float GetSpeed()
     {
-        return MoveSpeed;
+        return MaxMoveSpeed;
     }
 
     /// <summary>
@@ -671,8 +677,16 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!DidAJump) OnBeginJump();
 
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
-            if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
-            else MoveVec.y -= DownGravityOnPlayer * DeltaTime;
+            if (!IsGrounded())
+            {
+                if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
+                else if (MoveVec.y > -15.0f)
+                {
+                    MoveVec.y -= DownGravityOnPlayer * DeltaTime;
+                    ChangePlayerState(CharacterStates.Falling);
+                }
+                else ChangePlayerState(CharacterStates.Falling);
+            }
         }
     }
 
@@ -694,11 +708,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (FallStartHeight - gameObject.transform.position.y >= HardFallDistance)
         {
             FallStartHeight = 0.0f;
-            float InitSpeed = MoveSpeed;
             FreezeVelocity(CharacterStates.Lying);
             StartCoroutine(Timer(LengthOfHardFallAnim, UnfreezeVelocity));
-            MoveSpeed = PostHardFallSpeed;
-            StartCoroutine(Timer(LengthOfSlowdown, InitSpeed, SetSpeed));
+            MoveSpeedPercentage = PostHardFallSpeed;
+            StartCoroutine(Timer(LengthOfSlowdown, 1.0f, SetSpeedPercentage));
 
         }
         if (Left || Right) ChangePlayerState(CharacterStates.Running);
@@ -739,6 +752,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
         //Set velocity of player
         Vector3 FinalVel;
+        float MoveSpeed = MaxMoveSpeed * MoveSpeedPercentage;
 
         if (FallingOff)
         {
@@ -792,12 +806,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else if (IsGrounded() && (Left || Right) && !DidAJump)
         {
             ChangePlayerState(CharacterStates.Running);
-        }
-        //If the player is falling, play the falling animation
-        else if (!IsGrounded() && MoveVec.y < 0.0f)
-        {
-            ChangePlayerState(CharacterStates.Falling);
-
         }
     }
 
