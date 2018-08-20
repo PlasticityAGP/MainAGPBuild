@@ -133,7 +133,7 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         if (WhoLifted == ThingLiftingTrapDoor.Character)
         {
             CharacterManager.InteractingWith = gameObject;
-            CharacterManager.FreezeVelocity();
+            CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
             IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
             IkTools.SetEffectorTarget("RightHand", RightHandEffector);
             IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);

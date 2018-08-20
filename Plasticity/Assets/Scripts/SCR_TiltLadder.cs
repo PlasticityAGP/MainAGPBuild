@@ -141,7 +141,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             //to allow lerp to be called in update
             if (transform.up.x > 0.0f && CharacterManager.MoveDir)
             {
-                CharacterManager.FreezeVelocity();
+                CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
                 LerpDir = 1;
                 Vector3 FirstTarget = new Vector3();
                 FirstTarget.x = Anchor.transform.position.x - LeftRightOffset;
@@ -151,7 +151,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             }
             if (transform.up.x < 0.0f && !CharacterManager.MoveDir)
             {
-                CharacterManager.FreezeVelocity();
+                CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
                 LerpDir = 2;
                 Vector3 FirstTarget = new Vector3();
                 FirstTarget.x = Anchor.transform.position.x + LeftRightOffset;

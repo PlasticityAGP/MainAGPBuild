@@ -6,8 +6,15 @@ using Sirenix.OdinInspector;
 
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
-    private enum CharacterStates {Running, Falling, Jumping, Idling}
+    [HideInInspector]
+    public enum CharacterStates {Running, Falling, Jumping, Idling, Lying}
     private CharacterStates PlayerState;
+
+    private IEnumerator Timer(float time, System.Action callBack)
+    {
+        yield return new WaitForSeconds(time);
+        callBack();
+    }
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -53,6 +60,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     [Tooltip("How much force you want the player to jump with.")]
     [ValidateInput("LessThanZero", "We cannot have a jump force <= 0.0")]
     private float JumpForce;
+    [SerializeField]
+    private float HardFallDistance;
+    [SerializeField]
+    private float LengthOfHardFallAnim;
     [SerializeField]
     [Tooltip("Impact of gravity as the player rises to zenith of jump.")]
     [ValidateInput("LessThanZero", "We cannot have an up gravity component <= 0.0")]
@@ -146,6 +157,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     [HideInInspector]
     public bool StateChangeLocked = false;
     private string LastAnim;
+    private float FallStartHeight;
+    private bool IsLockedAnims;
 
     private void Awake()
     {
@@ -177,7 +190,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void ChangePlayerState(CharacterStates state)
     {
-        if (PlayerState != state)
+        if (PlayerState != state && !IsLockedAnims)
         {
             if (LastAnim != null) ResetAnim();
             if (PlayerState == CharacterStates.Running)
@@ -185,11 +198,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 if (state == CharacterStates.Idling) SetAnim("RunningToIdle");
                 else if (state == CharacterStates.Falling) SetAnim("RunningToFalling");
                 else if (state == CharacterStates.Jumping) SetAnim("RunningToJump");
+                else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
             }
             else if (PlayerState == CharacterStates.Falling)
             {
                 if (state == CharacterStates.Idling) SetAnim("FallingToIdle");
                 else if (state == CharacterStates.Running) SetAnim("FallingToRunning");
+                else if (state == CharacterStates.Lying) SetAnim("FallingToLying");
             }
             else if (PlayerState == CharacterStates.Jumping)
             {
@@ -202,9 +217,30 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 if (state == CharacterStates.Running) SetAnim("IdleToRunning");
                 else if (state == CharacterStates.Falling) SetAnim("IdleToFalling");
                 else if (state == CharacterStates.Jumping) SetAnim("IdleToJump");
+                else if (state == CharacterStates.Lying) SetAnim("IdleToLying");
+            }
+            else if (PlayerState == CharacterStates.Lying)
+            {
+                if (state == CharacterStates.Running) SetAnim("LyingToRunning");
+                else if (state == CharacterStates.Idling) SetAnim("LyingToIdle");
             }
             PlayerState = state;
+            if(state == CharacterStates.Falling)
+            {
+                FallStartHeight = gameObject.transform.position.y;                
+            }
         }
+    }
+
+    private void LockAnim(CharacterStates anim)
+    {
+        ChangePlayerState(anim);
+        IsLockedAnims = true;
+    }
+
+    private void UnlockAnim()
+    {
+        IsLockedAnims = false;
     }
 
     private void SetAnim(string input)
@@ -484,7 +520,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     
     private void TurnCharacter()
     {
-        if (!InAnimationOverride)
+        if (!InAnimationOverride && !IsLockedAnims)
         {
             //If we turn, we flip the boolean the signifies player direction
             MoveDir = !MoveDir;
@@ -560,9 +596,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// <summary>
     /// Sets the character's velocity to Vector3.Zero, and prevents the CharacterManager from updating velocity unitl UnfreezeVelocity() is called
     /// </summary>
-    public void FreezeVelocity()
+    public void FreezeVelocity(CharacterStates AnimState)
     {
         VelocityAllowed = false;
+        LockAnim(AnimState);
     }
 
     /// <summary>
@@ -571,6 +608,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public void UnfreezeVelocity()
     {
         VelocityAllowed = true;
+        UnlockAnim();
     }
 
     private void Jump(float DeltaTime)
@@ -639,7 +677,14 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
         if (!JumpWhileHeld) Up = false;
+        if (FallStartHeight - gameObject.transform.position.y >= HardFallDistance)
+        {
+            FallStartHeight = 0.0f;
+            FreezeVelocity(CharacterStates.Lying);
+            StartCoroutine(Timer(LengthOfHardFallAnim, UnfreezeVelocity));
+        }
         if (Left || Right) ChangePlayerState(CharacterStates.Running);
+        else ChangePlayerState(CharacterStates.Idling);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -792,7 +837,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
         IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.5f);
         IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.5f);
-        FreezeVelocity();
+        FreezeVelocity(CharacterStates.Idling);
     }
 
     //Called when we want to drop down from the ledge

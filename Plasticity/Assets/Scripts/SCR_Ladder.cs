@@ -97,7 +97,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
         if (ClamberEnabled)
         {
             CharacterManager.AmClambering = true;
-            CharacterManager.FreezeVelocity();
+            CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
             CharacterManager.IsClimbing = false;
             ReleaseTrigger();
             if (direction == 1)

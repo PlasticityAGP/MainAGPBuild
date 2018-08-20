@@ -163,7 +163,7 @@ public class SCR_ZJump : SCR_GameplayStatics {
         //If the player is clambering, we don't want the CharacterManager to update velocity
         if (ClamberLerpValue == 0.0f)
         {
-            CharacterManager.FreezeVelocity();
+            CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
             CharacterManager.MovingInZ = true;
         }
 

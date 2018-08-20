@@ -5,6 +5,7 @@ using UnityEngine;
 public class SCR_GameplayStatics : MonoBehaviour
 {
 
+
     public static bool NotEmpty (string[] array)
     {
         if (array.Length == 0) return false;

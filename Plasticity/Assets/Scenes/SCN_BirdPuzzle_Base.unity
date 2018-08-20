@@ -2217,7 +2217,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &385640964
 GameObject:
@@ -2247,7 +2247,7 @@ Transform:
   - {fileID: 696557362}
   - {fileID: 927090578}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &395133708
 Prefab:
@@ -3458,6 +3458,18 @@ Prefab:
       propertyPath: OffTheTop
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4980003499133030, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1.1305307
+      objectReference: {fileID: 0}
+    - target: {fileID: 4980003499133030, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4980003499133030, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -1.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
   m_IsPrefabParent: 0
@@ -3764,7 +3776,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: -0.00564146, y: -0.010410559, z: 0.000005720795, w: 0.99992996}
+  m_LocalRotation: {x: -0.0057040257, y: -0.010520658, z: 0.000013472111, w: 0.9999284}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4684,7 +4696,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: -0.006235452, y: -0.009966994, z: 0.05785541, w: 0.9982558}
+  m_LocalRotation: {x: -0.00948957, y: -0.0073276814, z: 0.41018927, w: 0.9119216}
   m_LocalPosition: {x: -19.614923, y: 1.1293356, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5889,7 +5901,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4945883984273572, guid: 20d8a47e57f88bc4bba631dcb79e8cf8, type: 2}
       propertyPath: m_RootOrder
-      value: 12
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 20d8a47e57f88bc4bba631dcb79e8cf8, type: 2}
@@ -6127,7 +6139,7 @@ Transform:
   - {fileID: 2030360207}
   - {fileID: 283035907}
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1512300485
 GameObject:
@@ -7472,6 +7484,41 @@ Prefab:
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_RootOrder
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: HardFallDistance
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MoveDir
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MovingInZ
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: RBody
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: Ladder
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: StateChangeLocked
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LengthOfHardFallAnim
+      value: 5.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}

@@ -74,7 +74,7 @@ public class SCR_ClimbDown : MonoBehaviour {
     private void BeginLerp()
     {
         Lerping = true;
-        CharManager.FreezeVelocity();
+        CharManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         if (FireEventOnPressDown)
             SCR_EventManager.TriggerEvent("LevelTrigger", EventName);
     }
