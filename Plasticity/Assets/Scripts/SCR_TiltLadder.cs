@@ -77,7 +77,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     private string LadderTriggerName;
     //Which direction are we currently lerping the player
     private int LerpDir = 0;
-    private float Timer = 0.0f;
+    private float TiltTimer = 0.0f;
     private int Up;
 
     private void Awake()
@@ -180,7 +180,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             Character = other.gameObject;
             IkTools = Character.GetComponent<SCR_IKToolset>();
             CharacterManager = Character.GetComponent<SCR_CharacterManager>();
-            InitialSpeed = CharacterManager.MoveSpeed;
+            InitialSpeed = CharacterManager.GetSpeed();
             CharacterManager.StateChangeLocked = true;
             //Need to structure it this way in case interact is held down by the player before entering trigger
             if (Interact)
@@ -231,7 +231,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             IkTools.SetEffectorTarget("RightHand", RightHandEffector);
             IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
             IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
-            CharacterManager.MoveSpeed = SlowDownSpeed;
+            CharacterManager.SetSpeed(SlowDownSpeed);
             CharacterManager.InteractingWith = gameObject;
             PushEnabled = true;
         }
@@ -246,7 +246,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             IkTools.SetEffectorTarget("RightHand", RightHandEffector);
             IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
             IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
-            CharacterManager.MoveSpeed = InitialSpeed;
+            CharacterManager.SetSpeed(InitialSpeed);
             CharacterManager.InteractingWith = null;
             PushEnabled = false;
         }
@@ -264,7 +264,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     {
         CharacterManager.UnfreezeVelocity();
         LerpDir = 0;
-        Timer = TimerLength;
+        TiltTimer = TimerLength;
         if(Up == 0)
         {
             SCR_EventManager.TriggerEvent("UpKey", 1);
@@ -277,15 +277,15 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
 
     private void ManageTimer(float DeltaTime)
     {
-        if (Timer < 0.0f)
+        if (TiltTimer < 0.0f)
         {
             if(Up == 0) SCR_EventManager.TriggerEvent("UpKey", 0);
-            Timer = 0.0f;
+            TiltTimer = 0.0f;
         }
-        else if (Timer > 0.0f)
+        else if (TiltTimer > 0.0f)
         {
-            Timer -= DeltaTime;
-            if (Timer == 0.0f) Timer -= 0.1f;
+            TiltTimer -= DeltaTime;
+            if (TiltTimer == 0.0f) TiltTimer -= 0.1f;
         }
         else
         {

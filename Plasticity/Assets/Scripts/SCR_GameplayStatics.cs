@@ -5,6 +5,17 @@ using UnityEngine;
 public class SCR_GameplayStatics : MonoBehaviour
 {
 
+    public IEnumerator Timer(float time, System.Action callBack)
+    {
+        yield return new WaitForSeconds(time);
+        callBack();
+    }
+
+    public IEnumerator Timer(float time, float value, System.Action<float> callBack)
+    {
+        yield return new WaitForSeconds(time);
+        callBack(value);
+    }
 
     public static bool NotEmpty (string[] array)
     {

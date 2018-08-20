@@ -7,14 +7,8 @@ using Sirenix.OdinInspector;
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
-    public enum CharacterStates {Running, Falling, Jumping, Idling, Lying}
+    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying }
     private CharacterStates PlayerState;
-
-    private IEnumerator Timer(float time, System.Action callBack)
-    {
-        yield return new WaitForSeconds(time);
-        callBack();
-    }
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -42,10 +36,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     [Tooltip("Pass in a reference to the Game Object representing the bottom bound of the ledging window")]
     [ValidateInput("IsNull", "There must be a reference to the Game Object representing the bottom bound of the ledging window")]
     private GameObject LedgeBottomBound;
+
     [Title("Movement")]
+    [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
     [ValidateInput("LessThanZero", "We cannot have a max move speed <= 0.0")]
-    public float MoveSpeed;
+    private float MoveSpeed;
     [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
     [ValidateInput("LessThanZero", "We cannot have an acceleration value <= 0.0")]
@@ -64,6 +60,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private float HardFallDistance;
     [SerializeField]
     private float LengthOfHardFallAnim;
+    [SerializeField]
+    private float LengthOfSlowdown;
+    [SerializeField]
+    private float PostHardFallSpeed;
     [SerializeField]
     [Tooltip("Impact of gravity as the player rises to zenith of jump.")]
     [ValidateInput("LessThanZero", "We cannot have an up gravity component <= 0.0")]
@@ -105,6 +105,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     [HideInInspector]
     public bool MoveDir = true;
+    private bool LastKeypress = true;
     [HideInInspector]
     public bool MovingInZ = false;
     [HideInInspector]
@@ -294,6 +295,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (value == 1)
         {
             Left = true;
+            LastKeypress = false;
             //If we are currently running right when we recieve this left keypress, turn the character.
             if (MoveDir && !CurrentlyLedging)
                 TurnCharacter();
@@ -312,6 +314,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (value == 1)
         {
             Right = true;
+            LastKeypress = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
             if (!MoveDir && !CurrentlyLedging)
                 TurnCharacter();
@@ -593,6 +596,16 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         }
     }
 
+    public void SetSpeed(float speed)
+    {
+        MoveSpeed = speed;
+    }
+
+    public float GetSpeed()
+    {
+        return MoveSpeed;
+    }
+
     /// <summary>
     /// Sets the character's velocity to Vector3.Zero, and prevents the CharacterManager from updating velocity unitl UnfreezeVelocity() is called
     /// </summary>
@@ -609,6 +622,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = true;
         UnlockAnim();
+        if (LastKeypress != MoveDir) TurnCharacter();
     }
 
     private void Jump(float DeltaTime)
@@ -680,8 +694,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (FallStartHeight - gameObject.transform.position.y >= HardFallDistance)
         {
             FallStartHeight = 0.0f;
+            float InitSpeed = MoveSpeed;
             FreezeVelocity(CharacterStates.Lying);
             StartCoroutine(Timer(LengthOfHardFallAnim, UnfreezeVelocity));
+            MoveSpeed = PostHardFallSpeed;
+            StartCoroutine(Timer(LengthOfSlowdown, InitSpeed, SetSpeed));
+
         }
         if (Left || Right) ChangePlayerState(CharacterStates.Running);
         else ChangePlayerState(CharacterStates.Idling);

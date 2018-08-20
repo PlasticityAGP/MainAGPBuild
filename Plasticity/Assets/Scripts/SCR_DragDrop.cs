@@ -139,7 +139,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         if (Character.GetComponent<SCR_IKToolset>()) IkTools = Character.GetComponent<SCR_IKToolset>();
         else Debug.LogError("We need a SCR_IKToolset script attached to one of the Character's child Game Objects");
         //Define an initial speed that we want to return the character to after they finish moving the object
-        InitialSpeed = CharacterManager.MoveSpeed;
+        InitialSpeed = CharacterManager.GetSpeed();
         IsZ = false;
         OverlapTrigger = false;
     }
@@ -207,7 +207,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
             //and set the velocity of the object to be moved
             UnfreezeXY();
-            CharacterManager.MoveSpeed = MaxDragSpeed;
+            CharacterManager.SetSpeed(MaxDragSpeed);
             CharacterManager.InteractingWith = gameObject;
             if (IsZ)
             {
@@ -307,7 +307,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }
 
         //Freeze rigidbody via constraints, and return the player to their original speed
-        CharacterManager.MoveSpeed = InitialSpeed;
+        CharacterManager.SetSpeed(InitialSpeed);
         RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) | 
             (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
     }
