@@ -9,6 +9,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     //Listener to tell when character wants to interact
     private UnityAction<int> InteractListener;
+    private UnityAction<int> UpListener;
     private UnityAction<int> TurnListener;
     private bool Interact = false;
     private SCR_IKToolset IkTools;
@@ -16,17 +17,26 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private Rigidbody RBody;
     [HideInInspector]
     public bool IsZ;
-    private bool OverlapTrigger;
+    private bool Inside;
     private float Weight;
     private float InitialSpeed;
+    private bool Lerping;
+    [SerializeField]
+    private bool LerpWhilePlayerClose;
+    [SerializeField]
+    [ShowIf("LerpWhilePlayerClose")]
+    private float LerpSpeed;
+    [SerializeField]
+    [ShowIf("LerpWhilePlayerClose")]
+    private GameObject ReferencePoint;
     [SerializeField]
     [Tooltip("The farthest left a left hand effector is allowed to go on this object")]
     [ValidateInput("IsNull", "There must be a reference to the Left Endpoint Game Object!")]
-    private GameObject LeftEndPoint;
+    private GameObject ZLeftEndPoint;
     [SerializeField]
     [Tooltip("The farthest right a left hand effector is allowed to go on this object")]
     [ValidateInput("IsNull", "There must be a reference to the Left Endpoint Game Object!")]
-    private GameObject RightEndPoint;
+    private GameObject ZRightEndPoint;
     [SerializeField]
     [Tooltip("Left hand IK effector on box when dragging from Z")]
     [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
@@ -77,6 +87,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
         InteractListener = new UnityAction<int>(InteractPressed);
+        UpListener = new UnityAction<int>(UpPressed);
         TurnListener = new UnityAction<int>(CharacterTurned);
     }
 
@@ -84,6 +95,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("InteractKey", InteractListener);
+        SCR_EventManager.StartListening("UpKey", UpListener);
         SCR_EventManager.StartListening("CharacterTurn", TurnListener);
     }
 
@@ -91,6 +103,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         //Tell the EventManager we are no longer listening as the CharacterManager gets disabled.
         SCR_EventManager.StopListening("InteractKey", InteractListener);
+        SCR_EventManager.StopListening("UpKey", UpListener);
         SCR_EventManager.StopListening("CharacterTurn", TurnListener);
     }
 
@@ -100,7 +113,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         if (value == 1)
         {
             Interact = true;
-            if (OverlapTrigger)
+            if (Inside)
             {
                 EnteredAndInteracted();
             }
@@ -118,9 +131,18 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }            
     }
 
+    private void UpPressed(int value)
+    {
+        if (value == 1 && Inside)
+        {
+            Lerping = true;
+            CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
+        }
+    }
+
     private void CharacterTurned(int value)
     {
-        if(IsZ && Interact)
+        if (IsZ && Interact)
         {
             //Lerp effectors when the character is in the propper trigger and has pressed the interact key down while turning
             IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.75f);
@@ -141,14 +163,14 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         //Define an initial speed that we want to return the character to after they finish moving the object
         InitialSpeed = CharacterManager.GetSpeed();
         IsZ = false;
-        OverlapTrigger = false;
+        Inside = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Character")
         {
-            OverlapTrigger = true;
+            Inside = true;
             if (Interact)
             {
                 EnteredAndInteracted();
@@ -193,7 +215,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         if (other.gameObject.tag == "Character")
         {
             CharacterManager.InteractingWith = null;
-            OverlapTrigger = false;
+            Inside = false;
             IkTools.SetEffectorTarget("LeftHand", null);
             IkTools.SetEffectorTarget("RightHand", null);
             FreezeAll();
@@ -354,17 +376,17 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             ZEffectorLeft.transform.position = Left;
             ZEffectorRight.transform.position = Right;
             //If our effector locations lie outside of our box, set them to the corner of the box so the player isn't grabbing empty air
-            if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(LeftEndPoint.transform.position - Right))
+            if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(ZLeftEndPoint.transform.position - Right))
             {
-                if(IsZ) IkTools.SetEffectorTarget("LeftHand", LeftEndPoint);
+                if(IsZ) IkTools.SetEffectorTarget("LeftHand", ZLeftEndPoint);
             }
             else
             {
                 if (IsZ) IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
             }
-            if (Vector3.Magnitude(Right - Left) > Vector3.Magnitude(RightEndPoint.transform.position - Left))
+            if (Vector3.Magnitude(Right - Left) > Vector3.Magnitude(ZRightEndPoint.transform.position - Left))
             {
-                if (IsZ) IkTools.SetEffectorTarget("RightHand", RightEndPoint);
+                if (IsZ) IkTools.SetEffectorTarget("RightHand", ZRightEndPoint);
             }
             else
             {
@@ -373,9 +395,39 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }
     }
 
+    private void ClamberLerp(float DeltaTime)
+    {
+        if(Mathf.Abs(ReferencePoint.transform.position.y - Character.transform.position.y) <= 0.01f)
+        {
+            if(Mathf.Abs(ReferencePoint.transform.position.x - Character.transform.position.x) <= 0.01f)
+            {
+                Lerping = false;
+                Debug.Log("Finished");
+                CharacterManager.UnfreezeVelocity();
+            }
+            else
+            {
+                Vector3 NewPos = Character.transform.position;
+                if (ReferencePoint.transform.position.x - Character.transform.position.x > 0.0f) NewPos.x += DeltaTime * LerpSpeed;
+                else NewPos.y -= DeltaTime * LerpSpeed;
+                Character.transform.position = NewPos;
+            }
+        }
+        else
+        {
+            if (ReferencePoint.transform.position.y - Character.transform.position.y > 0.0f)
+            {
+                Vector3 NewPos = Character.transform.position;
+                NewPos.y += DeltaTime * LerpSpeed;
+                Character.transform.position = NewPos;
+            }
+        }
+    }
+
     private void FixedUpdate()
     {
         EffectorCalculations();
+        if (Lerping) ClamberLerp(Time.deltaTime);
         if(Moving && !LockedOut) CalculateDir();
     }
 }
