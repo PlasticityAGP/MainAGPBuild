@@ -25,9 +25,11 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private bool LerpWhilePlayerClose;
     [SerializeField]
     [ShowIf("LerpWhilePlayerClose")]
+    [ValidateInput("GreaterThanZero", "Our lerp speed must be greater than zero")]
     private float LerpSpeed;
     [SerializeField]
     [ShowIf("LerpWhilePlayerClose")]
+    [ValidateInput("IsNull", "We must have a reference to the point on the box we would like to lerp towards")]
     private GameObject ReferencePoint;
     [SerializeField]
     [Tooltip("The farthest left a left hand effector is allowed to go on this object")]
@@ -133,8 +135,9 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void UpPressed(int value)
     {
-        if (value == 1 && Inside)
+        if (value == 1 && Inside && LerpWhilePlayerClose && CharacterManager.InteractingWith == null)
         {
+            CharacterManager.InteractingWith = gameObject;
             Lerping = true;
             CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         }
@@ -397,19 +400,19 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void ClamberLerp(float DeltaTime)
     {
-        if(Mathf.Abs(ReferencePoint.transform.position.y - Character.transform.position.y) <= 0.01f)
+        if(Mathf.Abs(ReferencePoint.transform.position.y - Character.transform.position.y) <= 0.05f)
         {
-            if(Mathf.Abs(ReferencePoint.transform.position.x - Character.transform.position.x) <= 0.01f)
+            if(Mathf.Abs(ReferencePoint.transform.position.x - Character.transform.position.x) <= 0.05f)
             {
                 Lerping = false;
-                Debug.Log("Finished");
+                CharacterManager.InteractingWith = null;
                 CharacterManager.UnfreezeVelocity();
             }
             else
             {
                 Vector3 NewPos = Character.transform.position;
                 if (ReferencePoint.transform.position.x - Character.transform.position.x > 0.0f) NewPos.x += DeltaTime * LerpSpeed;
-                else NewPos.y -= DeltaTime * LerpSpeed;
+                else NewPos.x -= DeltaTime * LerpSpeed;
                 Character.transform.position = NewPos;
             }
         }

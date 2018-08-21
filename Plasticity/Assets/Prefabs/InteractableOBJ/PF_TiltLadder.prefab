@@ -493,7 +493,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1216481222108906}
   m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: -0.47, y: -1.499, z: -0.5}
+  m_LocalPosition: {x: -0.47, y: -1.025, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4980003499133030}
@@ -545,7 +545,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1550113397297676}
   m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 0.37, y: -1.499, z: -0.5}
+  m_LocalPosition: {x: 0.37000003, y: -1.0250001, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4980003499133030}
@@ -597,8 +597,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1989673841742206}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.53236574, y: 1.6757417, z: 1.073597}
+  m_LocalPosition: {x: 0, y: -1.2, z: 0}
+  m_LocalScale: {x: 0.53236574, y: 1.1305307, z: 1.073597}
   m_Children:
   - {fileID: 4653559962388822}
   - {fileID: 4872772937917118}
@@ -1015,8 +1015,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   ClamberSpeed: 1.5
   ReleaseLadderDoTrigger: 1
+  UsingLowerBarrier: 1
   ReleaseTriggerName: ActivateLadderTrigger
   LowerBarrier: {fileID: 1222162076832954}
-  OffTheTop: 4
+  OffTheTop: 3.5
   OffTheBottom: 5
   climbing: 0

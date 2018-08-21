@@ -132,8 +132,9 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     private void UpPressed(int value)
     {
         Up = value;
-        if (value == 1 && Inside)
+        if (value == 1 && Inside && CharacterManager.InteractingWith == null)
         {
+            CharacterManager.InteractingWith = gameObject;
             //When we begin shifting the player, we need to check if we are supposed to fire an event, and then tell ladder to fire our event
             DeactivateLadderZone();
 

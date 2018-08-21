@@ -642,8 +642,9 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = true;
         UnlockAnim();
-        if ((Left || Right)) ChangePlayerState(CharacterStates.Running);
-        else ChangePlayerState(CharacterStates.Idling);
+        if ((Left || Right) && PlayerGrounded) ChangePlayerState(CharacterStates.Running);
+        else if (PlayerGrounded) ChangePlayerState(CharacterStates.Idling);
+        else ChangePlayerState(CharacterStates.Falling);
         
         if (LastKeypress != MoveDir) TurnCharacter();
     }
