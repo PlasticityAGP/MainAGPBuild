@@ -22,6 +22,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool Down = false; // Uncommented by Matt for testing
     private bool Left = false;
     private bool Right = false;
+    [HideInInspector]
+    public bool PlayerGrounded;
 
     [Title("Character Model")]
     [SerializeField]
@@ -225,6 +227,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 if (state == CharacterStates.Running) SetAnim("LyingToRunning");
                 else if (state == CharacterStates.Idling) SetAnim("LyingToIdle");
+                else if (state == CharacterStates.Jumping)
+                {
+                    SetAnim("LyingToJumping");
+                }
+                
             }
             PlayerState = state;
             if(state == CharacterStates.Falling)
@@ -287,7 +294,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private bool CanSendRunAnimations()
     {
-        return IsGrounded() && !IsClimbing && !InAnimationOverride;
+        return PlayerGrounded && !IsClimbing && !InAnimationOverride;
     }
 
     private void LeftPressed(int value)
@@ -360,6 +367,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (!InAnimationOverride)
         {
             //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
+            Grounded();
             CalculateGroundAngle();
             CalculateMoveVec();
             if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
@@ -484,7 +492,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// in the air
     /// </summary>
     /// <returns>Whether the player is on the ground or not</returns>
-    public bool IsGrounded()
+    public void Grounded()
     {
         bool isGroundedResult = false;
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
@@ -519,7 +527,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 HitInfo = Result;
             }
         }
-        return isGroundedResult;
+        PlayerGrounded = isGroundedResult;
     }
     
     private void TurnCharacter()
@@ -532,7 +540,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             else SCR_EventManager.TriggerEvent("CharacterTurn", 0);
             Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
             RefToModel.transform.Rotate(TurnAround);
-            if (IsGrounded())
+            if (PlayerGrounded)
             {
                 SpeedModifier = 0.0f;
             }
@@ -543,7 +551,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         //If we are on a slope, we need our velocity to be parallel to the slope. We find this through 
         //a cross product of the normal of that slope, and our right and left vectors.
-        if (IsGrounded())
+        if (PlayerGrounded)
         {
             if (MoveDir)
             {
@@ -577,7 +585,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void CalculateGroundAngle()
     {
-        if (!IsGrounded())
+        if (!PlayerGrounded)
         {
             //If we are in the air, act like the ground is flat
             GroundAngle = 90.0f;
@@ -649,7 +657,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
 
         //If the player has pressed an UP key and the player is currently standing on the ground
-        if (Up && IsGrounded() && !StateChangeLocked)
+        if (Up && PlayerGrounded && !StateChangeLocked)
         {
             if (CanJump)
             {
@@ -665,7 +673,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
         }
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
-        else if (!Up && IsGrounded())
+        else if (!Up && PlayerGrounded)
         {
             FallingOff = false;
             if (DidAJump) OnEndJump();
@@ -677,7 +685,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!DidAJump) OnBeginJump();
 
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
-            if (!IsGrounded())
+            if (!PlayerGrounded)
             {
                 if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
                 else if (MoveVec.y > -15.0f)
@@ -722,13 +730,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
 
         //If our LEFT button is held, and we are supposed to be moving left, and if move while jumping is on or we are grounded, Accelerate
-        if ((Left && !MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
+        if ((Left && !MoveDir) && !(!MoveWhileJumping && !PlayerGrounded))
         {
             SpeedModifier += Acceleration * DeltaTime;
             if (SpeedModifier >= 1.0f) SpeedModifier = 1.0f;
         }
         //If our Right button is held, and we are supposed to be moving Right, and if move while jumping is on or we are grounded, Accelerate
-        else if ((Right && MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
+        else if ((Right && MoveDir) && !(!MoveWhileJumping && !PlayerGrounded))
         {
             SpeedModifier += Acceleration * DeltaTime;
             if (SpeedModifier >= 1.0f) SpeedModifier = 1.0f;
@@ -737,7 +745,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
         {
             //If we are grounded, decelerate quickly
-            if (IsGrounded())
+            if (PlayerGrounded)
             {
                 SpeedModifier -= Acceleration * DeltaTime;
                 if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
@@ -773,7 +781,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             FallingOff = true;
         }
         //If we are grounded and we didn't just jump move along slope of surface we are on.
-        else if (IsGrounded() && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
+        else if (PlayerGrounded && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
             //If the slope is too high, don't move
@@ -799,11 +807,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
         }
         //If the player is on the ground but not moving, play the idle animation.
-        else if (IsGrounded() && !(Left || Right) && !DidAJump)
+        else if (PlayerGrounded && !(Left || Right) && !DidAJump)
         {
             ChangePlayerState(CharacterStates.Idling);
         }
-        else if (IsGrounded() && (Left || Right) && !DidAJump)
+        else if (PlayerGrounded && (Left || Right) && !DidAJump)
         {
             ChangePlayerState(CharacterStates.Running);
         }

@@ -232,7 +232,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void CalculateDir()
     {
-        if (CharacterManager.IsGrounded())
+        if (CharacterManager.PlayerGrounded)
         {
             RaycastHit Output = FireTrace();
             Vector3 VelocityDir;
@@ -272,7 +272,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     /// <param name="Other">Other should be whatever GameObject is overlapping the trigger</param>
     public void InTrigger(GameObject Other)
     {
-        if (!CharacterManager.IsGrounded())
+        if (!CharacterManager.PlayerGrounded)
         {
             FreezeAll();
         }
