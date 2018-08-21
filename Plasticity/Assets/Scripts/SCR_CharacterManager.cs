@@ -391,10 +391,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         {
             if (this.transform.position.y > HighClimb)
             {
-                Ladder.GetComponent<SCR_Ladder>().climbing = false;
-                Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
-                IsClimbing = false;
-                InteractingWith = null;
+                //Ladder.GetComponent<SCR_Ladder>().climbing = false;
+                //Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+                //IsClimbing = false;
+                //InteractingWith = null;
+                MoveVec = Vector3.zero;
             }
             else
             {

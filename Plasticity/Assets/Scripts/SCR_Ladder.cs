@@ -174,8 +174,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
-        float maxclimb = ((transform.position.y + transform.localScale.y) * transform.up.normalized).y - OffTheTop;
-        float minclimb = ((transform.position.y - transform.localScale.y) * transform.up.normalized).y + OffTheBottom;
+        float maxclimb = ((gameObject.transform.position.y + gameObject.transform.lossyScale.y) * gameObject.transform.up.normalized).y - (OffTheTop * gameObject.transform.up.normalized).y;
+        float minclimb = ((gameObject.transform.position.y - gameObject.transform.lossyScale.y) * gameObject.transform.up.normalized).y + (OffTheBottom * gameObject.transform.up.normalized).y;
         CharacterManager.OnClimbable(maxclimb, minclimb);
     }
 

@@ -506,8 +506,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1434305540352802}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.02, y: 0.562, z: 0}
-  m_LocalScale: {x: 1.5, y: 9.55173, z: 1}
+  m_LocalPosition: {x: -0.02, y: 0.33, z: 0}
+  m_LocalScale: {x: 1.5, y: 8.594316, z: 1}
   m_Children: []
   m_Father: {fileID: 4514206504860890}
   m_RootOrder: 1
@@ -801,8 +801,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.9703885, z: 0.9999997}
+  m_Center: {x: 0.000000008259804, y: -0.0148058515, z: 0.0000000031261083}
 --- !u!65 &65787771787511852
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -1018,6 +1018,6 @@ MonoBehaviour:
   UsingLowerBarrier: 1
   ReleaseTriggerName: ActivateLadderTrigger
   LowerBarrier: {fileID: 1222162076832954}
-  OffTheTop: 3.5
+  OffTheTop: 4.4
   OffTheBottom: 5
   climbing: 0
