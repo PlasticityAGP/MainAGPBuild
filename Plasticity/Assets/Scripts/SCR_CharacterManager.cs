@@ -227,11 +227,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 if (state == CharacterStates.Running) SetAnim("LyingToRunning");
                 else if (state == CharacterStates.Idling) SetAnim("LyingToIdle");
-                else if (state == CharacterStates.Jumping)
-                {
-                    SetAnim("LyingToJumping");
-                }
-                
+                else if (state == CharacterStates.Jumping) SetAnim("LyingToJumping");                
             }
             PlayerState = state;
             if(state == CharacterStates.Falling)
@@ -314,7 +310,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             }
 
         }
-        else Left = false;
+        else
+        {
+            Left = false;
+            if (PlayerGrounded && !Right) ChangePlayerState(CharacterStates.Idling);
+        }
+
+        
     }
     private void RightPressed(int value)
     {
@@ -332,7 +334,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 ChangePlayerState(CharacterStates.Running);
             }
         }
-        else Right = false;
+        else
+        {
+            Right = false;
+            if (PlayerGrounded && !Left) ChangePlayerState(CharacterStates.Idling);
+        }
+        
     }
 
 
@@ -374,7 +381,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
             if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
             MoveCharacter(Time.deltaTime);
-            PerTickAnimations();
         }
     }
 
@@ -636,6 +642,9 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = true;
         UnlockAnim();
+        if ((Left || Right)) ChangePlayerState(CharacterStates.Running);
+        else ChangePlayerState(CharacterStates.Idling);
+        
         if (LastKeypress != MoveDir) TurnCharacter();
     }
 
@@ -797,25 +806,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else RBody.velocity = Vector3.zero;
     }
 
-    //This function makes calls to the AnimManager for animations that need to be updated or calculated per update cycle
-    private void PerTickAnimations()
-    {
-        //This lock allows crossfadeing of animations to only be called once per transition
-        if (IsClimbing)
-        {
-            ChangePlayerState(CharacterStates.Idling);
-
-        }
-        //If the player is on the ground but not moving, play the idle animation.
-        else if (PlayerGrounded && !(Left || Right) && !DidAJump)
-        {
-            ChangePlayerState(CharacterStates.Idling);
-        }
-        else if (PlayerGrounded && (Left || Right) && !DidAJump)
-        {
-            ChangePlayerState(CharacterStates.Running);
-        }
-    }
+    //All of the following is trash and I feel bad :(
 
     //This function fires two raycasts out from the character to try and hit a wall. If the bottom hits and the top misses, it starts
     //ledging

@@ -2573,14 +2573,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f65d64a06b4aba4394482d8a251cd1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerGrounded: 0
   RefToModel: {fileID: 1793328245700466}
   LedgeTopBound: {fileID: 1537326733513572}
   LedgeBottomBound: {fileID: 1399188006228340}
-  MoveSpeed: 3.8
+  MaxMoveSpeed: 4
   Acceleration: 4
   MoveWhileJumping: 0
   JumpWhileHeld: 0
-  JumpForce: 5
+  JumpForce: 6
+  HardFallDistance: 5.5
+  LengthOfHardFallAnim: 5.3
+  LengthOfSlowdown: 13.2
+  PostHardFallSpeed: 0.5
   UpGravityOnPlayer: 10
   DownGravityOnPlayer: 16
   LedgingAllowedDistance: 0.6
@@ -2760,8 +2765,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  GroundTraceDistance: 0.5
-  YTraceOffset: 0.3
+  GroundTraceDistance: 1
+  YTraceOffset: 0.9
   MaxGroundAngle: 120
   GroundLayer:
     serializedVersion: 2
@@ -2788,10 +2793,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.16807836
-  m_Height: 2.0648394
+  m_Radius: 0.13718694
+  m_Height: 1.9229766
   m_Direction: 1
-  m_Center: {x: -1.02798565e-17, y: 0.9827297, z: -0.016348377}
+  m_Center: {x: 2.932084e-17, y: 0.95943433, z: -0.013561726}
 --- !u!137 &137612821066628662
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

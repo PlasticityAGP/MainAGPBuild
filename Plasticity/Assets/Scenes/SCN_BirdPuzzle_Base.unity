@@ -3788,7 +3788,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: -0.0056627886, y: -0.010480171, z: 0.000014006237, w: 0.9999291}
+  m_LocalRotation: {x: -0.0056499606, y: -0.01046787, z: 0.00012744994, w: 0.9999293}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4708,7 +4708,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: -0.010045793, y: -0.006412162, z: 0.48719728, w: 0.87321067}
+  m_LocalRotation: {x: -0.005770814, y: -0.010212281, z: 0.011954838, w: 0.9998598}
   m_LocalPosition: {x: -19.614923, y: 1.1293356, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -7496,101 +7496,6 @@ Prefab:
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_RootOrder
       value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: HardFallDistance
-      value: 5.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: MoveDir
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: MovingInZ
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: RBody
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: Ladder
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: StateChangeLocked
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: LengthOfHardFallAnim
-      value: 5.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: GroundTraceDistance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: m_Height
-      value: 1.9229766
-      objectReference: {fileID: 0}
-    - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: m_Center.y
-      value: 0.95943433
-      objectReference: {fileID: 0}
-    - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: m_Radius
-      value: 0.13718694
-      objectReference: {fileID: 0}
-    - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: m_Center.x
-      value: 2.932084e-17
-      objectReference: {fileID: 0}
-    - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: m_Center.z
-      value: -0.013561726
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: LengthOfSlowdown
-      value: 13.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: MoveSpeed
-      value: 3.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: PostHardFallSpeed
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: MaxMoveSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: JumpForce
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
-        type: 2}
-      propertyPath: YTraceOffset
-      value: 0.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
