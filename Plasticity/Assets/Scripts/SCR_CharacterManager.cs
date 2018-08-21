@@ -376,7 +376,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
             Grounded();
             CalculateGroundAngle();
-            CalculateMoveVec();
+            if (!JumpingOff) CalculateMoveVec();
             if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
             if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
             if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
