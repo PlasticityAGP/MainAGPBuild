@@ -216,10 +216,10 @@ public class LandingSpot : MonoBehaviour
             }
         }
 
-        LandBird(fChild);
+        LandBird(fChild, false);
     }
 
-    public bool LandBird(FlockChild fChild)
+    public bool LandBird(FlockChild fChild, bool instant)
     {
         bool landBeginSuccess = false;
 
@@ -231,9 +231,12 @@ public class LandingSpot : MonoBehaviour
                 landing = true;
                 _controller._activeLandingSpots++;
                 landingChild._landing = true;
-                landingChild._thisT.position = _thisT.position + landingChild._landingPosOffset;
-                landingChild._model.GetComponent<Animation>().Play(landingChild._spawner._idleAnimation);
-                landingChild._thisT.Rotate(Vector3.up, Random.Range(0f, 360f));
+                if(instant)
+                {
+                    landingChild._thisT.position = _thisT.position + landingChild._landingPosOffset;
+                    landingChild._model.GetComponent<Animation>().Play(landingChild._spawner._idleAnimation);
+                    landingChild._thisT.Rotate(Vector3.up, Random.Range(0f, 360f));
+                }
                 if (_controller._autoDismountDelay.x > 0) Invoke("ReleaseFlockChild", Random.Range(_controller._autoDismountDelay.x, _controller._autoDismountDelay.y));
                 landBeginSuccess = true;
             }

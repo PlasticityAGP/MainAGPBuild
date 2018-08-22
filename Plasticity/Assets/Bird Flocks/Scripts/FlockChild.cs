@@ -265,7 +265,7 @@ public class FlockChild : MonoBehaviour
 
     public void Wander(float delay)
     {
-        if (!_landing)
+        if (!_landing && !ControlledByBolt)
         {
             _damping = Random.Range(_spawner._minDamping, _spawner._maxDamping);
             _targetSpeed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed);
@@ -363,7 +363,7 @@ public class FlockChild : MonoBehaviour
 
     public void LandAtSpot(LandingSpot spot)
     {
-        if (spot.LandBird(this))
+        if (spot.LandBird(this, false))
             _landedSpot = spot;
     }
 
@@ -379,7 +379,7 @@ public class FlockChild : MonoBehaviour
 
     public void SetWaypoint(Vector3 newWaypoint)
     {
-        if (_landedSpot) _landedSpot.ReleaseFlockChild();
+        //if (_landedSpot) _landedSpot.ReleaseFlockChild();
         _wayPoint = newWaypoint;
     }
 
