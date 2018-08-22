@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -422,6 +422,61 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: 9819881cd70f5b34f8602d4b0360fc97, type: 3}
   m_PrefabInternal: {fileID: 1711587442}
+--- !u!1 &1300310397
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1300310399}
+  - component: {fileID: 1300310398}
+  - component: {fileID: 1300310400}
+  m_Layer: 0
+  m_Name: BuildingTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1300310398
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1300310397}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1300310399
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1300310397}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.94, y: 0.46, z: 1.37}
+  m_LocalScale: {x: 12.37758, y: 5.1867313, z: 7.2476664}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1300310400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1300310397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1aa1f9756009414b872273abc007c26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 1711587443}
+  LengthOfFade: 0.4
 --- !u!1 &1597980966
 GameObject:
   m_ObjectHideFlags: 0
@@ -652,7 +707,7 @@ Prefab:
       objectReference: {fileID: 2100000, guid: 4c70cc5fd2e74744fb484c6c11886800, type: 2}
     - target: {fileID: 100000, guid: 9819881cd70f5b34f8602d4b0360fc97, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 9819881cd70f5b34f8602d4b0360fc97, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -661,6 +716,10 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9819881cd70f5b34f8602d4b0360fc97, type: 3}
   m_IsPrefabParent: 0
+--- !u!1 &1711587443 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100000, guid: 9819881cd70f5b34f8602d4b0360fc97, type: 3}
+  m_PrefabInternal: {fileID: 1711587442}
 --- !u!1 &1742484978
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,7 +801,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1742484978}
   m_LocalRotation: {x: 0.3842274, y: 0.59360707, z: -0.3842274, w: 0.59360707}
-  m_LocalPosition: {x: -18.352, y: -2.319, z: 0.11}
+  m_LocalPosition: {x: -18.84, y: -2.37, z: 0.11}
   m_LocalScale: {x: 2.1118248, y: 1.0463377, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -765,7 +824,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: bce78e599e5fd0d42b624ab05523a80a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.2
+      value: -4.418
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: bce78e599e5fd0d42b624ab05523a80a, type: 3}
       propertyPath: m_LocalRotation.x
@@ -818,6 +877,10 @@ Prefab:
     - target: {fileID: 100000, guid: bce78e599e5fd0d42b624ab05523a80a, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: bce78e599e5fd0d42b624ab05523a80a, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bce78e599e5fd0d42b624ab05523a80a, type: 3}
@@ -902,8 +965,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 8.829009, y: 0.2940502, z: 6.0167212}
-  m_Center: {x: 0.33390495, y: 0.14720367, z: 0.026823994}
+  m_Size: {x: 10.712703, y: 0.29405022, z: 6.0167212}
+  m_Center: {x: -0.60793936, y: 0.14720368, z: 0.026824076}
 --- !u!1001 &1897557543
 Prefab:
   m_ObjectHideFlags: 0
