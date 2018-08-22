@@ -963,7 +963,7 @@ GameObject:
   - component: {fileID: 1300310399}
   - component: {fileID: 1300310398}
   - component: {fileID: 1300310400}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BuildingTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
