@@ -281,6 +281,20 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 6.1269646
       objectReference: {fileID: 0}
+    - target: {fileID: 1660724548036910, guid: 5b5e243ebb276c8499886eaec937c8c4, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114574151472779580, guid: 5b5e243ebb276c8499886eaec937c8c4,
+        type: 2}
+      propertyPath: EnterTagToPlay
+      value: PanIn
+      objectReference: {fileID: 0}
+    - target: {fileID: 114574151472779580, guid: 5b5e243ebb276c8499886eaec937c8c4,
+        type: 2}
+      propertyPath: UsingOnExit
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5b5e243ebb276c8499886eaec937c8c4, type: 2}
   m_IsPrefabParent: 0
@@ -3791,7 +3805,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: -0.0056476253, y: -0.01044507, z: -0.000053297103, w: 0.99992955}
+  m_LocalRotation: {x: -0.005638531, y: -0.010466567, z: -0.0018763151, w: 0.99992764}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4725,7 +4739,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: -0.005759425, y: -0.010353847, z: 0.010679028, w: 0.99987286}
+  m_LocalRotation: {x: -0.0025920146, y: -0.0116481995, z: -0.2704893, w: 0.96065825}
   m_LocalPosition: {x: -19.614923, y: 1.1293356, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4812,8 +4826,8 @@ PlayableDirector:
   m_GameObject: {fileID: 1031922988}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 6618eaa849f5ec84ea06d52e0081fc05, type: 2}
-  m_InitialState: 0
+  m_PlayableAsset: {fileID: 11400000, guid: fe8e0e803d4c46e4582eccdab388521d, type: 2}
+  m_InitialState: 1
   m_WrapMode: 0
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
@@ -4844,8 +4858,7 @@ MonoBehaviour:
   TimelineAssets:
   - TimelineAsset: {fileID: 11400000, guid: fe8e0e803d4c46e4582eccdab388521d, type: 2}
     Tag: PanIn
-  - TimelineAsset: {fileID: 11400000, guid: 6618eaa849f5ec84ea06d52e0081fc05, type: 2}
-    Tag: PanOut
+  MaxLength: 2
 --- !u!1 &1061942979
 GameObject:
   m_ObjectHideFlags: 0
@@ -5636,8 +5649,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1167710954}
-  m_LocalRotation: {x: 0.07080897, y: -0.012714822, z: 0.00089791365, w: 0.99740845}
-  m_LocalPosition: {x: -0.33133966, y: -0.3719408, z: -2.060005}
+  m_LocalRotation: {x: 0.059366256, y: 0.02990333, z: -0.004330728, w: 0.9977789}
+  m_LocalPosition: {x: -0.3178816, y: -0.31419012, z: -2.0603786}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999998}
   m_Children:
   - {fileID: 1766970086}
@@ -7961,6 +7974,7 @@ MonoBehaviour:
   TimelineAssets:
   - TimelineAsset: {fileID: 11400000, guid: f5474f85e6df6d043a274da6c7d7888c, type: 2}
     Tag: Ladder
+  MaxLength: 3
 --- !u!1 &2103812031
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,15 +7,16 @@ using UnityEngine.Events;
 public class SCR_CameraTrigger : MonoBehaviour {
 
     [SerializeField]
-    private bool UsingOnEnter;
-    [SerializeField]
-    [ShowIf("UsingOnEnter")]
     private string EnterTagToPlay;
     [SerializeField]
-    private bool UsingOnExit;
+    private bool UsingOnEnter;
     [SerializeField]
-    [ShowIf("UsingOnExit")]
-    private string ExitTagToPlay;
+    private bool UsingOnExit;
+
+    private void Start()
+    {
+        //SCR_EventManager.TriggerEvent("Timeline", EnterTagToPlay);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -23,7 +24,7 @@ public class SCR_CameraTrigger : MonoBehaviour {
         {
             if (other.tag == "Character")
             {
-                SCR_EventManager.TriggerEvent("Timeline", EnterTagToPlay);
+                SCR_EventManager.TriggerEvent("TimelineInstruction", "Forward");
             }
         }
     }
@@ -34,7 +35,7 @@ public class SCR_CameraTrigger : MonoBehaviour {
         {
             if (other.tag == "Character")
             {
-                SCR_EventManager.TriggerEvent("Timeline", ExitTagToPlay);
+                SCR_EventManager.TriggerEvent("TimelineInstruction", "Rewind");
             }
         }
     }

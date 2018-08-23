@@ -76,6 +76,7 @@ public class SCR_SceneLoader : MonoBehaviour {
             else if(Data.Settings[i].State == 2)
             {
                 SCR_EventManager.TriggerEvent("Timeline", Data.Settings[i].Flag);
+                SCR_EventManager.TriggerEvent("TimelineInstruction", "Resume");
             }
         }
     }
