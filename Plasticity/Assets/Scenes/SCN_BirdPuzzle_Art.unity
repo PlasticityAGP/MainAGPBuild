@@ -879,6 +879,47 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 3.1066434, y: 1.602295, z: 0.9333012}
   m_Center: {x: -0.0000009536743, y: 0, z: 0.00000025331974}
+--- !u!1 &1154074425
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1154074426}
+  - component: {fileID: 1154074427}
+  m_Layer: 0
+  m_Name: collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1154074426
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1154074425}
+  m_LocalRotation: {x: 0.0015808046, y: -0.00054879667, z: 0.14017837, w: 0.9901249}
+  m_LocalPosition: {x: -0.05177, y: 0.03079, z: -0.01073}
+  m_LocalScale: {x: 0.020248814, y: 0.0023518517, z: 0.042841524}
+  m_Children: []
+  m_Father: {fileID: 1945559417}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.18800001, y: -0.037, z: 16.116001}
+--- !u!65 &1154074427
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1154074425}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1222078612
 Prefab:
   m_ObjectHideFlags: 0
@@ -1932,22 +1973,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a6d85303e69a4db409487f8b884109c6, type: 3}
   m_IsPrefabParent: 0
---- !u!1 &2003483604 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 100000, guid: a6d85303e69a4db409487f8b884109c6, type: 3}
-  m_PrefabInternal: {fileID: 2003483603}
---- !u!65 &2003483605
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2003483604}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.021513866, y: 0.0022214511, z: 0.04366708}
-  m_Center: {x: -0.051059254, y: 0.029748052, z: -0.010912836}
 --- !u!4 &2032973176 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: cba2075ad2a305741ae743f15b795684, type: 3}
