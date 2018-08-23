@@ -1634,7 +1634,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1793328245700466}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.102, z: 0}
+  m_LocalPosition: {x: 0, y: -0.053, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4649989128191022}
@@ -2766,7 +2766,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   GroundTraceDistance: 1
-  YTraceOffset: 0.8
+  YTraceOffset: 0.9
   MaxGroundAngle: 120
   GroundLayer:
     serializedVersion: 2
