@@ -8,6 +8,8 @@ using UnityEngine.Playables;
 
 public class SCR_TimelineManager : MonoBehaviour {
 
+    [SerializeField]
+    private string TimelineObject;
     private UnityAction<string> TimelineListener;
     private PlayableDirector ThisDirector;
 
@@ -34,7 +36,7 @@ public class SCR_TimelineManager : MonoBehaviour {
 
     private void PlayTimeline(string AssetToPlay)
     {
-        ThisDirector.Play();
+        if(AssetToPlay == TimelineObject) ThisDirector.Play();
     }
 
     // Use this for initialization
