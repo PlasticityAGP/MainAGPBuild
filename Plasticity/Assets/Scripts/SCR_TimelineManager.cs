@@ -4,12 +4,17 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
 
-
+[System.Serializable]
+struct TimelinePair
+{
+    public PlayableAsset TimelineAsset;
+    public string Tag;
+};
 
 public class SCR_TimelineManager : MonoBehaviour {
 
     [SerializeField]
-    private string TimelineObject;
+    private TimelinePair[] TimelineAssets;
     private UnityAction<string> TimelineListener;
     private PlayableDirector ThisDirector;
 
@@ -36,7 +41,10 @@ public class SCR_TimelineManager : MonoBehaviour {
 
     private void PlayTimeline(string AssetToPlay)
     {
-        if(AssetToPlay == TimelineObject) ThisDirector.Play();
+        for (int i = 0; i < TimelineAssets.Length; ++i)
+        {
+            if (AssetToPlay == TimelineAssets[i].Tag) ThisDirector.Play(TimelineAssets[i].TimelineAsset);
+        }
     }
 
     // Use this for initialization
