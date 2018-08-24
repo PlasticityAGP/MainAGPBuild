@@ -265,7 +265,7 @@ public class FlockChild : MonoBehaviour
 
     public void Wander(float delay)
     {
-        if (!_landing && !ControlledByBolt)
+        if (!_landing)
         {
             _damping = Random.Range(_spawner._minDamping, _spawner._maxDamping);
             _targetSpeed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed);
@@ -298,7 +298,7 @@ public class FlockChild : MonoBehaviour
             _soar = false;
             animationSpeed();
             if(!ControlledByBolt)
-                SetWaypoint(findWaypoint());
+                SetWaypoint(findWaypoint(), false);
             _dived = false;
         }
     }
@@ -318,7 +318,7 @@ public class FlockChild : MonoBehaviour
         {
             _model.GetComponent<Animation>().CrossFade(_spawner._soarAnimation, 1.5f);
             if(!ControlledByBolt)
-                SetWaypoint(findWaypoint());
+                SetWaypoint(findWaypoint(), false);
             _soar = true;
         }
     }
@@ -342,7 +342,7 @@ public class FlockChild : MonoBehaviour
         Vector3 tempWp = findWaypoint();
         tempWp.y -= _spawner._diveValue;
         if(!ControlledByBolt)
-            SetWaypoint(tempWp);
+            SetWaypoint(tempWp, false);
         _dived = true;
     }
 
@@ -363,8 +363,12 @@ public class FlockChild : MonoBehaviour
 
     public void LandAtSpot(LandingSpot spot)
     {
+        if (_landedSpot)
+            _landedSpot.ReleaseFlockChild();
         if (spot.LandBird(this, false))
             _landedSpot = spot;
+
+        SetWaypoint(spot._thisT.position + _landingPosOffset, true);
     }
 
     public void SetSpawner(FlockController spawner)
@@ -377,9 +381,9 @@ public class FlockChild : MonoBehaviour
         _landedSpot = null;
     }
 
-    public void SetWaypoint(Vector3 newWaypoint)
+    public void SetWaypoint(Vector3 newWaypoint, bool isLanding)
     {
-        //if (_landedSpot) _landedSpot.ReleaseFlockChild();
+        if (_landedSpot && !isLanding) _landedSpot.ReleaseFlockChild();
         _wayPoint = newWaypoint;
     }
 

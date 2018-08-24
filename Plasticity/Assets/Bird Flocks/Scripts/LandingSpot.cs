@@ -81,13 +81,13 @@ public class LandingSpot : MonoBehaviour
                         landingChild._model.GetComponent<Animation>().CrossFade(landingChild._spawner._flapAnimation, .5f);
                 }
                 landingChild._targetSpeed = landingChild._spawner._maxSpeed * _controller._landingSpeedModifier;
-                landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
+                //landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
                 landingChild._damping = _controller._landingTurnSpeedModifier;
                 landingChild._avoid = false;
             }
             else if (distance <= .5f)
             {
-                landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
+                //landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
                 if (distance < _controller._snapLandDistance && !_idle)
                 {
                     _idle = true;
@@ -116,7 +116,7 @@ public class LandingSpot : MonoBehaviour
             else
             {
                 //Move towards landing spot
-                landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
+                //landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
                 landingChild._targetSpeed = landingChild._spawner._maxSpeed;
             }
             if (landingChild)
