@@ -378,7 +378,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
             Grounded();
             CalculateGroundAngle();
-            Grounded();
             if (!JumpingOff)
             {
                 CalculateMoveVec();
@@ -520,34 +519,42 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
         Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.2f) + YOffset;
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.2f) + YOffset;
-        RaycastHit Result;
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.1f) + YOffset;
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.1f) + YOffset;
+        RaycastHit LeftResult;
+        RaycastHit RightResult;
         float raycastExtension = 0.3f;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
         //because we want our velocity to match the slope of the surface slightly before we return true.
         //This prevents a weird bouncing effect that can happen after a player lands. 
-        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance + raycastExtension, GroundLayer))
+        if (Physics.Raycast(RightPosition, Vector3.down, out RightResult, GroundTraceDistance + raycastExtension, GroundLayer))
         {
-            if (Result.distance <= GroundTraceDistance)
+            if (RightResult.distance <= GroundTraceDistance)
             {
                 isGroundedResult = true;
             }
             if (MoveDir)
             {
-                HitInfo = Result;
+                HitInfo = RightResult;
             }
         }
-        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance + raycastExtension, GroundLayer))
+        if (Physics.Raycast(LeftPosition, Vector3.down, out LeftResult, GroundTraceDistance + raycastExtension, GroundLayer))
         {
-            if (Result.distance <= GroundTraceDistance)
+            if (LeftResult.distance <= GroundTraceDistance)
             {
                 isGroundedResult = true;
             }
             if (!MoveDir)
             {
-                HitInfo = Result;
+                HitInfo = LeftResult;
             }
+        }
+        if(((RightResult.distance < 0.95f * GroundTraceDistance) && (LeftResult.distance < 0.95f * GroundTraceDistance))
+            && isGroundedResult)
+        {
+            Vector3 NewPos = gameObject.transform.position;
+            NewPos.y += (0.05f * GroundTraceDistance);
+            gameObject.transform.position = NewPos; 
         }
         PlayerGrounded = isGroundedResult;
     }

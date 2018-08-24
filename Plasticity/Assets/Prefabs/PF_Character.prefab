@@ -1634,7 +1634,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1793328245700466}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.053, z: 0}
+  m_LocalPosition: {x: 0, y: -0.096, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4649989128191022}
@@ -2578,6 +2578,7 @@ MonoBehaviour:
   LedgeTopBound: {fileID: 1537326733513572}
   LedgeBottomBound: {fileID: 1399188006228340}
   MaxMoveSpeed: 4
+  MaxFallVelocity: 12
   Acceleration: 4
   MoveWhileJumping: 0
   JumpWhileHeld: 0
@@ -2794,9 +2795,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.13718694
-  m_Height: 1.9229766
+  m_Height: 1.9102734
   m_Direction: 1
-  m_Center: {x: 2.932084e-17, y: 0.95943433, z: -0.013561726}
+  m_Center: {x: 2.932084e-17, y: 0.96578604, z: -0.013561726}
 --- !u!137 &137612821066628662
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
