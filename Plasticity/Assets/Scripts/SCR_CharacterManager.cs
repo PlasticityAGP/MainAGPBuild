@@ -45,6 +45,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     [ValidateInput("LessThanZero", "We cannot have a max move speed <= 0.0")]
     private float MaxMoveSpeed;
     [SerializeField]
+    private float MaxFallVelocity;
+    [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
     [ValidateInput("LessThanZero", "We cannot have an acceleration value <= 0.0")]
     private float Acceleration;
@@ -380,22 +382,18 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!JumpingOff)
             {
                 CalculateMoveVec();
-                Grounded();
             }
             if (!IsClimbing)
             {
                 Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
-                Grounded();
             }
             if (DidAJump && !CurrentlyLedging && !MovingInZ)
             {
                 CheckForLedges();
-                Grounded();
             }
             if (DoLedgeLerp)
             {
                 LedgeLerp(Time.deltaTime);
-                Grounded();
             }
             MoveCharacter(Time.deltaTime);
         }
@@ -716,7 +714,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!PlayerGrounded)
             {
                 if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
-                else if (MoveVec.y > -15.0f)
+                else if (MoveVec.y > -MaxFallVelocity)
                 {
                     MoveVec.y -= DownGravityOnPlayer * DeltaTime;
                     ChangePlayerState(CharacterStates.Falling);

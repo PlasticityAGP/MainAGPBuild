@@ -184,10 +184,6 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             InitialSpeed = CharacterManager.GetSpeed();
             CharacterManager.StateChangeLocked = true;
             //Need to structure it this way in case interact is held down by the player before entering trigger
-            if (Interact)
-            {
-                GrabLadder();
-            }
         }
     }
 

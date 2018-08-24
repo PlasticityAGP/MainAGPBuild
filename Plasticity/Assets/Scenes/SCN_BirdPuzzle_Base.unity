@@ -3531,6 +3531,11 @@ Prefab:
       propertyPath: LerpSpeed
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 114830445567558030, guid: db1f2a324325b1d4b99911d53df491f1,
+        type: 2}
+      propertyPath: OffTheTop
+      value: 4.6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
   m_IsPrefabParent: 0
@@ -3814,7 +3819,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: -0.005617013, y: -0.010516906, z: -0.0001998774, w: 0.99992895}
+  m_LocalRotation: {x: -0.005636567, y: -0.01048511, z: -0.00019906038, w: 0.9999292}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4748,7 +4753,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: -0.0023899628, y: -0.011562715, z: -0.29071465, w: 0.956737}
+  m_LocalRotation: {x: -0.0017694631, y: -0.011937562, z: -0.3333802, w: 0.9427152}
   m_LocalPosition: {x: -19.614923, y: 1.0763357, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4990,7 +4995,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1062436907
 Prefab:
@@ -5658,8 +5663,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1167710954}
-  m_LocalRotation: {x: 0.057820454, y: 0.0322695, z: -0.0027929402, w: 0.9978014}
-  m_LocalPosition: {x: -0.31915987, y: -0.31167498, z: -2.0604079}
+  m_LocalRotation: {x: 0.053373188, y: 0.038229637, z: -0.0033626314, w: 0.99783695}
+  m_LocalPosition: {x: -0.31812304, y: -0.3007214, z: -2.060571}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999998}
   m_Children:
   - {fileID: 1766970086}
@@ -7549,17 +7554,17 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
         type: 2}
       propertyPath: m_Height
-      value: 1.89642
+      value: 1.7777994
       objectReference: {fileID: 0}
     - target: {fileID: 136348256801458980, guid: 0bf968594bcb48746b37c0734ddaa3f9,
         type: 2}
       propertyPath: m_Center.y
-      value: 0.97271276
+      value: 1.0320231
       objectReference: {fileID: 0}
     - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
         type: 2}
@@ -7585,6 +7590,21 @@ Prefab:
         type: 2}
       propertyPath: MoveDir
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: Ladder
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MovingInZ
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MaxFallVelocity
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
