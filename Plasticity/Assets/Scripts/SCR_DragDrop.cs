@@ -48,6 +48,18 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
     private GameObject ZEffectorRight;
     [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
+    private GameObject NegativeXEffectorLeft;
+    [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
+    private GameObject NegativeXEffectorRight;
+    [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
+    private GameObject PositiveXEffectorLeft;
+    [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
+    private GameObject PositiveXEffectorRight;
+    [SerializeField]
     [Tooltip("Speed we want to slow down the player to when they drag an object")]
     [ValidateInput("GreaterThanZero", "The Drag speed cannot be zero or a negative number!")]
     private float MaxDragSpeed;
@@ -117,6 +129,20 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             Interact = true;
             if (Inside)
             {
+                if (gameObject.transform.parent.transform.position.x - Character.transform.position.x > 0.0f)
+                {
+                    IkTools.SetEffectorTarget("LeftHand", PositiveXEffectorLeft);
+                    IkTools.SetEffectorTarget("RightHand", PositiveXEffectorRight);
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                }
+                else
+                {
+                    IkTools.SetEffectorTarget("LeftHand", NegativeXEffectorLeft);
+                    IkTools.SetEffectorTarget("RightHand", NegativeXEffectorRight);
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                }
                 EnteredAndInteracted();
             }
             if (IsZ)
@@ -329,6 +355,11 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
                 IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
             }
+        }
+        else if(!Interact && Inside)
+        {
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+            IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
         }
 
         //Freeze rigidbody via constraints, and return the player to their original speed
