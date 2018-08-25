@@ -8,7 +8,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
     public enum CharacterStates { Running, Falling, Jumping, Idling, Lying }
-    private CharacterStates PlayerState;
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -196,45 +195,40 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void ChangePlayerState(CharacterStates state)
     {
-        if (PlayerState != state && !IsLockedAnims)
+        if (!IsLockedAnims)
         {
             if (LastAnim != null) ResetAnim();
-            if (PlayerState == CharacterStates.Running)
+            if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Running"))
             {
                 if (state == CharacterStates.Idling) SetAnim("RunningToIdle");
                 else if (state == CharacterStates.Falling) SetAnim("RunningToFalling");
                 else if (state == CharacterStates.Jumping) SetAnim("RunningToJump");
                 else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
             }
-            else if (PlayerState == CharacterStates.Falling)
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Falling"))
             {
                 if (state == CharacterStates.Idling) SetAnim("FallingToIdle");
                 else if (state == CharacterStates.Running) SetAnim("FallingToRunning");
                 else if (state == CharacterStates.Lying) SetAnim("FallingToLying");
             }
-            else if (PlayerState == CharacterStates.Jumping)
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
             {
                 if (state == CharacterStates.Falling) SetAnim("JumpToFalling");
                 else if (state == CharacterStates.Idling) SetAnim("JumpToIdle");
                 else if (state == CharacterStates.Running) SetAnim("JumpToRunning");
             }
-            else if (PlayerState == CharacterStates.Idling)
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             {
                 if (state == CharacterStates.Running) SetAnim("IdleToRunning");
                 else if (state == CharacterStates.Falling) SetAnim("IdleToFalling");
                 else if (state == CharacterStates.Jumping) SetAnim("IdleToJump");
                 else if (state == CharacterStates.Lying) SetAnim("IdleToLying");
             }
-            else if (PlayerState == CharacterStates.Lying)
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("GettingUp"))
             {
                 if (state == CharacterStates.Running) SetAnim("LyingToRunning");
                 else if (state == CharacterStates.Idling) SetAnim("LyingToIdle");
                 else if (state == CharacterStates.Jumping) SetAnim("LyingToJumping");                
-            }
-            PlayerState = state;
-            if(state == CharacterStates.Falling)
-            {
-                FallStartHeight = gameObject.transform.position.y;                
             }
         }
     }
@@ -267,6 +261,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //The value passed by the event indicates whether or not the key is pressed down. 
         if (value == 1)
         {
+            DeterminePlayerState();
             Up = true;
             if (CurrentlyLedging)
             {
@@ -297,25 +292,20 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void LeftPressed(int value)
     {
+        
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
             Left = true;
             LastKeypress = false;
             //If we are currently running right when we recieve this left keypress, turn the character.
+            DeterminePlayerState();
             if (MoveDir && !CurrentlyLedging)
                 TurnCharacter();
-            if (CanSendRunAnimations())
-            {
-                //Tell the animation manager to play a running animation is left is pressed and player is on ground.
-                ChangePlayerState(CharacterStates.Running);
-            }
-
         }
         else
         {
             Left = false;
-            if (PlayerGrounded && !Right) ChangePlayerState(CharacterStates.Idling);
         }
 
         
@@ -328,18 +318,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Right = true;
             LastKeypress = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
+            DeterminePlayerState();
             if (!MoveDir && !CurrentlyLedging)
                 TurnCharacter();
-            if (CanSendRunAnimations())
-            {
-                //Tell the animation manager to play a running animation is left is pressed and player is on ground.
-                ChangePlayerState(CharacterStates.Running);
-            }
         }
         else
         {
             Right = false;
-            if (PlayerGrounded && !Left) ChangePlayerState(CharacterStates.Idling);
         }
         
     }
@@ -378,22 +363,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
             Grounded();
             CalculateGroundAngle();
-            if (!JumpingOff)
-            {
-                CalculateMoveVec();
-            }
-            if (!IsClimbing)
-            {
-                Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
-            }
-            if (DidAJump && !CurrentlyLedging && !MovingInZ)
-            {
-                CheckForLedges();
-            }
-            if (DoLedgeLerp)
-            {
-                LedgeLerp(Time.deltaTime);
-            }
+            if (!JumpingOff) CalculateMoveVec();
+            if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
+            if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
+            if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
             MoveCharacter(Time.deltaTime);
         }
     }
@@ -549,13 +522,14 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 HitInfo = LeftResult;
             }
         }
-        if(((RightResult.distance < 0.95f * GroundTraceDistance) && (LeftResult.distance < 0.95f * GroundTraceDistance))
+        if(((RightResult.distance < 0.96f * GroundTraceDistance) && (LeftResult.distance < 0.96f * GroundTraceDistance))
             && isGroundedResult)
         {
             Vector3 NewPos = gameObject.transform.position;
-            NewPos.y += (0.05f * GroundTraceDistance);
+            NewPos.y += (0.04f * GroundTraceDistance);
             gameObject.transform.position = NewPos; 
         }
+        DeterminePlayerState();
         PlayerGrounded = isGroundedResult;
     }
     
@@ -699,8 +673,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 //Need a different jump force if we are moving uphill while jumping.
                 if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
                 else MoveVec.y = JumpForce;
-                //Tell anim manager to play a jump animation.
-                ChangePlayerState(CharacterStates.Jumping);
                 OnBeginJump();
             }
 
@@ -720,13 +692,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
             if (!PlayerGrounded)
             {
+                if (Mathf.Abs(MoveVec.y) < 0.1f && !IsClimbing) FallStartHeight = gameObject.transform.position.y;
                 if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
                 else if (MoveVec.y > -MaxFallVelocity)
                 {
                     MoveVec.y -= DownGravityOnPlayer * DeltaTime;
-                    ChangePlayerState(CharacterStates.Falling);
                 }
-                else ChangePlayerState(CharacterStates.Falling);
             }
         }
     }
@@ -755,8 +726,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             StartCoroutine(Timer(LengthOfSlowdown, 1.0f, SetSpeedPercentage));
 
         }
-        if (Left || Right) ChangePlayerState(CharacterStates.Running);
-        else ChangePlayerState(CharacterStates.Idling);
     }
 
     private void MoveCharacter(float DeltaTime)
@@ -828,6 +797,14 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         }
         if (VelocityAllowed) RBody.velocity = FinalVel;
         else RBody.velocity = Vector3.zero;
+    }
+
+    private void DeterminePlayerState()
+    {
+        if (!PlayerGrounded && MoveVec.y > 0.0f) ChangePlayerState(CharacterStates.Jumping);
+        else if (PlayerGrounded && (Left || Right)) ChangePlayerState(CharacterStates.Running);
+        else if (!PlayerGrounded && MoveVec.y < 0.0f) ChangePlayerState(CharacterStates.Falling);
+        else if (PlayerGrounded && !(Left || Right)) ChangePlayerState(CharacterStates.Idling);
     }
 
     //All of the following is trash and I feel bad :(
