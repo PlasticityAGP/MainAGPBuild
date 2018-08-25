@@ -110,6 +110,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public bool MoveDir = true;
     private float MoveSpeedPercentage = 1.0f;
     private bool LastKeypress = true;
+    private bool NoAnimUpdate = false;
     [HideInInspector]
     public bool MovingInZ = false;
     [HideInInspector]
@@ -261,7 +262,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //The value passed by the event indicates whether or not the key is pressed down. 
         if (value == 1)
         {
-            DeterminePlayerState();
             Up = true;
             if (CurrentlyLedging)
             {
@@ -299,7 +299,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Left = true;
             LastKeypress = false;
             //If we are currently running right when we recieve this left keypress, turn the character.
-            DeterminePlayerState();
             if (MoveDir && !CurrentlyLedging)
                 TurnCharacter();
         }
@@ -318,7 +317,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Right = true;
             LastKeypress = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
-            DeterminePlayerState();
             if (!MoveDir && !CurrentlyLedging)
                 TurnCharacter();
         }
@@ -368,6 +366,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
             if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
             MoveCharacter(Time.deltaTime);
+            DeterminePlayerState();
         }
     }
 
@@ -395,6 +394,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         {
             if (this.transform.position.y < LowClimb)
             {
+                NoAnimUpdate = false;
                 Ladder.GetComponent<SCR_Ladder>().climbing = false;
                 Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
                 IsClimbing = false;
@@ -449,6 +449,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// </summary>
     public void JumpOff()
     {
+        NoAnimUpdate = false;
         if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
         MoveVec.y = JumpForce;
         if (Left && !Right)
@@ -468,10 +469,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// <param name="low"></param>
     public void OnClimbable(float high, float low)
     {
+        FallStartHeight = 0.0f;
         HighClimb = high;
         LowClimb = low;
         IsClimbing = true;
-        ChangePlayerState(CharacterStates.Idling);
+        NoAnimUpdate = true;
         MoveVec.x = 0;
         // TODO: have to change the player's x velocity accordingly.
     }
@@ -529,7 +531,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             NewPos.y += (0.04f * GroundTraceDistance);
             gameObject.transform.position = NewPos; 
         }
-        DeterminePlayerState();
         PlayerGrounded = isGroundedResult;
     }
     
@@ -801,10 +802,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void DeterminePlayerState()
     {
-        if (!PlayerGrounded && MoveVec.y > 0.0f) ChangePlayerState(CharacterStates.Jumping);
-        else if (PlayerGrounded && (Left || Right)) ChangePlayerState(CharacterStates.Running);
-        else if (!PlayerGrounded && MoveVec.y < 0.0f) ChangePlayerState(CharacterStates.Falling);
-        else if (PlayerGrounded && !(Left || Right)) ChangePlayerState(CharacterStates.Idling);
+        if (!NoAnimUpdate)
+        {
+            if (!PlayerGrounded && MoveVec.y > 0.0f) ChangePlayerState(CharacterStates.Jumping);
+            if (PlayerGrounded && (Left || Right)) ChangePlayerState(CharacterStates.Running);
+            if (!PlayerGrounded && MoveVec.y < 0.0f) ChangePlayerState(CharacterStates.Falling);
+            if (PlayerGrounded && !(Left || Right)) ChangePlayerState(CharacterStates.Idling);
+        }
     }
 
     //All of the following is trash and I feel bad :(

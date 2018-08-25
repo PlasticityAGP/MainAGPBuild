@@ -813,8 +813,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5118704, y: 5.0166984, z: 2.847724}
-  m_Center: {x: -0.00556612, y: 0.00023245811, z: -0.039091587}
+  m_Size: {x: 0.51187027, y: 2.4639382, z: 2.8477237}
+  m_Center: {x: -0.005571979, y: -1.2761477, z: -0.039091565}
 --- !u!65 &65797323264924910
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -949,7 +949,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   SlowDownSpeed: 0.75
   Anchor: {fileID: 1976094566310422}
-  LerpSpeed: 5
+  LerpSpeed: 15
   LeftRightOffset: 0.5
   TimerLength: 0.5
   TriggerOnLerping: 1
@@ -1018,6 +1018,6 @@ MonoBehaviour:
   UsingLowerBarrier: 1
   ReleaseTriggerName: ActivateLadderTrigger
   LowerBarrier: {fileID: 1222162076832954}
-  OffTheTop: 4.4
+  OffTheTop: 4.6
   OffTheBottom: 5
   climbing: 0
