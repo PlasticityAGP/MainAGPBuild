@@ -111,6 +111,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private float MoveSpeedPercentage = 1.0f;
     private bool LastKeypress = true;
     private bool NoAnimUpdate = false;
+    private bool IsTurnRestricted = false;
+    private int MoveDirAtRestricted = 0;
     [HideInInspector]
     public bool MovingInZ = false;
     [HideInInspector]
@@ -542,11 +544,14 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             MoveDir = !MoveDir;
             if (MoveDir) SCR_EventManager.TriggerEvent("CharacterTurn", 1);
             else SCR_EventManager.TriggerEvent("CharacterTurn", 0);
-            Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
-            RefToModel.transform.Rotate(TurnAround);
-            if (PlayerGrounded)
+            if (!IsTurnRestricted)
             {
-                SpeedModifier = 0.0f;
+                Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+                RefToModel.transform.Rotate(TurnAround);
+                if (PlayerGrounded)
+                {
+                    SpeedModifier = 0.0f;
+                }
             }
         }
     }
@@ -622,6 +627,24 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public float GetSpeed()
     {
         return MaxMoveSpeed;
+    }
+
+    public void RestrictTurning()
+    {
+        if (MoveDir) MoveDirAtRestricted = 1;
+        else MoveDirAtRestricted = 2;
+        IsTurnRestricted = true;
+    }
+
+    public void UnrestrictTurning()
+    {
+        IsTurnRestricted = false;
+        if ((MoveDirAtRestricted == 1 && !MoveDir) || (MoveDirAtRestricted == 2 && MoveDir))
+        {
+            Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+            RefToModel.transform.Rotate(TurnAround);
+        }
+        MoveDirAtRestricted = 0;
     }
 
     /// <summary>
