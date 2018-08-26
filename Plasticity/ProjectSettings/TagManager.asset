@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Character
   - ReferencePoint
+  - PuzzleBox
+  - PuzzleBox1
+  - AI
   layers:
   - Default
   - TransparentFX
@@ -17,9 +20,9 @@ TagManager:
   - 
   - PostProcessing
   - LedgingWall
-  - 
-  - 
-  - 
+  - Ladder
+  - Character
+  - Floor
   - 
   - 
   - 

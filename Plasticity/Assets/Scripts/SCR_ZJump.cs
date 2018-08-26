@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
 
-public class SCR_ZJump : MonoBehaviour {
+public class SCR_ZJump : SCR_GameplayStatics {
 
     //Listens for the up key to be pressed
     private UnityAction<int> UpListener;
@@ -38,18 +38,6 @@ public class SCR_ZJump : MonoBehaviour {
     //Reference to character and it's manager
     private GameObject Character;
     private SCR_CharacterManager CharacterManager;
-
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
 
     private void Awake()
     {
@@ -117,7 +105,7 @@ public class SCR_ZJump : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.gameObject.tag == "Character" && ZTransformMethod)
+        if(other.gameObject.tag == "Character" && ZTransformMethod && CharacterManager.InteractingWith == null)
         {
             //This is a little vector math that just checks if the player is higher than the reference point in the
             //direction of the normal of the surface they will be walking on
@@ -175,7 +163,7 @@ public class SCR_ZJump : MonoBehaviour {
         //If the player is clambering, we don't want the CharacterManager to update velocity
         if (ClamberLerpValue == 0.0f)
         {
-            CharacterManager.FreezeVelocity();
+            CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
             CharacterManager.MovingInZ = true;
         }
 

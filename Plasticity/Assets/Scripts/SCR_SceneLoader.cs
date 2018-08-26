@@ -9,11 +9,13 @@ public class PairObject
 {
     public GameObject ObjToSet;
     public int State;
+    public string Flag;
 }
 
 [System.Serializable]
 public class SettingsArray
 {
+    public string SettingName;
     public PairObject[] Settings;
 }
 
@@ -23,7 +25,8 @@ public class SCR_SceneLoader : MonoBehaviour {
     [Tooltip("What level state data we want the scene loader to operate based on")]
     private SCR_LevelStates LevelData; 
     private string[] LevelArray;
-    private UnityAction<int> TriggerListener;
+    private UnityAction<string> TriggerListener;
+    private UnityAction<int> LevelStateListener;
     [SerializeField]
     private SettingsArray[] LevelSettings;
 
@@ -31,22 +34,31 @@ public class SCR_SceneLoader : MonoBehaviour {
     {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
-        TriggerListener = new UnityAction<int>(TriggerEntered);
+        TriggerListener = new UnityAction<string>(TriggerEntered);
+        LevelStateListener = new UnityAction<int>(LevelStateChange);
     }
     private void OnEnable()
     {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("LevelTrigger", TriggerListener);
+        SCR_EventManager.StartListening("SceneStateTrigger", LevelStateListener);
     }
 
     private void OnDisable()
     {
         SCR_EventManager.StopListening("LevelTrigger", TriggerListener);
+        SCR_EventManager.StopListening("SceneStateTrigger", LevelStateListener);
     }
 
-    private void TriggerEntered(int ID)
+    private void LevelStateChange (int ID)
     {
-        ActivateOnTrigger(LevelSettings[ID]);
+        string[] PuzzleStates = LevelData.PuzzleStates;
+        ActivateOnTrigger(LevelSettings[FindByName(PuzzleStates[ID])]);
+    }
+
+    private void TriggerEntered(string ID)
+    {
+        ActivateOnTrigger(LevelSettings[FindByName(ID)]);
     }
 
     private void ActivateOnTrigger(SettingsArray Data)
@@ -61,7 +73,22 @@ public class SCR_SceneLoader : MonoBehaviour {
             {
                 Data.Settings[i].ObjToSet.SetActive(false);
             }
+            else if(Data.Settings[i].State == 2)
+            {
+                SCR_EventManager.TriggerEvent("Timeline", Data.Settings[i].Flag);
+                SCR_EventManager.TriggerEvent("TimelineInstruction", "Resume");
+            }
         }
+    }
+
+    private int FindByName(string Name)
+    {
+        for(int i = 0; i < LevelSettings.Length; ++i)
+        {
+            if (LevelSettings[i].SettingName == Name) return i;
+        }
+        Debug.LogError("Setting name not found");
+        return -1;
     }
 
     void Start () {

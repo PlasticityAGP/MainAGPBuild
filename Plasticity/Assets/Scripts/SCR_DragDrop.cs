@@ -5,29 +5,40 @@ using UnityEngine.Events;
 using Sirenix.OdinInspector;
 using RootMotion.FinalIK;
 
-public class SCR_DragDrop : MonoBehaviour {
+public class SCR_DragDrop : SCR_GameplayStatics {
 
     //Listener to tell when character wants to interact
     private UnityAction<int> InteractListener;
+    private UnityAction<int> UpListener;
     private UnityAction<int> TurnListener;
-    [HideInInspector]
     private bool Interact = false;
     private SCR_IKToolset IkTools;
     //The rigidbody of the object we will be moving
     private Rigidbody RBody;
     [HideInInspector]
     public bool IsZ;
-    private bool OverlapTrigger;
+    private bool Inside;
     private float Weight;
     private float InitialSpeed;
+    private bool Lerping;
+    [SerializeField]
+    private bool LerpWhilePlayerClose;
+    [SerializeField]
+    [ShowIf("LerpWhilePlayerClose")]
+    [ValidateInput("GreaterThanZero", "Our lerp speed must be greater than zero")]
+    private float LerpSpeed;
+    [SerializeField]
+    [ShowIf("LerpWhilePlayerClose")]
+    [ValidateInput("IsNull", "We must have a reference to the point on the box we would like to lerp towards")]
+    private GameObject ReferencePoint;
     [SerializeField]
     [Tooltip("The farthest left a left hand effector is allowed to go on this object")]
     [ValidateInput("IsNull", "There must be a reference to the Left Endpoint Game Object!")]
-    private GameObject LeftEndPoint;
+    private GameObject ZLeftEndPoint;
     [SerializeField]
     [Tooltip("The farthest right a left hand effector is allowed to go on this object")]
     [ValidateInput("IsNull", "There must be a reference to the Left Endpoint Game Object!")]
-    private GameObject RightEndPoint;
+    private GameObject ZRightEndPoint;
     [SerializeField]
     [Tooltip("Left hand IK effector on box when dragging from Z")]
     [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
@@ -37,6 +48,18 @@ public class SCR_DragDrop : MonoBehaviour {
     [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
     private GameObject ZEffectorRight;
     [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
+    private GameObject NegativeXEffectorLeft;
+    [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
+    private GameObject NegativeXEffectorRight;
+    [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Left Effector Game Object!")]
+    private GameObject PositiveXEffectorLeft;
+    [SerializeField]
+    [ValidateInput("IsNull", "There must be a reference to the Right Effector Game Object!")]
+    private GameObject PositiveXEffectorRight;
+    [SerializeField]
     [Tooltip("Speed we want to slow down the player to when they drag an object")]
     [ValidateInput("GreaterThanZero", "The Drag speed cannot be zero or a negative number!")]
     private float MaxDragSpeed;
@@ -45,37 +68,40 @@ public class SCR_DragDrop : MonoBehaviour {
     public GameObject Character;
     [SerializeField]
     [Tooltip("Ik animations curves for left hand effector")]
+    [ValidateInput("NotEmpty", "We need at least a couple of anim curves to define IK behavior")]
     private AnimationCurve[] LeftHandCurves;
     [SerializeField]
     [Tooltip("IK animation curves for right hand effector")]
+    [ValidateInput("NotEmpty", "We need at least a couple of anim curves to define IK behavior")]
     private AnimationCurve[] RightHandCurves;
+    [SerializeField]
+    [Tooltip("Trace distance for determining if the player has landed.")]
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float GroundTraceDistance;
+    [SerializeField]
+    [Tooltip("How much higher above origin IsGrounded trace should occur")]
+    [ValidateInput("LessThanZero", "We cannot have a trace distance <= 0.0")]
+    private float YTraceOffset;
+    [SerializeField]
+    [Tooltip("The maximum angle between player and ground that is walkable by player")]
+    private float MaxGroundAngle;
+    [SerializeField]
+    [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
+    private LayerMask GroundLayer;
+    [SerializeField]
 
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
-
-    private bool GreaterThanZero(float input)
-    {
-        return input > 0.0f;
-    }
-
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    private bool LockedOut;
+    private bool Moving;
 
     private void Awake()
     {
         //Register the callback functions related to each listener. These will be called as
         //the events these listeners are listening to get invoked 
         InteractListener = new UnityAction<int>(InteractPressed);
+        UpListener = new UnityAction<int>(UpPressed);
         TurnListener = new UnityAction<int>(CharacterTurned);
     }
 
@@ -83,6 +109,7 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("InteractKey", InteractListener);
+        SCR_EventManager.StartListening("UpKey", UpListener);
         SCR_EventManager.StartListening("CharacterTurn", TurnListener);
     }
 
@@ -90,6 +117,7 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         //Tell the EventManager we are no longer listening as the CharacterManager gets disabled.
         SCR_EventManager.StopListening("InteractKey", InteractListener);
+        SCR_EventManager.StopListening("UpKey", UpListener);
         SCR_EventManager.StopListening("CharacterTurn", TurnListener);
     }
 
@@ -99,8 +127,10 @@ public class SCR_DragDrop : MonoBehaviour {
         if (value == 1)
         {
             Interact = true;
-            if (OverlapTrigger)
+            if (Inside && !LockedOut)
             {
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
                 EnteredAndInteracted();
             }
             if (IsZ)
@@ -113,13 +143,43 @@ public class SCR_DragDrop : MonoBehaviour {
         else
         {
             Interact = false;
+            CharacterManager.UnrestrictTurning();
+            if (Inside && !LockedOut)
+            {
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+            }
             FreezeAll();
         }            
     }
 
+    private void UpPressed(int value)
+    {
+        if (value == 1 && Inside && LerpWhilePlayerClose && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject))
+        {
+            SetXEffectors();
+            if(!CharacterManager.InteractingWith == gameObject)
+            {
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[0], 0.75f);
+            }
+            CharacterManager.InteractingWith = gameObject;
+            Lerping = true;
+            CharacterManager.UnrestrictTurning();
+            StartCoroutine(Timer(1.0f/LerpSpeed - (Character.transform.position.y - gameObject.transform.position.y + 0.35f), ReleaseHands));
+            CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
+        }
+    }
+
+    private void ReleaseHands()
+    {
+        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+        IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+    }
+
     private void CharacterTurned(int value)
     {
-        if(IsZ && Interact)
+        if (IsZ && Interact)
         {
             //Lerp effectors when the character is in the propper trigger and has pressed the interact key down while turning
             IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.75f);
@@ -138,20 +198,40 @@ public class SCR_DragDrop : MonoBehaviour {
         if (Character.GetComponent<SCR_IKToolset>()) IkTools = Character.GetComponent<SCR_IKToolset>();
         else Debug.LogError("We need a SCR_IKToolset script attached to one of the Character's child Game Objects");
         //Define an initial speed that we want to return the character to after they finish moving the object
-        InitialSpeed = CharacterManager.MoveSpeed;
+        InitialSpeed = CharacterManager.GetSpeed();
         IsZ = false;
-        OverlapTrigger = false;
+        Inside = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Character")
         {
-            OverlapTrigger = true;
+            SetXEffectors();
+            Inside = true;
             if (Interact)
             {
+                if(!LockedOut)
+                {
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                }
                 EnteredAndInteracted();
             }
+        }
+    }
+
+    private void SetXEffectors()
+    {
+        if (gameObject.transform.parent.transform.position.x - Character.transform.position.x > 0.0f)
+        {
+            IkTools.SetEffectorTarget("LeftHand", PositiveXEffectorLeft);
+            IkTools.SetEffectorTarget("RightHand", PositiveXEffectorRight);
+        }
+        else
+        {
+            IkTools.SetEffectorTarget("LeftHand", NegativeXEffectorLeft);
+            IkTools.SetEffectorTarget("RightHand", NegativeXEffectorRight);
         }
     }
 
@@ -166,12 +246,18 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Called by SCR_ZDrag when a player has entered the trigger volume in the Z direction of the Draggable object
+    /// </summary>
     public void OnZTriggerEnter()
     {
         IsZ = true;
         if (Interact) EnteredAndInteracted();
     }
 
+    /// <summary>
+    /// Called by SCR_ZDrag when a player has exited the trigger volume in the Z direction of the Draggable object
+    /// </summary>
     public void OnZTriggerExit()
     {
         //Reset effectors when the character leaves the dragable object zone
@@ -185,37 +271,82 @@ public class SCR_DragDrop : MonoBehaviour {
     {
         if (other.gameObject.tag == "Character")
         {
-            OverlapTrigger = false;
-            IkTools.SetEffectorTarget("LeftHand", null);
-            IkTools.SetEffectorTarget("RightHand", null);
+            CharacterManager.InteractingWith = null;
+            Inside = false;
+            if (!Lerping)
+            {
+                IkTools.SetEffectorTarget("LeftHand", null);
+                IkTools.SetEffectorTarget("RightHand", null);
+            }
             FreezeAll();
         }
     }
 
     private void EnteredAndInteracted()
     {
-        //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
-        //and set the velocity of the object to be moved
-        UnfreezeXY();
-        CharacterManager.MoveSpeed = MaxDragSpeed;
-        if (IsZ)
+        if(CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject)
         {
-            if (Interact)
+            //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
+            //and set the velocity of the object to be moved
+            CharacterManager.RestrictTurning();
+            UnfreezeXY();
+            CharacterManager.SetSpeed(MaxDragSpeed);
+            CharacterManager.InteractingWith = gameObject;
+            if (IsZ)
             {
-                IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
-                IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
-                if (CharacterManager.MoveDir)
+                if (Interact)
                 {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0],  0.75f);
-                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
-                }
-                else
-                {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f);
-                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
+                    IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
+                    IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
+                    if (CharacterManager.MoveDir)
+                    {
+                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                    }
+                    else
+                    {
+                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f);
+                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
+                    }
                 }
             }
         }
+    }
+
+    private void CalculateDir()
+    {
+        if (CharacterManager.PlayerGrounded)
+        {
+            RaycastHit Output = FireTrace();
+            Vector3 VelocityDir;
+            float GroundAngle;
+            if (CharacterManager.MoveDir)
+            {
+                VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude;
+                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+            }
+            else
+            {
+                VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude * -1.0f;
+                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+            }
+            gameObject.transform.parent.localEulerAngles = new Vector3(0.0f, 0.0f, -(GroundAngle - 90.0f));
+            RBody.velocity = VelocityDir;
+        }
+    }
+
+    public RaycastHit FireTrace()
+    {
+        //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
+        //or not the character is on an object.
+        Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
+        Vector3 CenterPosition = transform.position + YOffset;
+        RaycastHit Result;
+        Vector3 End = CenterPosition;
+        End.y -= GroundTraceDistance;
+        Physics.Raycast(CenterPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer);
+        return Result;
     }
 
     /// <summary>
@@ -224,17 +355,8 @@ public class SCR_DragDrop : MonoBehaviour {
     /// <param name="Other">Other should be whatever GameObject is overlapping the trigger</param>
     public void InTrigger(GameObject Other)
     {
-        if (CharacterManager.IsGrounded())
+        if (!CharacterManager.PlayerGrounded)
         {
-            if (Interact)
-            {
-                //Debug.Log("Entered + interacted");
-                RBody.velocity = Other.GetComponent<Rigidbody>().velocity;
-            }
-        }
-        else
-        {
-            //In all other cases we want the character to be still
             FreezeAll();
         }
     }
@@ -245,13 +367,14 @@ public class SCR_DragDrop : MonoBehaviour {
     [HideInInspector]
     public void FreezeAll()
     {
-        if (!IsZ)
+        Moving = false;
+        if (!IsZ && Interact)
         {
-            IkTools.ForceEffectorWeight("LeftHand", 0.0f);
-            IkTools.ForceEffectorWeight("RightHand", 0.0f);
+            CharacterManager.InteractingWith = null;
         }
-        else
+        if(IsZ)
         {
+            CharacterManager.InteractingWith = null;
             if (CharacterManager.MoveDir)
             {
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
@@ -265,14 +388,29 @@ public class SCR_DragDrop : MonoBehaviour {
         }
 
         //Freeze rigidbody via constraints, and return the player to their original speed
-        CharacterManager.MoveSpeed = InitialSpeed;
-        RBody.constraints = RigidbodyConstraints.FreezeAll;
+        CharacterManager.SetSpeed(InitialSpeed);
+        RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) | 
+            (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
+    }
+
+    public void Lockout()
+    {
+        ReleaseHands();
+        CharacterManager.UnrestrictTurning();
+        LockedOut = true;
+        RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+        FreezeAll();
     }
 
     private void UnfreezeXY()
     {
-        //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
-        RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY);
+        if (!LockedOut)
+        {
+            //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
+            RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY)
+                | (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ); ;
+            Moving = true;
+        }
     }
     
     //Calculate where effectors should be whenever the character is within the z trigger
@@ -299,17 +437,17 @@ public class SCR_DragDrop : MonoBehaviour {
             ZEffectorLeft.transform.position = Left;
             ZEffectorRight.transform.position = Right;
             //If our effector locations lie outside of our box, set them to the corner of the box so the player isn't grabbing empty air
-            if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(LeftEndPoint.transform.position - Right))
+            if (Vector3.Magnitude(Left - Right) > Vector3.Magnitude(ZLeftEndPoint.transform.position - Right))
             {
-                if(IsZ) IkTools.SetEffectorTarget("LeftHand", LeftEndPoint);
+                if(IsZ) IkTools.SetEffectorTarget("LeftHand", ZLeftEndPoint);
             }
             else
             {
                 if (IsZ) IkTools.SetEffectorTarget("LeftHand", ZEffectorLeft);
             }
-            if (Vector3.Magnitude(Right - Left) > Vector3.Magnitude(RightEndPoint.transform.position - Left))
+            if (Vector3.Magnitude(Right - Left) > Vector3.Magnitude(ZRightEndPoint.transform.position - Left))
             {
-                if (IsZ) IkTools.SetEffectorTarget("RightHand", RightEndPoint);
+                if (IsZ) IkTools.SetEffectorTarget("RightHand", ZRightEndPoint);
             }
             else
             {
@@ -318,8 +456,39 @@ public class SCR_DragDrop : MonoBehaviour {
         }
     }
 
+    private void ClamberLerp(float DeltaTime)
+    {
+        if(Mathf.Abs(ReferencePoint.transform.position.y - Character.transform.position.y) <= 0.05f)
+        {
+            if(Mathf.Abs(ReferencePoint.transform.position.x - Character.transform.position.x) <= 0.05f)
+            {
+                Lerping = false;
+                CharacterManager.InteractingWith = null;
+                CharacterManager.UnfreezeVelocity();
+            }
+            else
+            {
+                Vector3 NewPos = Character.transform.position;
+                if (ReferencePoint.transform.position.x - Character.transform.position.x > 0.0f) NewPos.x += DeltaTime * LerpSpeed;
+                else NewPos.x -= DeltaTime * LerpSpeed;
+                Character.transform.position = NewPos;
+            }
+        }
+        else
+        {
+            if (ReferencePoint.transform.position.y - Character.transform.position.y > 0.0f)
+            {
+                Vector3 NewPos = Character.transform.position;
+                NewPos.y += DeltaTime * LerpSpeed;
+                Character.transform.position = NewPos;
+            }
+        }
+    }
+
     private void FixedUpdate()
     {
         EffectorCalculations();
+        if (Lerping) ClamberLerp(Time.deltaTime);
+        if(Moving && !LockedOut) CalculateDir();
     }
 }

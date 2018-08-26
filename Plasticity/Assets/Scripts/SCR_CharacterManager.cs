@@ -1,18 +1,19 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-public class SCR_CharacterManager : MonoBehaviour
+public class SCR_CharacterManager : SCR_GameplayStatics
 {
+    [HideInInspector]
+    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying }
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
     private UnityAction<int> DownListener;
     private UnityAction<int> LeftListener;
     private UnityAction<int> RightListener;
-    private UnityAction<int> InteractListener;
 
     //Booleans that will signify what input is being held down. For example, Up is true whenever an Up
     //Key is held down, and so on
@@ -20,6 +21,8 @@ public class SCR_CharacterManager : MonoBehaviour
     private bool Down = false; // Uncommented by Matt for testing
     private bool Left = false;
     private bool Right = false;
+    [HideInInspector]
+    public bool PlayerGrounded;
 
     [Title("Character Model")]
     [SerializeField]
@@ -34,25 +37,14 @@ public class SCR_CharacterManager : MonoBehaviour
     [Tooltip("Pass in a reference to the Game Object representing the bottom bound of the ledging window")]
     [ValidateInput("IsNull", "There must be a reference to the Game Object representing the bottom bound of the ledging window")]
     private GameObject LedgeBottomBound;
-    [Title("Animations")]
-    [InfoBox("Each of the type of animations stores an array of Animation State names that are associated with the Character Model child Game Object. These categories of animation will randomly choose" +
-        " one of the level states in its array to play. This adds a little randomness/lifelike feeling to the way our character moves")]
-    [SerializeField]
-    [Tooltip("An array of string names for running animations for the character")]
-    [ValidateInput("NotEmpty", "There must be at least one idle animation specified")]
-    private string[] IdleAnimations;
-    [SerializeField]
-    [Tooltip("An array of string names for idle animations for the character")]
-    [ValidateInput("NotEmpty", "There must be at least one run animation specified")]
-    private string[] RunAnimations;
-    [SerializeField]
-    [Tooltip("An array of string names for jumping animations for the character")]
-    [ValidateInput("NotEmpty", "There must be at least one jump animation specified")]
-    private string[] JumpAnimations;
+
     [Title("Movement")]
+    [SerializeField]
     [Tooltip("Determines the maximum speed our character can move.")]
     [ValidateInput("LessThanZero", "We cannot have a max move speed <= 0.0")]
-    public float MoveSpeed;
+    private float MaxMoveSpeed;
+    [SerializeField]
+    private float MaxFallVelocity;
     [SerializeField]
     [Tooltip("Acceleration factor. This effects how quickly the player can start moving, stop moving, and change direction.")]
     [ValidateInput("LessThanZero", "We cannot have an acceleration value <= 0.0")]
@@ -67,6 +59,14 @@ public class SCR_CharacterManager : MonoBehaviour
     [Tooltip("How much force you want the player to jump with.")]
     [ValidateInput("LessThanZero", "We cannot have a jump force <= 0.0")]
     private float JumpForce;
+    [SerializeField]
+    private float HardFallDistance;
+    [SerializeField]
+    private float LengthOfHardFallAnim;
+    [SerializeField]
+    private float LengthOfSlowdown;
+    [SerializeField]
+    private float PostHardFallSpeed;
     [SerializeField]
     [Tooltip("Impact of gravity as the player rises to zenith of jump.")]
     [ValidateInput("LessThanZero", "We cannot have an up gravity component <= 0.0")]
@@ -108,13 +108,19 @@ public class SCR_CharacterManager : MonoBehaviour
     //MoveDir is a boolean that signifies what direction the player is moving in, Right(true) or Left(false).
     [HideInInspector]
     public bool MoveDir = true;
+    private float MoveSpeedPercentage = 1.0f;
+    private bool LastKeypress = true;
+    private bool NoAnimUpdate = false;
+    private bool IsTurnRestricted = false;
+    private int MoveDirAtRestricted = 0;
     [HideInInspector]
     public bool MovingInZ = false;
     [HideInInspector]
     public bool CanJump = true;
     [HideInInspector]
     public bool AmClambering = false;
-
+    [HideInInspector]
+    public GameObject InteractingWith;
     //MoveVec is the vector we are moving along. Will flip as MoveDir changes value
     private Vector3 MoveVec;
     //InitialDir vector is used for determining what direction player velocity should be in if they turn
@@ -129,26 +135,29 @@ public class SCR_CharacterManager : MonoBehaviour
     private RaycastHit LedgingWall;
     //CharacterAnimator will store a reference to the Animator of our Character.
     private Animator CharacterAnimator;
-    private SCR_AnimEventManager AnimManager;
     private SCR_IKToolset IkTools;
 
     //Reference to the character's rigidbody
     [HideInInspector]
     public Rigidbody RBody;
-    //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
 
+    //Boolean used in Jump() to determine when to call OnBeginJump() and OnEndJump()
     private bool DidAJump = false;
+    //Boolean used to shut off velocity calculations 
     private bool VelocityAllowed = true;
+    //Dictates whether the Character manager should behave like the player is climbing
     [HideInInspector]
-    public bool IsClimbing = false; 
-    private bool JumpingOff = false; 
+    public bool IsClimbing = false;
+    private bool JumpingOff = false;
     private bool FallingOff = false;
+    //Defines if the player is in the process of hanging from a ledge
+    private bool CurrentlyLedging = false;
+    public float ClimbSpeed = 3.0f;
+    //Defines how high or low a player can climb up a ladder relative to the ladder's scale
     private float HighClimb;
     private float LowClimb;
     [HideInInspector]
     public GameObject Ladder;
-    private bool CurrentlyLedging = false;
-    public float ClimbSpeed = 3.0f; 
     private bool DoLedgeLerp = false;
     private float LedgeYTarget;
     private float LedgeXTarget;
@@ -184,6 +193,13 @@ public class SCR_CharacterManager : MonoBehaviour
         }
     }
 
+    private bool InAnimationOverride = false;
+    [HideInInspector]
+    public bool StateChangeLocked = false;
+    private string LastAnim;
+    private float FallStartHeight;
+    private bool IsLockedAnims;
+
     private void Awake()
     {
         //Register the callback functions related to each listener. These will be called as
@@ -212,6 +228,68 @@ public class SCR_CharacterManager : MonoBehaviour
         SCR_EventManager.StopListening("RightKey", RightListener);
     }
 
+    private void ChangePlayerState(CharacterStates state)
+    {
+        if (!IsLockedAnims)
+        {
+            if (LastAnim != null) ResetAnim();
+            if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Running"))
+            {
+                if (state == CharacterStates.Idling) SetAnim("RunningToIdle");
+                else if (state == CharacterStates.Falling) SetAnim("RunningToFalling");
+                else if (state == CharacterStates.Jumping) SetAnim("RunningToJump");
+                else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Falling"))
+            {
+                if (state == CharacterStates.Idling) SetAnim("FallingToIdle");
+                else if (state == CharacterStates.Running) SetAnim("FallingToRunning");
+                else if (state == CharacterStates.Lying) SetAnim("FallingToLying");
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+            {
+                if (state == CharacterStates.Falling) SetAnim("JumpToFalling");
+                else if (state == CharacterStates.Idling) SetAnim("JumpToIdle");
+                else if (state == CharacterStates.Running) SetAnim("JumpToRunning");
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            {
+                if (state == CharacterStates.Running) SetAnim("IdleToRunning");
+                else if (state == CharacterStates.Falling) SetAnim("IdleToFalling");
+                else if (state == CharacterStates.Jumping) SetAnim("IdleToJump");
+                else if (state == CharacterStates.Lying) SetAnim("IdleToLying");
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("GettingUp"))
+            {
+                if (state == CharacterStates.Running) SetAnim("LyingToRunning");
+                else if (state == CharacterStates.Idling) SetAnim("LyingToIdle");
+                else if (state == CharacterStates.Jumping) SetAnim("LyingToJumping");                
+            }
+        }
+    }
+
+    private void LockAnim(CharacterStates anim)
+    {
+        ChangePlayerState(anim);
+        IsLockedAnims = true;
+    }
+
+    private void UnlockAnim()
+    {
+        IsLockedAnims = false;
+    }
+
+    private void SetAnim(string input)
+    {
+        LastAnim = input;
+        CharacterAnimator.SetTrigger(input);
+    }
+
+    private void ResetAnim()
+    {
+        CharacterAnimator.ResetTrigger(LastAnim);
+    }
+
     //The following 5 functions are callbacks that get called by the event listeners
     private void UpPressed(int value)
     {
@@ -235,28 +313,35 @@ public class SCR_CharacterManager : MonoBehaviour
             if (CurrentlyLedging)
             {
                 LedgeDismount(false);
-            }   
+            }
         }
         else
             Down = false;
     }
+
+    private bool CanSendRunAnimations()
+    {
+        return PlayerGrounded && !IsClimbing && !InAnimationOverride;
+    }
+
     private void LeftPressed(int value)
     {
+        
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
             Left = true;
+            LastKeypress = false;
             //If we are currently running right when we recieve this left keypress, turn the character.
             if (MoveDir && !CurrentlyLedging)
                 TurnCharacter();
-            if (IsGrounded() && !IsClimbing)
-            {
-                //Tell the animation manager to play a running animation is left is pressed and player is on ground.
-                AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
-            }
-
         }
-        else Left = false;
+        else
+        {
+            Left = false;
+        }
+
+        
     }
     private void RightPressed(int value)
     {
@@ -264,16 +349,16 @@ public class SCR_CharacterManager : MonoBehaviour
         if (value == 1)
         {
             Right = true;
+            LastKeypress = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
             if (!MoveDir && !CurrentlyLedging)
                 TurnCharacter();
-            if (IsGrounded() && !IsClimbing)
-            {
-                //Tell the animation manager to play a running animation is left is pressed and player is on ground.
-                AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.0f);
-            }
         }
-        else Right = false;
+        else
+        {
+            Right = false;
+        }
+        
     }
 
 
@@ -287,24 +372,12 @@ public class SCR_CharacterManager : MonoBehaviour
         if (GetComponent<Rigidbody>()) RBody = GetComponent<Rigidbody>();
         else Debug.LogError("There is currently not a rigidbody attached to this character");
 
-        //Make sure the character has an animation manager
-        if (gameObject.GetComponent<SCR_AnimEventManager>()) AnimManager = gameObject.GetComponent<SCR_AnimEventManager>();
-        else Debug.LogError("There is currently not an AnimEventManager attached to the Character GameObject");
-
         if (gameObject.GetComponent<SCR_IKToolset>()) IkTools = gameObject.GetComponent<SCR_IKToolset>();
         else Debug.LogError("We need a SCR_IKToolset script attached to one of the Character's child Game Objects");
 
         //Make sure the model has an animator component
         if (RefToModel.GetComponent<Animator>()) CharacterAnimator = RefToModel.GetComponent<Animator>();
         else Debug.LogError("There is currently not an animator attached to this character's model");
-        //Pass the instance of the CharacterAnimator obtained in the CharacterManager to the AnimManager.
-        AnimManager.CharacterAnimator = CharacterAnimator;
-
-        //Make sure we have at least one of each type of animation specified.
-        if (RunAnimations.Length == 0) Debug.LogError("You need at least one run animation specified in the CharacterManager");
-        if (IdleAnimations.Length == 0) Debug.LogError("You need at least one idle animation specified in the CharacterManager");
-        if (JumpAnimations.Length == 0) Debug.LogError("You need at least one jump animation specified in the CharacterManager");
-
 
         //Our first move direction will just be the forward vector of the player
         InitialDir = transform.forward;
@@ -316,24 +389,18 @@ public class SCR_CharacterManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        /*if (swimming)
+        if (!InAnimationOverride)
         {
-            if(!CurrentlyLedging && !MovingInZ) CheckForLedges();
+            //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
+            Grounded();
+            CalculateGroundAngle();
+            if (!JumpingOff) CalculateMoveVec();
+            if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
+            if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
             if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
-            Swim();
+            MoveCharacter(Time.deltaTime);
+            DeterminePlayerState();
         }
-        else
-        {
-            
-        }*/
-        //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
-        CalculateGroundAngle();
-        CalculateMoveVec();
-        if (!IsClimbing) Jump(Time.deltaTime);
-        if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
-        if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
-        MoveCharacter(Time.deltaTime);
-        PerTickAnimations();
     }
 
     /// <summary>
@@ -437,26 +504,45 @@ public class SCR_CharacterManager : MonoBehaviour
     // Controls for a player that is climbing a ladder.
     private void Climb()
     {
+        ChangePlayerState(CharacterStates.Idling);
         if (Up)
         {
             if (this.transform.position.y > HighClimb)
-                MoveVec.y = 0;
+            {
+                //Ladder.GetComponent<SCR_Ladder>().climbing = false;
+                //Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+                //IsClimbing = false;
+                //InteractingWith = null;
+                MoveVec = Vector3.zero;
+            }
             else
-                MoveVec.y = ClimbSpeed;
+            {
+                MoveVec = ClimbSpeed * Ladder.transform.up;
+            }
+                
             // Play animation
-        }  
+        }
         else if (Down)
         {
             if (this.transform.position.y < LowClimb)
-                MoveVec.y = 0;
+            {
+                NoAnimUpdate = false;
+                Ladder.GetComponent<SCR_Ladder>().climbing = false;
+                Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+                IsClimbing = false;
+                InteractingWith = null;
+            }
             else
-                MoveVec.y = ClimbSpeed * -1;
+            {
+                MoveVec = (ClimbSpeed * Ladder.transform.up.normalized) * -1.0f;
+            }
+                
             // Play animation
         }
         else
-            MoveVec.y = 0;
+            MoveVec = Vector3.zero;
 
-        if(MoveVec.y == 0)
+        if(MoveVec == Vector3.zero && Ladder.GetComponent<SCR_Ladder>().ClamberEnabled)
         {
             if (Ladder.transform.position.x - gameObject.transform.position.x < 0.0f)
             {
@@ -495,17 +581,17 @@ public class SCR_CharacterManager : MonoBehaviour
     /// </summary>
     public void JumpOff()
     {
-        if (Up)
+        NoAnimUpdate = false;
+        if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+        MoveVec.y = JumpForce;
+        if (Left && !Right)
         {
-            MoveVec.y = JumpForce;
-            if (Left && !Right)
-            {
-                MoveVec.x = JumpForce / 2 * -1;
-            }
-            else if (!Left && Right) MoveVec.x = JumpForce / 2;
-            JumpingOff = true;
-            Jump(Time.deltaTime);
+            MoveVec.x = JumpForce / 2 * -1;
+            //Debug.Log("Jumped off Leftwards");
         }
+        else if (!Left && Right) MoveVec.x = JumpForce / 2;
+        JumpingOff = true;
+        Jump(Time.deltaTime);
     }
 
     /// <summary>
@@ -515,11 +601,18 @@ public class SCR_CharacterManager : MonoBehaviour
     /// <param name="low"></param>
     public void OnClimbable(float high, float low)
     {
-        HighClimb = high- 1.5f;
+        FallStartHeight = 0.0f;
+        HighClimb = high;
         LowClimb = low;
         IsClimbing = true;
+        NoAnimUpdate = true;
         MoveVec.x = 0;
         // TODO: have to change the player's x velocity accordingly.
+    }
+
+    public void SetInAnimationOverride(bool InOverride)
+    {
+        InAnimationOverride = InOverride;
     }
 
     /// <summary>
@@ -527,47 +620,69 @@ public class SCR_CharacterManager : MonoBehaviour
     /// in the air
     /// </summary>
     /// <returns>Whether the player is on the ground or not</returns>
-    public bool IsGrounded()
+    public void Grounded()
     {
+        bool isGroundedResult = false;
         //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
         //or not the character is on an object.
         Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
-        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.15f) + YOffset;
-        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.15f) + YOffset;
-        RaycastHit Result;
+        Vector3 RightPosition = transform.position + (InitialDir.normalized * 0.1f) + YOffset;
+        Vector3 LeftPosition = transform.position + (InitialDir.normalized * -0.1f) + YOffset;
+        RaycastHit LeftResult;
+        RaycastHit RightResult;
+        float raycastExtension = 0.3f;
         //Raycast to find slope of ground beneath us. Needs to extend lower than our raycast that decides if grounded 
         //because we want our velocity to match the slope of the surface slightly before we return true.
         //This prevents a weird bouncing effect that can happen after a player lands. 
-        if (Physics.Raycast(RightPosition, Vector3.down, out Result, GroundTraceDistance + 0.3f, GroundLayer))
+        if (Physics.Raycast(RightPosition, Vector3.down, out RightResult, GroundTraceDistance + raycastExtension, GroundLayer))
         {
+            if (RightResult.distance <= GroundTraceDistance)
+            {
+                isGroundedResult = true;
+            }
             if (MoveDir)
             {
-                HitInfo = Result;
+                HitInfo = RightResult;
             }
         }
-        if (Physics.Raycast(LeftPosition, Vector3.down, out Result, GroundTraceDistance + 0.3f, GroundLayer))
+        if (Physics.Raycast(LeftPosition, Vector3.down, out LeftResult, GroundTraceDistance + raycastExtension, GroundLayer))
         {
+            if (LeftResult.distance <= GroundTraceDistance)
+            {
+                isGroundedResult = true;
+            }
             if (!MoveDir)
             {
-                HitInfo = Result;
+                HitInfo = LeftResult;
             }
         }
-        return (Physics.Raycast(LeftPosition, Vector3.down, GroundTraceDistance, GroundLayer)) ||
-            (Physics.Raycast(RightPosition, Vector3.down, GroundTraceDistance, GroundLayer));
-
+        if(((RightResult.distance < 0.96f * GroundTraceDistance) && (LeftResult.distance < 0.96f * GroundTraceDistance))
+            && isGroundedResult)
+        {
+            Vector3 NewPos = gameObject.transform.position;
+            NewPos.y += (0.04f * GroundTraceDistance);
+            gameObject.transform.position = NewPos; 
+        }
+        PlayerGrounded = isGroundedResult;
     }
-
+    
     private void TurnCharacter()
     {
-        //If we turn, we flip the boolean the signifies player direction
-        MoveDir = !MoveDir;
-        if (MoveDir) SCR_EventManager.TriggerEvent("CharacterTurn", 1);
-        else SCR_EventManager.TriggerEvent("CharacterTurn", 0);
-        Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
-        RefToModel.transform.Rotate(TurnAround);
-        if (IsGrounded())
+        if (!InAnimationOverride && !IsLockedAnims)
         {
-            SpeedModifier = 0.0f;
+            //If we turn, we flip the boolean the signifies player direction
+            MoveDir = !MoveDir;
+            if (MoveDir) SCR_EventManager.TriggerEvent("CharacterTurn", 1);
+            else SCR_EventManager.TriggerEvent("CharacterTurn", 0);
+            if (!IsTurnRestricted)
+            {
+                Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+                RefToModel.transform.Rotate(TurnAround);
+                if (PlayerGrounded)
+                {
+                    SpeedModifier = 0.0f;
+                }
+            }
         }
     }
 
@@ -584,7 +699,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
         //If we are on a slope, we need our velocity to be parallel to the slope. We find this through 
         //a cross product of the normal of that slope, and our right and left vectors.
-        if (IsGrounded())
+        if (PlayerGrounded)
         {
             if (MoveDir)
             {
@@ -618,7 +733,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
     private void CalculateGroundAngle()
     {
-        if (!IsGrounded())
+        if (!PlayerGrounded)
         {
             //If we are in the air, act like the ground is flat
             GroundAngle = 90.0f;
@@ -638,12 +753,46 @@ public class SCR_CharacterManager : MonoBehaviour
         }
     }
 
+    public void SetSpeedPercentage(float modifier)
+    {
+        MoveSpeedPercentage = modifier;
+    }
+
+    public void SetSpeed(float speed)
+    {
+        MaxMoveSpeed = speed;
+    }
+
+    public float GetSpeed()
+    {
+        return MaxMoveSpeed;
+    }
+
+    public void RestrictTurning()
+    {
+        if (MoveDir) MoveDirAtRestricted = 1;
+        else MoveDirAtRestricted = 2;
+        IsTurnRestricted = true;
+    }
+
+    public void UnrestrictTurning()
+    {
+        IsTurnRestricted = false;
+        if ((MoveDirAtRestricted == 1 && !MoveDir) || (MoveDirAtRestricted == 2 && MoveDir))
+        {
+            Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+            RefToModel.transform.Rotate(TurnAround);
+        }
+        MoveDirAtRestricted = 0;
+    }
+
     /// <summary>
     /// Sets the character's velocity to Vector3.Zero, and prevents the CharacterManager from updating velocity unitl UnfreezeVelocity() is called
     /// </summary>
-    public void FreezeVelocity()
+    public void FreezeVelocity(CharacterStates AnimState)
     {
         VelocityAllowed = false;
+        LockAnim(AnimState);
     }
 
     /// <summary>
@@ -652,6 +801,12 @@ public class SCR_CharacterManager : MonoBehaviour
     public void UnfreezeVelocity()
     {
         VelocityAllowed = true;
+        UnlockAnim();
+        if ((Left || Right) && PlayerGrounded) ChangePlayerState(CharacterStates.Running);
+        else if (PlayerGrounded) ChangePlayerState(CharacterStates.Idling);
+        else ChangePlayerState(CharacterStates.Falling);
+        
+        if (LastKeypress != MoveDir) TurnCharacter();
     }
 
     private void Jump(float DeltaTime)
@@ -660,7 +815,8 @@ public class SCR_CharacterManager : MonoBehaviour
         if (IsClimbing || JumpingOff)
         {
             MoveVec.y = JumpForce;
-            AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
+            //Tell anim manager to play a jump animation.
+            ChangePlayerState(CharacterStates.Jumping);
             OnBeginJump();
             IsClimbing = false;
             return;
@@ -670,9 +826,8 @@ public class SCR_CharacterManager : MonoBehaviour
             CalculateMoveVec();
         }
 
-        //If the player has pressed an UP key and the player is currently standing on the ground or if they are swimming at the
-        //surface of a body of water.
-        if (Up && (IsGrounded() || (swimming && !underWater)))
+        //If the player has pressed an UP key and the player is currently standing on the ground
+        if (Up && PlayerGrounded && !StateChangeLocked)
         {
             if (CanJump)
             {   
@@ -681,14 +836,12 @@ public class SCR_CharacterManager : MonoBehaviour
                 //Need a different jump force if we are moving uphill while jumping.
                 if (!swimming && (GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
                 else MoveVec.y = JumpForce;
-                //Tell anim manager to play a jump animation.
-                AnimManager.NewAnimEvent(JumpAnimations[Random.Range(0, JumpAnimations.Length - 1)], 0.15f, 0.0f);
                 OnBeginJump();
                 Debug.Log("jumped");
             }
         }
-        //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be unchanged
-        else if ((!Up && IsGrounded()) || (swimming && underWater))
+        //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero
+        else if (!Up && PlayerGrounded)
         {
             FallingOff = false;
             if (DidAJump) OnEndJump();
@@ -700,9 +853,15 @@ public class SCR_CharacterManager : MonoBehaviour
             if (!DidAJump) OnBeginJump();
 
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
-            if (inWater) MoveVec.y -= UpGravityOnPlayer * DeltaTime / 2;
-            if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
-            else MoveVec.y -= DownGravityOnPlayer * DeltaTime;
+            if (!PlayerGrounded)
+            {
+                if (Mathf.Abs(MoveVec.y) < 0.1f && !IsClimbing) FallStartHeight = gameObject.transform.position.y;
+                if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
+                else if (MoveVec.y > -MaxFallVelocity)
+                {
+                    MoveVec.y -= DownGravityOnPlayer * DeltaTime;
+                }
+            }
         }
     }
 
@@ -721,22 +880,28 @@ public class SCR_CharacterManager : MonoBehaviour
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
         if (!JumpWhileHeld) Up = false;
+        if (FallStartHeight - gameObject.transform.position.y >= HardFallDistance)
+        {
+            FallStartHeight = 0.0f;
+            FreezeVelocity(CharacterStates.Lying);
+            StartCoroutine(Timer(LengthOfHardFallAnim, UnfreezeVelocity));
+            MoveSpeedPercentage = PostHardFallSpeed;
+            StartCoroutine(Timer(LengthOfSlowdown, 1.0f, SetSpeedPercentage));
 
-        AnimManager.NewAnimEvent("SoftLanding", 0.15f, 0.0f);
-        if(Left||Right) AnimManager.NewAnimEvent(RunAnimations[Random.Range(0, RunAnimations.Length - 1)], 0.15f, 0.05f);
+        }
     }
 
     private void MoveCharacter(float DeltaTime)
     {
 
         //If our LEFT button is held, and we are supposed to be moving left, and if move while jumping is on or we are grounded, Accelerate
-        if ((Left && !MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
+        if ((Left && !MoveDir) && !(!MoveWhileJumping && !PlayerGrounded))
         {
             SpeedModifier += Acceleration * DeltaTime;
             if (SpeedModifier >= 1.0f) SpeedModifier = 1.0f;
         }
         //If our Right button is held, and we are supposed to be moving Right, and if move while jumping is on or we are grounded, Accelerate
-        else if ((Right && MoveDir) && !(!MoveWhileJumping && !IsGrounded()))
+        else if ((Right && MoveDir) && !(!MoveWhileJumping && !PlayerGrounded))
         {
             SpeedModifier += Acceleration * DeltaTime;
             if (SpeedModifier >= 1.0f) SpeedModifier = 1.0f;
@@ -745,7 +910,7 @@ public class SCR_CharacterManager : MonoBehaviour
         else
         {
             //If we are grounded, decelerate quickly
-            if (IsGrounded())
+            if (PlayerGrounded)
             {
                 SpeedModifier -= Acceleration * DeltaTime;
                 if (SpeedModifier <= 0.0f) SpeedModifier = 0.0f;
@@ -760,6 +925,7 @@ public class SCR_CharacterManager : MonoBehaviour
 
         //Set velocity of player
         Vector3 FinalVel;
+        float MoveSpeed = MaxMoveSpeed * MoveSpeedPercentage;
 
         if (FallingOff)
         {
@@ -772,7 +938,7 @@ public class SCR_CharacterManager : MonoBehaviour
         if (IsClimbing)
         {
             Climb();
-            FinalVel = new Vector3(0, MoveVec.y, 0);
+            FinalVel = MoveVec;
         }
         // If the player is jumping off of a ladder.
         else if (JumpingOff)
@@ -791,16 +957,11 @@ public class SCR_CharacterManager : MonoBehaviour
             FinalVel = MoveVec;
         }
         //If we are grounded and we didn't just jump move along slope of surface we are on.
-        else if (IsGrounded() && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
+        else if (PlayerGrounded && !DidAJump) // Changed by Matt for Testing from "if" to "else if"
         {
             FinalVel = new Vector3(MoveVec.x * MoveSpeed * SpeedModifier, MoveVec.y * MoveSpeed * SpeedModifier, MoveVec.z * MoveSpeed * SpeedModifier);
             //If the slope is too high, don't move
-            //if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
-            if(gameObject.transform.position.y - HitInfo.point.y < (GroundTraceDistance - YTraceOffset) * 0.5)
-            {
-                float difference = (GroundTraceDistance - YTraceOffset) - (gameObject.transform.position.y - HitInfo.point.y);
-                gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + (difference * 0.95f), gameObject.transform.position.z);
-            }
+            if ((GroundAngle > MaxGroundAngle)) FinalVel = Vector3.zero;
 
         }
         //Otherwise move, but with a y component of velocity that is determined by jumping/falling, and not the slope of the surface we are on.
@@ -812,36 +973,18 @@ public class SCR_CharacterManager : MonoBehaviour
         else RBody.velocity = Vector3.zero;
     }
 
-    //This function makes calls to the AnimManager for animations that need to be updated or calculated per update cycle
-    private void PerTickAnimations()
+    private void DeterminePlayerState()
     {
-        //This lock allows crossfadeing of animations to only be called once per transition
-        if (!AnimManager.AnimLock)
+        if (!NoAnimUpdate)
         {
-            if (IsClimbing)
-            {
-                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
-                AnimManager.AnimLock = true;
-            }
-            else if (swimming && !(Left || Right) && !DidAJump)
-            {
-                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f); // TODO: treading water animation.
-                AnimManager.AnimLock = true;
-            }
-            //If the player is on the ground but not moving, play the idle animation.
-            else if (IsGrounded() && !(Left || Right) && !DidAJump)
-            {
-                AnimManager.NewAnimEvent(IdleAnimations[Random.Range(0, IdleAnimations.Length - 1)], 0.15f, 0.0f);
-                AnimManager.AnimLock = true;
-            }
-            //If the player is falling, play the falling animation
-            else if (!IsGrounded() && MoveVec.y < 0.0f)
-            {
-                AnimManager.NewAnimEvent("Falling", 0.45f, 0.0f);
-                AnimManager.AnimLock = true;
-            }
+            if (!PlayerGrounded && MoveVec.y > 0.0f) ChangePlayerState(CharacterStates.Jumping);
+            if (PlayerGrounded && (Left || Right)) ChangePlayerState(CharacterStates.Running);
+            if (!PlayerGrounded && MoveVec.y < 0.0f) ChangePlayerState(CharacterStates.Falling);
+            if (PlayerGrounded && !(Left || Right)) ChangePlayerState(CharacterStates.Idling);
         }
     }
+
+    //All of the following is trash and I feel bad :(
 
     //This function fires two raycasts out from the character to try and hit a wall. If the bottom hits and the top misses, it starts
     //ledging
@@ -881,7 +1024,7 @@ public class SCR_CharacterManager : MonoBehaviour
             XValue = other.transform.position.x - (other.transform.lossyScale.x / 2.0f);
             ZValueLeft = gameObject.transform.position.z + 0.3f;
             ZValueRight = gameObject.transform.position.z - 0.3f;
-        }     
+        }
         else
         {
             XValue = other.transform.position.x + (other.transform.lossyScale.x / 2.0f);
@@ -897,7 +1040,7 @@ public class SCR_CharacterManager : MonoBehaviour
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
         IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.5f);
         IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.5f);
-        FreezeVelocity();
+        FreezeVelocity(CharacterStates.Idling);
     }
 
     //Called when we want to drop down from the ledge
@@ -920,7 +1063,7 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         //Define Y and X checkpoints we need to reach when we move our character to climb up on top of the wall
         LedgeYTarget = LedgingWall.transform.position.y + (LedgingWall.transform.lossyScale.y / 2.0f);
-        if(transform.position.x - LedgingWall.transform.position.x > 0.0f)
+        if (transform.position.x - LedgingWall.transform.position.x > 0.0f)
             LedgeXTarget = LedgingWall.transform.position.x + (LedgingWall.transform.lossyScale.x / 2.0f);
         else
             LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f);
@@ -936,7 +1079,7 @@ public class SCR_CharacterManager : MonoBehaviour
     {
         Vector3 temp;
         //If we aren't as high as the ledge yet, keep lerping up in Y
-        if(LedgeYTarget - transform.position.y > 0.0f)
+        if (LedgeYTarget - transform.position.y > 0.0f)
         {
             temp = new Vector3(transform.position.x, transform.position.y + (DeltaTime * 2.0f), transform.position.z);
             transform.position = temp;
@@ -959,4 +1102,5 @@ public class SCR_CharacterManager : MonoBehaviour
             LedgeDismount(true);
         }
     }
+
 }

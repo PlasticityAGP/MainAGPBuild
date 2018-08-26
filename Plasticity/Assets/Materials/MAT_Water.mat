@@ -56,7 +56,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
         m_Texture: {fileID: 2800000, guid: 8129c3e3ce8f58f46b0116c3104ecd8c, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
@@ -78,7 +78,7 @@ Material:
     - _DistortStrength: 0.5
     - _DstBlend: 0
     - _ExtraHeight: 0.5
-    - _FoamMultiply: 1.25
+    - _FoamMultiply: 2.22
     - _GlossMapScale: 1
     - _Glossiness: 0.824
     - _GlossyReflections: 1
@@ -86,18 +86,18 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ShoreFactor: 0.92
+    - _ShoreFactor: 0.91
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _WaveAmp: 0.15
-    - _WaveSpeed: 50
+    - _WaveAmp: 0.1
+    - _WaveSpeed: 150
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.07778566, g: 0.49613896, b: 0.8679245, a: 0.3647059}
     - _EdgeColor: {r: 0.9593928, g: 1, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShoreColor: {r: 0, g: 1, b: 0.99999976, a: 1}
-    - _WaterColor: {r: 0, g: 0.3156457, b: 1, a: 0.26666668}
+    - _FoamColor: {r: 0.8584906, g: 0.8220452, b: 0.8220452, a: 1}
+    - _ShoreColor: {r: 0, g: 1, b: 0.06818819, a: 1}
+    - _WaterColor: {r: 0.06906373, g: 0.1509434, b: 0.08660936, a: 0.2509804}

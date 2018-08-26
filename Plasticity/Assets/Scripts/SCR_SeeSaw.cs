@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class SCR_SeeSaw : MonoBehaviour
+public class SCR_SeeSaw : SCR_GameplayStatics
 {
     [SerializeField]
     [Tooltip("This float impacts how much the SeeSaw reacts to the player's weight. The higher the number, the quicker it changes pitch")]
@@ -15,11 +15,6 @@ public class SCR_SeeSaw : MonoBehaviour
     private Rigidbody ParentRbody;
     //Predefined axis along which the seesaw will rotate
     private Vector3 ZVec = new Vector3(0.0f, 0.0f, 1.0f);
-
-    private bool GreaterThanOrEqualZero(float input)
-    {
-        return input >= 0.0f;
-    }
 
     // Use this for initialization
     void Start()

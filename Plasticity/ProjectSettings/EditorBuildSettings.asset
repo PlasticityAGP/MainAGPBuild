@@ -5,13 +5,19 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SCN_Test_Art.unity
     guid: c7be14a95defc204b97d95e3fe31d7c5
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SCN_Test_Base.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SCN_City_Base.unity
     guid: 4d50ccb56a94de34b91d49c222023466
+  - enabled: 1
+    path: Assets/Scenes/SCN_BirdPuzzle_Base.unity
+    guid: 0c6c3d46801b5448ca444dc61f4540db
+  - enabled: 1
+    path: Assets/Scenes/SCN_BirdPuzzle_Art.unity
+    guid: 586f796e5864f4913a89e6a4e5f40033
   m_configObjects: {}
