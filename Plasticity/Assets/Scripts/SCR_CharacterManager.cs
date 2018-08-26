@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
-    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying }
+    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing }
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -113,6 +113,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool NoAnimUpdate = false;
     private bool IsTurnRestricted = false;
     private int MoveDirAtRestricted = 0;
+    private bool PushingAllowed;
     [HideInInspector]
     public bool MovingInZ = false;
     [HideInInspector]
@@ -207,6 +208,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Falling) SetAnim("RunningToFalling");
                 else if (state == CharacterStates.Jumping) SetAnim("RunningToJump");
                 else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
+                else if (state == CharacterStates.Pushing) SetAnim("RunningToPush");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Falling"))
             {
@@ -226,12 +228,18 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Falling) SetAnim("IdleToFalling");
                 else if (state == CharacterStates.Jumping) SetAnim("IdleToJump");
                 else if (state == CharacterStates.Lying) SetAnim("IdleToLying");
+                else if (state == CharacterStates.Pushing) SetAnim("IdleToPush");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("GettingUp"))
             {
                 if (state == CharacterStates.Running) SetAnim("LyingToRunning");
                 else if (state == CharacterStates.Idling) SetAnim("LyingToIdle");
                 else if (state == CharacterStates.Jumping) SetAnim("LyingToJumping");                
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Push"))
+            {
+                if (state == CharacterStates.Running) SetAnim("PushToRunning");
+                else if (state == CharacterStates.Idling) SetAnim("PushToIdle");
             }
         }
     }
@@ -629,6 +637,18 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         return MaxMoveSpeed;
     }
 
+    public void StartPushing()
+    {
+        PushingAllowed = true;
+        RestrictTurning();
+    }
+
+    public void StopPushing()
+    {
+        PushingAllowed = false;
+        UnrestrictTurning();
+    }
+
     public void RestrictTurning()
     {
         if (MoveDir) MoveDirAtRestricted = 1;
@@ -828,7 +848,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (!NoAnimUpdate)
         {
             if (!PlayerGrounded && MoveVec.y > 0.0f) ChangePlayerState(CharacterStates.Jumping);
-            if (PlayerGrounded && (Left || Right)) ChangePlayerState(CharacterStates.Running);
+            if (PlayerGrounded && (Left || Right))
+            {
+                if(PushingAllowed && ((MoveDir && MoveDirAtRestricted == 1) || (!MoveDir && MoveDirAtRestricted == 2)))
+                    ChangePlayerState(CharacterStates.Pushing);
+                else ChangePlayerState(CharacterStates.Running);
+            }
             if (!PlayerGrounded && MoveVec.y < 0.0f) ChangePlayerState(CharacterStates.Falling);
             if (PlayerGrounded && !(Left || Right)) ChangePlayerState(CharacterStates.Idling);
         }

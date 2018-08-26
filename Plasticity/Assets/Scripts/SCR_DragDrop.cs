@@ -143,7 +143,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         else
         {
             Interact = false;
-            CharacterManager.UnrestrictTurning();
+            CharacterManager.StopPushing();
             if (Inside && !LockedOut)
             {
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
@@ -165,7 +165,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             }
             CharacterManager.InteractingWith = gameObject;
             Lerping = true;
-            CharacterManager.UnrestrictTurning();
             StartCoroutine(Timer(1.0f/LerpSpeed - (Character.transform.position.y - gameObject.transform.position.y + 0.35f), ReleaseHands));
             CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         }
@@ -288,7 +287,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         {
             //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
             //and set the velocity of the object to be moved
-            CharacterManager.RestrictTurning();
+            CharacterManager.StartPushing();
             UnfreezeXY();
             CharacterManager.SetSpeed(MaxDragSpeed);
             CharacterManager.InteractingWith = gameObject;
@@ -396,7 +395,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     public void Lockout()
     {
         ReleaseHands();
-        CharacterManager.UnrestrictTurning();
+        CharacterManager.StopPushing();
         LockedOut = true;
         RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
         FreezeAll();
@@ -463,6 +462,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             if(Mathf.Abs(ReferencePoint.transform.position.x - Character.transform.position.x) <= 0.05f)
             {
                 Lerping = false;
+                CharacterManager.StopPushing();
                 CharacterManager.InteractingWith = null;
                 CharacterManager.UnfreezeVelocity();
             }
