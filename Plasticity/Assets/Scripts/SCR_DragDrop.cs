@@ -127,7 +127,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         if (value == 1)
         {
             Interact = true;
-            if (Inside)
+            if (Inside && !LockedOut)
             {
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
                 IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
@@ -143,7 +143,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         else
         {
             Interact = false;
-            if (Inside)
+            if (Inside && !LockedOut)
             {
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
                 IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
@@ -163,7 +163,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             }
             CharacterManager.InteractingWith = gameObject;
             Lerping = true;
-            StartCoroutine(Timer(1.0f/LerpSpeed, ReleaseHands));
+            StartCoroutine(Timer(1.0f/LerpSpeed - (Character.transform.position.y - gameObject.transform.position.y + 0.35f), ReleaseHands));
             CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         }
     }
@@ -217,6 +217,11 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             Inside = true;
             if (Interact)
             {
+                if(!LockedOut)
+                {
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                }
                 EnteredAndInteracted();
             }
         }
@@ -381,6 +386,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     public void Lockout()
     {
+        ReleaseHands();
         LockedOut = true;
         RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
         FreezeAll();
