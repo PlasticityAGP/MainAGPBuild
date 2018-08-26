@@ -9,6 +9,11 @@ Assets/AssetStoreTools*
 # Visual Studio cache directory
 .vs/
 
+# Rider Auto-Generated Files
+Plasticity/.idea
+Plasticity/Assets/Plugins/Editor/JetBrains/
+JetBrains.meta
+
 Plasticity/Assets/Plugins/Sirenix/Assemblies/AOT
 Plasticity/Assets/Plugins/RootMotion/FinalIK/_DEMOS
 Plasticity/Assets/Plugins/RootMotion/FinalIK/_DEMOS.meta
@@ -46,3 +51,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# For Local Changes
+Plasticity/Assets/LOCAL/
+LOCAL.meta
