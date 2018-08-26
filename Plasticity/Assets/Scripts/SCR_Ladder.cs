@@ -49,6 +49,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool ClamberDir;
     private bool AmLerpingCharacter;
     private bool Inside;
+    public bool InsideTop;
 
 
 
@@ -137,13 +138,13 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The "up" key is pressed while the player is inside the ladder's trigger.
     private void Up(int val)
     {
+        if (InsideTop && reaching) OffLadder();
         if (Inside)
         {
             if (reaching)
             {
                 OffLadder();
             }
-
             else if (val == 1 && !climbing)
             {
                 InitiateClimb();
