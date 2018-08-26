@@ -750,6 +750,11 @@ Transform:
   m_Father: {fileID: 982795972}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &122430750 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1976094566310422, guid: db1f2a324325b1d4b99911d53df491f1,
+    type: 2}
+  m_PrefabInternal: {fileID: 791435194}
 --- !u!1 &128697762
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,6 +895,11 @@ Transform:
   m_PrefabParentObject: {fileID: 4755434781468656, guid: f24d07c278cbd5a4d84516eea9a8bf6b,
     type: 2}
   m_PrefabInternal: {fileID: 146967822}
+--- !u!4 &160360464 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4387530405163074, guid: db1f2a324325b1d4b99911d53df491f1,
+    type: 2}
+  m_PrefabInternal: {fileID: 791435194}
 --- !u!1 &166490012
 GameObject:
   m_ObjectHideFlags: 0
@@ -2399,6 +2409,11 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.46697772, y: 0.25, z: 3}
   m_Center: {x: -0.015903534, y: -6.275794e-11, z: 0}
+--- !u!1 &375598059 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1216481222108906, guid: db1f2a324325b1d4b99911d53df491f1,
+    type: 2}
+  m_PrefabInternal: {fileID: 791435194}
 --- !u!1 &376206979
 GameObject:
   m_ObjectHideFlags: 0
@@ -3646,7 +3661,17 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4514206504860890, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4355595451396818, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 114562967379649846, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
+    - {fileID: 65787771787511852, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: db1f2a324325b1d4b99911d53df491f1, type: 2}
   m_IsPrefabParent: 0
 --- !u!1001 &847363231
@@ -3929,7 +3954,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: 0.018197691, y: 0.07448934, z: -0.8774677, w: -0.47346663}
+  m_LocalRotation: {x: 0.016530074, y: 0.07526339, z: -0.8802506, w: -0.46821052}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4158,6 +4183,11 @@ Transform:
   m_Father: {fileID: 1031922992}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &883204136 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1624169753059174, guid: db1f2a324325b1d4b99911d53df491f1,
+    type: 2}
+  m_PrefabInternal: {fileID: 791435194}
 --- !u!1 &927090577
 GameObject:
   m_ObjectHideFlags: 0
@@ -4864,7 +4894,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: 0.027984122, y: 0.09906444, z: -0.90494776, w: 0.4128835}
+  m_LocalRotation: {x: -0.009441882, y: -0.03746586, z: 0.40968317, w: 0.91140926}
   m_LocalPosition: {x: -19.614923, y: 1.0333357, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5774,8 +5804,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1167710954}
-  m_LocalRotation: {x: 0.0031533402, y: -0.02581076, z: 0.999615, w: -0.009678972}
-  m_LocalPosition: {x: 0.11486791, y: -0.96763235, z: -2.1241312}
+  m_LocalRotation: {x: -0.009956349, y: -0.053527407, z: 0.7003146, w: -0.71175504}
+  m_LocalPosition: {x: -0.7393328, y: -0.54546714, z: -2.0828097}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999998}
   m_Children:
   - {fileID: 1766970086}
@@ -6219,6 +6249,164 @@ Transform:
   m_Father: {fileID: 75566971}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &1439503876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1439503877}
+  - component: {fileID: 1439503878}
+  - component: {fileID: 1439503879}
+  m_Layer: 2
+  m_Name: SideGrabTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1439503877
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1439503876}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.983, y: -2.698, z: -0.05}
+  m_LocalScale: {x: 1, y: 1.6851772, z: 2.7573724}
+  m_Children: []
+  m_Father: {fileID: 160360464}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1439503878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1439503876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad5f290fedbec444f9f621378fe2f59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StrengthOfGirl: 20
+  LeftHandEffector: {fileID: 375598059}
+  RightHandEffector: {fileID: 1548861475}
+  LeftHandCurves:
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  RightHandCurves:
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  SlowDownSpeed: 0.75
+  Anchor: {fileID: 122430750}
+  LerpSpeed: 15
+  LeftRightOffset: 0.5
+  TimerLength: 0.5
+  TriggerOnLerping: 1
+  LerpingTriggerName: DeactivateLadderTrigger
+  ObjectWithHingeJoint: {fileID: 883204136}
+--- !u!65 &1439503879
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1439503876}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1443587335
 GameObject:
   m_ObjectHideFlags: 0
@@ -6541,6 +6729,11 @@ Transform:
   m_Father: {fileID: 286976749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1548861475 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1550113397297676, guid: db1f2a324325b1d4b99911d53df491f1,
+    type: 2}
+  m_PrefabInternal: {fileID: 791435194}
 --- !u!1 &1579664726
 GameObject:
   m_ObjectHideFlags: 0
@@ -8352,6 +8545,7 @@ MonoBehaviour:
   TimerLength: 0.5
   TriggerOnLerping: 1
   LerpingTriggerName: DeactivateLadderTrigger
+  ObjectWithHingeJoint: {fileID: 0}
 --- !u!65 &2103812034
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -45,6 +45,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     [ShowIf("TriggerOnLerping")]
     [Tooltip("This is the ID of the setting in the SceneLoader that we would like to load")]
     private string LerpingTriggerName;
+    [SerializeField]
+    private GameObject ObjectWithHingeJoint;
 
 
     //Input event listeners
@@ -104,8 +106,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
 
     private void Start()
     {
-        LadderRB = gameObject.transform.parent.GetComponent<Rigidbody>();
-        LadderHJ = gameObject.transform.parent.GetComponent<HingeJoint>();
+        LadderRB = ObjectWithHingeJoint.GetComponent<Rigidbody>();
+        LadderHJ = ObjectWithHingeJoint.GetComponent<HingeJoint>();
     }
 
     private void InteractPressed(int value)
