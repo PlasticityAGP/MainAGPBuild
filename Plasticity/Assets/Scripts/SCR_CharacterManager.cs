@@ -395,7 +395,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Grounded();
             CalculateGroundAngle();
             if (!JumpingOff) CalculateMoveVec();
-            if (!IsClimbing) Jump(Time.deltaTime); // Changed by Matt for testing from "Jump(Time.deltaTime);"
+            if (!IsClimbing) Jump(Time.deltaTime);
             if (DidAJump && !CurrentlyLedging && !MovingInZ) CheckForLedges();
             if (DoLedgeLerp) LedgeLerp(Time.deltaTime);
             MoveCharacter(Time.deltaTime);
@@ -412,14 +412,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         inWater = inwater;
         if(inWater) waterHeight = sealevel;
-        if (inWater) Debug.Log(this.transform.position.y);
     }
 
     // If the player is touching water, this will determine if they are considered swimming
     // or if they are just walking in shallow water/jumping into water.
     private void InWater()
     {
-        if (IsGrounded())
+        if (PlayerGrounded)
         {
             if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
                 swimming = true;
