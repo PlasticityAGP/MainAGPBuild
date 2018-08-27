@@ -245,6 +245,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     
     private void NullHands()
     {
+        CharacterManager.SetSpeed(InitialSpeed);
         IkTools.ForceEffectorWeight("LeftHand", 0.0f);
         IkTools.ForceEffectorWeight("RightHand", 0.0f);
         IkTools.SetEffectorTarget("LeftHand", null);
