@@ -49,6 +49,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool ClamberDir;
     private bool AmLerpingCharacter;
     private bool Inside;
+    public bool InsideTop;
 
 
 
@@ -137,14 +138,14 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The "up" key is pressed while the player is inside the ladder's trigger.
     private void Up(int val)
     {
+        if (InsideTop && reaching) OffLadder();
         if (Inside)
         {
             if (reaching)
             {
                 OffLadder();
             }
-
-            else if (val == 1 && !climbing)
+            else if (val == 1 && !climbing && !InsideTop)
             {
                 InitiateClimb();
             }
@@ -171,6 +172,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         CharacterManager.Ladder = gameObject;
         CharacterManager.InteractingWith = gameObject;
+        CharacterManager.StopAnimationChange();
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -189,6 +191,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
         CharacterManager.InteractingWith = null;
+        CharacterManager.ResumeAnimationChange();
         CharacterManager.JumpOff();
     }
 
