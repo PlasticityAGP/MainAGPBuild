@@ -20,6 +20,7 @@ public class SCR_Water : MonoBehaviour {
     {
         if(other.tag == "Character")
         {
+            Debug.Log("In water");
             other.GetComponent<SCR_CharacterManager>().IsInWater(true, height);
         }
     }

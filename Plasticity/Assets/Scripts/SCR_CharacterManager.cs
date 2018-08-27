@@ -456,39 +456,39 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
             timeUnderWater += Time.deltaTime;
 
-        // Calculates swimming movement under normal conditions.
+        // Calculates vertical swimming movement under normal conditions.
         maxSwimSpeed *= swimAcceleration;
 
-        if (!DidAJump && !(timeUnderWater > maxTimeUnderWater && underWater))
-        {
-            if (Up && !Down)
-                MoveVec.y += maxSwimSpeed * Time.deltaTime;
-            else if (Down && !Up)
-                MoveVec.y -= maxSwimSpeed * Time.deltaTime;
-            else if (MoveVec.y > 0.05f)
-                MoveVec.y -= maxSwimSpeed * Time.deltaTime / 6f;
-            else if (MoveVec.y < 0.05f)
-                MoveVec.y += maxSwimSpeed * Time.deltaTime / 12f;
+        if (Up && !Down)
+            MoveVec.y += maxSwimSpeed * Time.deltaTime;
+        else if (Down && !Up)
+            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.y > 0.05f)
+            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.y < 0.05f)
+            MoveVec.y += maxSwimSpeed * Time.deltaTime;
 
-            // Calculates vertical movement during edge cases.
-            if (!underWater && !DidAJump)
-            {
-                if (MoveVec.y > 0)
-                    MoveVec.y = 0;
-            }
+        // Calculates vertical movement during edge cases.
+        if (!underWater && !DidAJump)
+        {
+            if (MoveVec.y > 0)
+                MoveVec.y = 0;
         }
 
-        if(!DidAJump || MoveWhileJumping)
+        // TODO: Bring them back to surface. For now it's just going to push them upwards.
+        if (timeUnderWater > maxTimeUnderWater && underWater)
         {
-            if (Left && !Right)
-                MoveVec.x -= maxSwimSpeed * Time.deltaTime;
-            else if (Right && !Left)
-                MoveVec.x += maxSwimSpeed * Time.deltaTime;
-            else if (MoveVec.x < (0 - maxSwimSpeed / swimAcceleration * Time.deltaTime))
-                MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
-            else if (MoveVec.x > (0 + maxSwimSpeed / swimAcceleration * Time.deltaTime))
-                MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
+            
         }
+
+        if (Left && !Right)
+            MoveVec.x -= maxSwimSpeed * Time.deltaTime;
+        else if (Right && !Left)
+            MoveVec.x += maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.x < (0 - maxSwimSpeed / swimAcceleration * Time.deltaTime))
+            MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
+        else if (MoveVec.x > (0 + maxSwimSpeed / swimAcceleration * Time.deltaTime))
+            MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
 
         maxSwimSpeed /= swimAcceleration;
 
@@ -829,7 +829,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (Up && PlayerGrounded && !StateChangeLocked)
         {
             if (CanJump)
-            {   
+            {
                 FallingOff = false;
                 if (DidAJump) OnEndJump();
                 //Need a different jump force if we are moving uphill while jumping.
@@ -852,7 +852,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!DidAJump) OnBeginJump();
 
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
-            if (!PlayerGrounded)
+            if (!PlayerGrounded && !swimming)
             {
                 if (Mathf.Abs(MoveVec.y) < 0.1f && !IsClimbing) FallStartHeight = gameObject.transform.position.y;
                 if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;
