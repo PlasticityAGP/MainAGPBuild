@@ -185,7 +185,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1797596041465854
 GameObject:
   m_ObjectHideFlags: 1
@@ -270,7 +270,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1516003365626394}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.88, y: 0.21, z: -0.121}
+  m_LocalPosition: {x: -8.88, y: 0.21, z: -0.02}
   m_LocalScale: {x: 1.1999999, y: 1.1999999, z: 1.1999999}
   m_Children:
   - {fileID: 4438944344620472}
@@ -619,8 +619,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.2942245, y: 0.4758468, z: 0.9562494}
-  m_Center: {x: -0.00055695564, y: 0.121161155, z: -0.0054383776}
+  m_Size: {x: 1.9168155, y: 0.70232457, z: 0.95624936}
+  m_Center: {x: 0.024988653, y: 0.14205536, z: -0.0054383776}
 --- !u!65 &65960004217877954
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -681,7 +681,7 @@ MonoBehaviour:
   NegativeXEffectorRight: {fileID: 1480348598286412}
   PositiveXEffectorLeft: {fileID: 1890179525004086}
   PositiveXEffectorRight: {fileID: 1814269838962184}
-  MaxDragSpeed: 2
+  MaxDragSpeed: 1
   Character: {fileID: 0}
   LeftHandCurves:
   - serializedVersion: 2

@@ -119,9 +119,9 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         if (value == 1)
         {
             Interact = true;
-            if (Inside && CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject)
+            if (Inside)
             {
-                GrabLadder();
+                if((CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject)) GrabLadder();
             }
         }
       else
@@ -207,10 +207,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             //Make sure the hand effectors are freed for other interactions
             Inside = false;
             CharacterManager.StateChangeLocked = false;
-            if (Interact)
+            if (Interact && CharacterManager.InteractingWith == gameObject)
             {
-                IkTools.SetEffectorTarget("LeftHand", null);
-                IkTools.SetEffectorTarget("RightHand", null);
                 ReleaseLadder();
             }
         }
@@ -236,14 +234,22 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         //Interpolate hands back from their weighted locations and free the character to interact with other objects
         if (CharacterManager.InteractingWith == gameObject)
         {
-            IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
-            IkTools.SetEffectorTarget("RightHand", RightHandEffector);
             IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
             IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
+            StartCoroutine(Timer(0.5f, NullHands));
             CharacterManager.SetSpeed(InitialSpeed);
             CharacterManager.InteractingWith = null;
             PushEnabled = false;
         }
+    }
+    
+    private void NullHands()
+    {
+        IkTools.ForceEffectorWeight("LeftHand", 0.0f);
+        IkTools.ForceEffectorWeight("RightHand", 0.0f);
+        IkTools.SetEffectorTarget("LeftHand", null);
+        IkTools.SetEffectorTarget("RightHand", null);
+        PushEnabled = false;
     }
 
     private void DeactivateLadderZone()

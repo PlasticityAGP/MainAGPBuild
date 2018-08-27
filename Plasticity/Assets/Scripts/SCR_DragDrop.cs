@@ -129,8 +129,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             Interact = true;
             if (Inside && !LockedOut)
             {
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
                 EnteredAndInteracted();
             }
             if (IsZ)
@@ -157,9 +155,9 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (value == 1 && Inside && LerpWhilePlayerClose && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject))
         {
-            SetXEffectors();
             if(!CharacterManager.InteractingWith == gameObject)
             {
+                SetXEffectors();
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
                 IkTools.StartEffectorLerp("RightHand", LeftHandCurves[0], 0.75f);
             }
@@ -206,9 +204,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (other.gameObject.tag == "Character")
         {
-            SetXEffectors();
             Inside = true;
-            if (Interact)
+            if (Interact && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject))
             {
                 if (!LockedOut)
                 {
@@ -223,15 +220,18 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void SetXEffectors()
     {
-        if (gameObject.transform.parent.transform.position.x - Character.transform.position.x > 0.0f)
+        if((CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && Inside)
         {
-            IkTools.SetEffectorTarget("LeftHand", PositiveXEffectorLeft);
-            IkTools.SetEffectorTarget("RightHand", PositiveXEffectorRight);
-        }
-        else
-        {
-            IkTools.SetEffectorTarget("LeftHand", NegativeXEffectorLeft);
-            IkTools.SetEffectorTarget("RightHand", NegativeXEffectorRight);
+            if (gameObject.transform.parent.transform.position.x - Character.transform.position.x > 0.0f)
+            {
+                IkTools.SetEffectorTarget("LeftHand", PositiveXEffectorLeft);
+                IkTools.SetEffectorTarget("RightHand", PositiveXEffectorRight);
+            }
+            else
+            {
+                IkTools.SetEffectorTarget("LeftHand", NegativeXEffectorLeft);
+                IkTools.SetEffectorTarget("RightHand", NegativeXEffectorRight);
+            }
         }
     }
 
@@ -261,8 +261,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     public void OnZTriggerExit()
     {
         //Reset effectors when the character leaves the dragable object zone
-        IkTools.SetEffectorTarget("LeftHand", null);
-        IkTools.SetEffectorTarget("RightHand", null);
+        NullHands();
         FreezeAll();
 
     }
@@ -271,13 +270,13 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (other.gameObject.tag == "Character")
         {
-            CharacterManager.InteractingWith = null;
+            
             Inside = false;
-            if (!Lerping)
+            if (!Lerping && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject))
             {
-                IkTools.SetEffectorTarget("LeftHand", null);
-                IkTools.SetEffectorTarget("RightHand", null);
+                NullHands();
             }
+            CharacterManager.InteractingWith = null;
             FreezeAll();
         }
     }
@@ -309,6 +308,12 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                         IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
                     }
                 }
+            }
+            else
+            {
+                SetXEffectors();
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
+                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
             }
         }
     }
@@ -349,6 +354,14 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         return Result;
     }
 
+    private void NullHands()
+    {
+        IkTools.ForceEffectorWeight("LeftHand", 0.0f);
+        IkTools.ForceEffectorWeight("RightHand", 0.0f);
+        IkTools.SetEffectorTarget("LeftHand", null);
+        IkTools.SetEffectorTarget("RightHand", null);
+    }
+
     /// <summary>
     /// Should be called when the character is overlapping a trigger to pull a DragOBJ
     /// </summary>
@@ -366,31 +379,34 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     /// </summary>
     [HideInInspector]
     public void FreezeAll()
-    {
-        Moving = false;
-        if (!IsZ && Interact)
+    {   
+        if(CharacterManager.InteractingWith == gameObject)
         {
-            CharacterManager.InteractingWith = null;
-        }
-        if(IsZ)
-        {
-            CharacterManager.InteractingWith = null;
-            if (CharacterManager.MoveDir)
+            Moving = false;
+            if (!IsZ && Interact)
             {
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+                CharacterManager.InteractingWith = null;
             }
-            else
+            if (IsZ)
             {
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+                CharacterManager.InteractingWith = null;
+                if (CharacterManager.MoveDir)
+                {
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+                }
+                else
+                {
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+                    IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+                }
             }
-        }
 
-        //Freeze rigidbody via constraints, and return the player to their original speed
-        CharacterManager.SetSpeed(InitialSpeed);
-        RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) | 
-            (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
+            //Freeze rigidbody via constraints, and return the player to their original speed
+            CharacterManager.SetSpeed(InitialSpeed);
+            RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) |
+                (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
+        }
     }
 
     public void Lockout()
@@ -466,8 +482,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                 CharacterManager.StopPushing();
                 CharacterManager.InteractingWith = null;
                 CharacterManager.UnfreezeVelocity();
-                IkTools.SetEffectorTarget("RightHand", null);
-                IkTools.SetEffectorTarget("LeftHand", null);
+                NullHands();
             }
             else
             {
