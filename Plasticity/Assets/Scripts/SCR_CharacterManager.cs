@@ -667,6 +667,16 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         MoveDirAtRestricted = 0;
     }
 
+    public void StopAnimationChange()
+    {
+        NoAnimUpdate = true;
+    }
+
+    public void ResumeAnimationChange()
+    {
+        NoAnimUpdate = false;
+    }
+
     /// <summary>
     /// Sets the character's velocity to Vector3.Zero, and prevents the CharacterManager from updating velocity unitl UnfreezeVelocity() is called
     /// </summary>
@@ -977,5 +987,4 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             LedgeDismount(true);
         }
     }
-
 }

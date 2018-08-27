@@ -210,7 +210,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             Inside = true;
             if (Interact)
             {
-                if(!LockedOut)
+                if (!LockedOut)
                 {
                     IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
                     IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
@@ -218,6 +218,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                 EnteredAndInteracted();
             }
         }
+        else Inside = false;
     }
 
     private void SetXEffectors()
@@ -283,7 +284,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void EnteredAndInteracted()
     {
-        if(CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject)
+        if((CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && !LockedOut)
         {
             //If the character is grounded, in the trigger, and pressing an interact key. Allow the box to move, limit player speed
             //and set the velocity of the object to be moved
@@ -465,6 +466,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                 CharacterManager.StopPushing();
                 CharacterManager.InteractingWith = null;
                 CharacterManager.UnfreezeVelocity();
+                IkTools.SetEffectorTarget("RightHand", null);
+                IkTools.SetEffectorTarget("LeftHand", null);
             }
             else
             {

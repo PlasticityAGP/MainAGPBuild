@@ -145,7 +145,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
             {
                 OffLadder();
             }
-            else if (val == 1 && !climbing)
+            else if (val == 1 && !climbing && !InsideTop)
             {
                 InitiateClimb();
             }
@@ -172,6 +172,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         CharacterManager.Ladder = gameObject;
         CharacterManager.InteractingWith = gameObject;
+        CharacterManager.StopAnimationChange();
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -190,6 +191,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
         CharacterManager.InteractingWith = null;
+        CharacterManager.ResumeAnimationChange();
         CharacterManager.JumpOff();
     }
 
