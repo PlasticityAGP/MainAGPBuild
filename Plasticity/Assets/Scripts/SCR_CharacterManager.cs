@@ -8,6 +8,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
     public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing, Pulling}
+    private CharacterStates PlayerState;
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -250,6 +251,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Idling) SetAnim("PullToIdle");
                 else if (state == CharacterStates.Pushing) SetAnim("PullToPush");
             }
+            PlayerState = state;
         }
     }
 
@@ -553,7 +555,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         PlayerGrounded = isGroundedResult;
     }
     
-    private void TurnCharacter()
+    public void TurnCharacter()
     {
         if (!InAnimationOverride && !IsLockedAnims)
         {
@@ -693,6 +695,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = false;
         LockAnim(AnimState);
+    }
+
+    public void FreezeVelocity()
+    {
+        VelocityAllowed = false;
+        LockAnim(PlayerState);
+    
     }
 
     /// <summary>
