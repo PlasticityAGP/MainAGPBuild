@@ -138,6 +138,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4192983480041826}
+  - component: {fileID: 65534128879904174}
   m_Layer: 0
   m_Name: PF_fishCrate_good
   m_TagString: Untagged
@@ -250,7 +251,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1629633460852526}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.545, y: 3.014, z: -0.108}
+  m_LocalPosition: {x: -15.37, y: 3.014, z: -0.108}
   m_LocalScale: {x: 1.09, y: 1.09, z: 1.09}
   m_Children:
   - {fileID: 4837642688440410}
@@ -916,3 +917,15 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1196564173314552}
   m_Mesh: {fileID: 4300010, guid: b4926845f2b3146408c85aebc85dc527, type: 3}
+--- !u!65 &65534128879904174
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1629633460852526}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.65, y: 0.65, z: 0.65}
+  m_Center: {x: 0, y: 0, z: 0}
