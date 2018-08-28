@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
-    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing }
+    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing, Pulling}
 
     //Event listeners per action for receiving events fired by the Input Manager
     private UnityAction<int> UpListener;
@@ -209,6 +209,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Jumping) SetAnim("RunningToJump");
                 else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
                 else if (state == CharacterStates.Pushing) SetAnim("RunningToPush");
+                else if (state == CharacterStates.Pulling) SetAnim("RunningToPull");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Falling"))
             {
@@ -229,6 +230,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Jumping) SetAnim("IdleToJump");
                 else if (state == CharacterStates.Lying) SetAnim("IdleToLying");
                 else if (state == CharacterStates.Pushing) SetAnim("IdleToPush");
+                else if (state == CharacterStates.Pulling) SetAnim("IdleToPull");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("GettingUp"))
             {
@@ -240,6 +242,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 if (state == CharacterStates.Running) SetAnim("PushToRunning");
                 else if (state == CharacterStates.Idling) SetAnim("PushToIdle");
+                else if (state == CharacterStates.Pulling) SetAnim("PushToPull");
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Pull"))
+            {
+                if (state == CharacterStates.Running) SetAnim("PullToRunning");
+                else if (state == CharacterStates.Idling) SetAnim("PullToIdle");
+                else if (state == CharacterStates.Pushing) SetAnim("PullToPush");
             }
         }
     }
@@ -860,8 +869,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!PlayerGrounded && MoveVec.y > 0.0f) ChangePlayerState(CharacterStates.Jumping);
             if (PlayerGrounded && (Left || Right))
             {
-                if(PushingAllowed && ((MoveDir && MoveDirAtRestricted == 1) || (!MoveDir && MoveDirAtRestricted == 2)))
+                if (PushingAllowed && ((MoveDir && MoveDirAtRestricted == 1) || (!MoveDir && MoveDirAtRestricted == 2)))
                     ChangePlayerState(CharacterStates.Pushing);
+                else if (PushingAllowed && ((MoveDir && MoveDirAtRestricted == 2) || (!MoveDir && MoveDirAtRestricted == 1)))
+                    ChangePlayerState(CharacterStates.Pulling);
                 else ChangePlayerState(CharacterStates.Running);
             }
             if (!PlayerGrounded && MoveVec.y < 0.0f) ChangePlayerState(CharacterStates.Falling);
