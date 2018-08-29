@@ -169,6 +169,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private string LastAnim;
     private float FallStartHeight;
     private bool IsLockedAnims;
+    private bool TurnOverride = false;
 
     private void Awake()
     {
@@ -320,7 +321,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Left = true;
             LastKeypress = false;
             //If we are currently running right when we recieve this left keypress, turn the character.
-            if (MoveDir && !CurrentlyLedging)
+            if (MoveDir && !CurrentlyLedging && PlayerGrounded)
                 TurnCharacter();
         }
         else
@@ -338,7 +339,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Right = true;
             LastKeypress = true;
             //If we are currently running right when we recieve this left keypress, turn the character.
-            if (!MoveDir && !CurrentlyLedging)
+            if (!MoveDir && !CurrentlyLedging && PlayerGrounded)
                 TurnCharacter();
         }
         else
@@ -476,9 +477,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (Left && !Right)
         {
             MoveVec.x = JumpForce / 2 * -1;
-            //Debug.Log("Jumped off Leftwards");
+            if (Ladder.transform.up.x > 0.0f) ForceTurnCharacter();
+        } 
+        else if (!Left && Right)
+        {
+            MoveVec.x = JumpForce / 2;
+            if (Ladder.transform.up.x < 0.0f) ForceTurnCharacter();
         }
-        else if (!Left && Right) MoveVec.x = JumpForce / 2;
         JumpingOff = true;
         Jump(Time.deltaTime);
     }
@@ -555,15 +560,22 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         PlayerGrounded = isGroundedResult;
     }
     
-    public void TurnCharacter()
+    public void ForceTurnCharacter()
     {
-        if (!InAnimationOverride && !IsLockedAnims)
+        TurnOverride = true;
+        LastKeypress = !MoveDir;
+        TurnCharacter();
+    }
+
+    private void TurnCharacter()
+    {
+        if ((!InAnimationOverride && !IsLockedAnims) || TurnOverride)
         {
             //If we turn, we flip the boolean the signifies player direction
             MoveDir = !MoveDir;
             if (MoveDir) SCR_EventManager.TriggerEvent("CharacterTurn", 1);
             else SCR_EventManager.TriggerEvent("CharacterTurn", 0);
-            if (!IsTurnRestricted)
+            if (!IsTurnRestricted || TurnOverride)
             {
                 Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
                 RefToModel.transform.Rotate(TurnAround);
@@ -571,6 +583,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 {
                     SpeedModifier = 0.0f;
                 }
+                if (TurnOverride) TurnOverride = false;
             }
         }
     }
@@ -789,6 +802,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //If we aren't continuously jumping, we need to reset the Up boolean so that the player
         //only jumps once per press of an UP key.
         if (!JumpWhileHeld) Up = false;
+        if (LastKeypress && !MoveDir) TurnCharacter();
+        else if (!LastKeypress && MoveDir) TurnCharacter();
         if (FallStartHeight - gameObject.transform.position.y >= HardFallDistance)
         {
             FallStartHeight = 0.0f;

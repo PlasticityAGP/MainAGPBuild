@@ -162,7 +162,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 LerpDir = 1;
                 IkTools.SetEffectorTarget("RightHand", RightHandMountEffector);
                 IkTools.StartEffectorLerp("RightHand", RightHandCurves[2], 0.75f);
-                //if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.35f, TurnTheCharacter));
+                if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.25f, TurnTheCharacter));
             }
             if (ObjectWithHingeJoint.transform.up.x < 0.0f)
             {
@@ -170,14 +170,14 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 LerpDir = 2;
                 IkTools.SetEffectorTarget("LeftHand", LeftHandMountEffector);
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                //if (CharacterManager.MoveDir) StartCoroutine(Timer(0.35f, TurnTheCharacter));
+                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.25f, TurnTheCharacter));
             }
         }
     }
 
     private void TurnTheCharacter()
     {
-        CharacterManager.TurnCharacter();
+        CharacterManager.ForceTurnCharacter();
     }
 
     private void FixedUpdate()
