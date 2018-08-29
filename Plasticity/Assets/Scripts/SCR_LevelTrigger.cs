@@ -65,6 +65,13 @@ public class SCR_LevelTrigger : MonoBehaviour {
     [ShowIf("TransformZ")]
     private float ZLerpSpeed;
     private bool LerpBool;
+    [SerializeField]
+    [Tooltip("Specifies whether or not we want to fire an event when the player begins changing plane")]
+    private bool TriggerOnLerping;
+    [SerializeField]
+    [ShowIf("TriggerOnLerping")]
+    [Tooltip("This is the ID of the setting in the SceneLoader that we would like to load")]
+    private string LerpingTriggerName;
     SCR_CharacterManager Manager;
 	
 	// Update is called once per frame
@@ -128,7 +135,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
         bool DoneX = false;
         bool DoneY = false;
         bool DoneZ = false;
-        if (Mathf.Abs(MagX) < 0.01f) DoneX = true;
+        if (Mathf.Abs(MagX) < 0.05f) DoneX = true;
         else
         {
             if (TransformX)
@@ -140,7 +147,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
             }
             else DoneX = true;
         }
-        if (Mathf.Abs(MagY) < 0.01f) DoneY = true;
+        if (Mathf.Abs(MagY) < 0.05f) DoneY = true;
         else
         {
             if (TransformY)
@@ -152,7 +159,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
             }
             else DoneY = true;
         }
-        if (Mathf.Abs(MagZ) < 0.01f) DoneZ = true;
+        if (Mathf.Abs(MagZ) < 0.05f) DoneZ = true;
         else
         {
             if (TransformZ)
@@ -167,6 +174,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
         if (DoneX && DoneY && DoneZ)
         {
             LerpBool = false;
+            if (TriggerOnLerping) SCR_EventManager.TriggerEvent("LevelTrigger", LerpingTriggerName);
         }
     }
 }
