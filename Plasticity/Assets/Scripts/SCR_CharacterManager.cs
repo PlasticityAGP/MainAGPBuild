@@ -646,6 +646,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         }
     }
 
+    public GameObject GetRefToModel()
+    {
+        return RefToModel;
+    }
+
     public void SetSpeedPercentage(float modifier)
     {
         MoveSpeedPercentage = modifier;
