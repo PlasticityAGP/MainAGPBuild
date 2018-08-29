@@ -159,7 +159,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     private void UpPressed(int value)
     {
         Up = value;
-        if (value == 1 && Inside && CharacterManager.InteractingWith == null)
+        if (value == 1 && Inside && CharacterManager.InteractingWith == null && CharacterManager.PlayerGrounded && !CharacterManager.IsCharacterInHardFall())
         {
             CharacterManager.InteractingWith = gameObject;
             //When we begin shifting the player, we need to check if we are supposed to fire an event, and then tell ladder to fire our event
@@ -173,7 +173,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 LerpDir = 1;
                 IkTools.SetEffectorTarget("RightHand", RightHandMountEffector);
                 IkTools.StartEffectorLerp("RightHand", RightHandCurves[2], 0.75f);
-                if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.25f, TurnTheCharacter));
+                if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.15f, TurnTheCharacter));
             }
             if (ObjectWithHingeJoint.transform.up.x < 0.0f)
             {
@@ -181,7 +181,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 LerpDir = 2;
                 IkTools.SetEffectorTarget("LeftHand", LeftHandMountEffector);
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.25f, TurnTheCharacter));
+                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.15f, TurnTheCharacter));
             }
         }
     }

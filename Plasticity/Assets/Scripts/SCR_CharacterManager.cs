@@ -170,6 +170,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private float FallStartHeight;
     private bool IsLockedAnims;
     private bool TurnOverride = false;
+    private bool AmInHardFall = false;
 
     private void Awake()
     {
@@ -399,10 +400,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         {
             if (this.transform.position.y > HighClimb)
             {
-                //Ladder.GetComponent<SCR_Ladder>().climbing = false;
-                //Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
-                //IsClimbing = false;
-                //InteractingWith = null;
                 MoveVec = Vector3.zero;
             }
             else
@@ -417,8 +414,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (this.transform.position.y < LowClimb)
             {
                 NoAnimUpdate = false;
-                Ladder.GetComponent<SCR_Ladder>().climbing = false;
-                Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
+                SCR_Ladder LadderScript = Ladder.GetComponent<SCR_Ladder>();
+                LadderScript.climbing = false;
+                LadderScript.ReleaseTrigger();
+                if (Ladder.transform.up.x > 0.0f && !LastKeypress) TurnCharacter();
+                else if (Ladder.transform.up.x < 0.0f && LastKeypress) TurnCharacter();
+                LadderScript.DoRotationCalculations(false);
                 IsClimbing = false;
                 InteractingWith = null;
             }
@@ -729,11 +730,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = true;
         UnlockAnim();
+        if (LastKeypress != MoveDir) TurnCharacter();
         if ((Left || Right) && PlayerGrounded) ChangePlayerState(CharacterStates.Running);
         else if (PlayerGrounded) ChangePlayerState(CharacterStates.Idling);
         else ChangePlayerState(CharacterStates.Falling);
-        
-        if (LastKeypress != MoveDir) TurnCharacter();
     }
 
     private void Jump(float DeltaTime)
@@ -812,12 +812,24 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (FallStartHeight - gameObject.transform.position.y >= HardFallDistance)
         {
             FallStartHeight = 0.0f;
+            AmInHardFall = true;
             FreezeVelocity(CharacterStates.Lying);
             StartCoroutine(Timer(LengthOfHardFallAnim, UnfreezeVelocity));
             MoveSpeedPercentage = PostHardFallSpeed;
             StartCoroutine(Timer(LengthOfSlowdown, 1.0f, SetSpeedPercentage));
+            StartCoroutine(Timer(LengthOfHardFallAnim + 0.4f, DisableHardFall));
 
         }
+    }
+
+    private void DisableHardFall()
+    {
+        AmInHardFall = false;
+    }
+
+    public bool IsCharacterInHardFall()
+    {
+        return AmInHardFall;
     }
 
     private void MoveCharacter(float DeltaTime)

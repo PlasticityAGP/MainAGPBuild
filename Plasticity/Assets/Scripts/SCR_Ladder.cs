@@ -36,6 +36,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private float OffTheTop;
     [SerializeField]
     private float OffTheBottom;
+    [SerializeField]
+    private bool LadderInXY;
+    [SerializeField]
+    private float RotationLerpSpeed;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -49,7 +53,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool ClamberDir;
     private bool AmLerpingCharacter;
     private bool Inside;
+    [HideInInspector]
     public bool InsideTop;
+    private bool RotationDirection;
+    private bool CoroutineDone = true;
 
 
 
@@ -173,6 +180,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
         CharacterManager.Ladder = gameObject;
         CharacterManager.InteractingWith = gameObject;
         CharacterManager.StopAnimationChange();
+        DoRotationCalculations(true);
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -193,6 +201,22 @@ public class SCR_Ladder : SCR_GameplayStatics {
         CharacterManager.InteractingWith = null;
         CharacterManager.ResumeAnimationChange();
         CharacterManager.JumpOff();
+        DoRotationCalculations(false);
+    }
+
+    public void DoRotationCalculations(bool IsOn)
+    {
+        if (LadderInXY && (CharacterManager.InteractingWith == gameObject || CharacterManager.InteractingWith == null))
+        {
+            RotationDirection = IsOn;
+            if (CoroutineDone)
+            {
+                CoroutineDone = false;
+                StartCoroutine(PlayerRotation(Quaternion.FromToRotation(CharacterManager.GetRefToModel().transform.up, Character.transform.up) * CharacterManager.GetRefToModel().transform.rotation,
+                    Quaternion.FromToRotation(CharacterManager.GetRefToModel().transform.up, gameObject.transform.up)
+                    * CharacterManager.GetRefToModel().transform.rotation));
+            }
+        }
     }
 
     private void EndLerp()
@@ -245,5 +269,22 @@ public class SCR_Ladder : SCR_GameplayStatics {
     void Update()
     {
         if (AmLerpingCharacter) LerpCharacter(Time.deltaTime);
+    }
+
+    IEnumerator PlayerRotation(Quaternion Base, Quaternion Tilted)
+    {
+        float TimeSlice = 0.0f;
+        bool LastTick = RotationDirection;
+        while (TimeSlice < 1.0f)
+        {
+            if (LastTick != RotationDirection) TimeSlice = 1.0f - TimeSlice;
+            TimeSlice += Time.deltaTime * RotationLerpSpeed;
+            Quaternion Output;
+            if (RotationDirection) Output = Quaternion.Lerp(Base, Tilted, TimeSlice);
+            else Output = Quaternion.Lerp(Tilted, Base, TimeSlice);
+            CharacterManager.GetRefToModel().transform.rotation = Output;
+            yield return null;
+        }
+        CoroutineDone = true;
     }
 }
