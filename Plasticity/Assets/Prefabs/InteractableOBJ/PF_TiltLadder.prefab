@@ -1095,8 +1095,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.8757508, y: 0.64342725, z: 0.68709475}
-  m_Center: {x: 0.09031546, y: -0.17828691, z: -0.5102196}
+  m_Size: {x: 1.8757508, y: 0.13928258, z: 0.68709475}
+  m_Center: {x: 0.09031546, y: -0.4303611, z: -0.5102196}
 --- !u!65 &65283850189804828
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -1156,7 +1156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5f290fedbec444f9f621378fe2f59d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StrengthOfGirl: 30
+  StrengthOfGirl: 15
   LeftHandEffector: {fileID: 1216481222108906}
   RightHandEffector: {fileID: 1550113397297676}
   LeftHandCurves:

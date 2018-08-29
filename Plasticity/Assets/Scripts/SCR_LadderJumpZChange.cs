@@ -64,7 +64,7 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
         {
             Character = other.gameObject;
             CharacterManager = Character.GetComponent<SCR_CharacterManager>();
-            if (!SideGrabbingScript.IsLerping() && !SideGrabbingScript.IsInside() && Up)
+            if (!SideGrabbingScript.IsLerping() && !SideGrabbingScript.IsInside() && Up && CharacterManager.InteractingWith == null)
             {
                 if (DetermineSide(other) && CharacterManager.MoveDir && LadderLean())
                 {
@@ -118,6 +118,7 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
     private void BeginLerp()
     {
         if (TriggerOnLerping) SCR_EventManager.TriggerEvent("LevelTrigger", LerpingTriggerName);
+        CharacterManager.InteractingWith = gameObject;
         CharacterManager.FreezeVelocity();
         Lerping = true;
     }
@@ -131,6 +132,7 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
         }
         else SCR_EventManager.TriggerEvent("UpKey", 1);
         if (Up) SCR_EventManager.TriggerEvent("UpKey", 0);
+        CharacterManager.InteractingWith = null;
         CharacterManager.UnfreezeVelocity();
         Lerping = false;
     }

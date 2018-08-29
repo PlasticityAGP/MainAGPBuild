@@ -60,6 +60,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     //Input event listeners
     private UnityAction<int> InteractListener;
     private UnityAction<int> UpListener;
+    private UnityAction<int> LeftListener;
+    private UnityAction<int> RightListener;
 
     //Is true while the player has the interact key pressed down
     private bool Interact;
@@ -67,6 +69,9 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     private bool Inside;
     //Is true while the player is physically moving the ladder
     private bool PushEnabled = false;
+    private bool LastKeyPress = true;
+    private bool Left;
+    private bool Right;
 
     //Reference to character
     private GameObject Character;
@@ -91,6 +96,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         //the events these listeners are listening to get invoked 
         InteractListener = new UnityAction<int>(InteractPressed);
         UpListener = new UnityAction<int>(UpPressed);
+        LeftListener = new UnityAction<int>(LeftPressed);
+        RightListener = new UnityAction<int>(RightPressed);
     }
 
 
@@ -99,12 +106,16 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         //Register listeners with their events in the EventManager
         SCR_EventManager.StartListening("InteractKey", InteractListener);
         SCR_EventManager.StartListening("UpKey", UpListener);
+        SCR_EventManager.StartListening("LeftKey", LeftListener);
+        SCR_EventManager.StartListening("RightKey", RightListener);
     }
 
     private void OnDisable()
     {
         SCR_EventManager.StopListening("InteractKey", InteractListener);
         SCR_EventManager.StopListening("UpKey", UpListener);
+        SCR_EventManager.StopListening("LeftKey", LeftListener);
+        SCR_EventManager.StopListening("RightKey", RightListener);
     }
 
     private void Start()
@@ -175,6 +186,26 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         }
     }
 
+    private void LeftPressed(int value)
+    {
+        if (value == 1)
+        {
+            LastKeyPress = false;
+            Left = true;
+        }
+        else Left = false;  
+    }
+
+    private void RightPressed(int value)
+    {
+        if (value == 1)
+        {
+            LastKeyPress = true;
+            Right = true;
+        }
+        else Right = false;
+    }
+
     private void TurnTheCharacter()
     {
         CharacterManager.ForceTurnCharacter();
@@ -207,11 +238,11 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         //If the character is pushing the ladder every tick, add torque in the appropriate direction
         if (other.tag == "Character" && PushEnabled)
         {
-            if (CharacterManager.MoveDir)
+            if (Right && LastKeyPress)
             {
                 LadderRB.AddTorque(LadderHJ.axis * -(StrengthOfGirl));
             }
-            else
+            else if (Left && !LastKeyPress)
             {
                 LadderRB.AddTorque(LadderHJ.axis * (StrengthOfGirl));
             }
