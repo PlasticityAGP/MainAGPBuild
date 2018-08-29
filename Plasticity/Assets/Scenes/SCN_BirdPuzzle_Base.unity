@@ -35,10 +35,10 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 1
+  m_ReflectionIntensity: 0.798
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.40156984, g: 0.4469322, b: 0.5183011, a: 0.798}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3973,7 +3973,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: 0.019834591, y: 0.06966294, z: -0.8588328, w: 0.5071094}
+  m_LocalRotation: {x: 0.02534244, y: 0.09977557, z: -0.86590827, w: 0.4894951}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4966,8 +4966,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: 0.0022192087, y: 0.05918807, z: -0.62964624, w: 0.7746209}
-  m_LocalPosition: {x: -19.614923, y: 1.0333357, z: -14.531662}
+  m_LocalRotation: {x: -0.009126771, y: -0.02617479, z: 0.37052128, w: 0.9284103}
+  m_LocalPosition: {x: -24.754923, y: 1.0333357, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 880448470}
@@ -5876,8 +5876,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1167710954}
-  m_LocalRotation: {x: 0.014599269, y: 0.07451036, z: -0.69705623, w: -0.7129851}
-  m_LocalPosition: {x: -0.24270996, y: -0.46987984, z: -2.0620227}
+  m_LocalRotation: {x: -0.030709881, y: 0.027219994, z: 0.32414553, w: -0.9451167}
+  m_LocalPosition: {x: -0.32572627, y: -1.3045706, z: -2.1613476}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999998}
   m_Children:
   - {fileID: 1766970086}
@@ -7939,7 +7939,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -19.95
+      value: -25.09
       objectReference: {fileID: 0}
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_LocalPosition.y
