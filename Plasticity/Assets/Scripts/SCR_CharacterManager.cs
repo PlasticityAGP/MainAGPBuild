@@ -155,6 +155,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     //Defines if the player is in the process of hanging from a ledge
     private bool CurrentlyLedging = false;
     public float ClimbSpeed = 3.0f;
+    [SerializeField]
+    private GameObject BackTarget;
     //Defines how high or low a player can climb up a ladder relative to the ladder's scale
     private float HighClimb;
     private float LowClimb;
@@ -173,28 +175,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public float maxTimeUnderWater = 2;
     public float timeUnderWater;
     public float waterHeight;
-
-    private bool NotEmpty(string[] array)
-    {
-        if (array.Length == 0) return false;
-        else return true;
-    }
-    private bool LessThanZero(float input)
-    {
-        return input > 0.0f;
-    }
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     private bool InAnimationOverride = false;
     [HideInInspector]
     public bool StateChangeLocked = false;
@@ -622,40 +602,49 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     // Controls for a player that is climbing a ladder.
     private void Climb()
     {
+        Vector3 LadderUp = IkTools.LadderSlope.normalized;
+        IkTools.BodyPos = BackTarget;
         ChangePlayerState(CharacterStates.Idling);
         if (Up)
         {
-            if (this.transform.position.y > HighClimb)
+            if (this.transform.position.y > HighClimb || IkTools.DisableUp)
             {
                 MoveVec = Vector3.zero;
                 ForcePlayerState(CharacterStates.Paused);
+                IkTools.Still();
             }
             else
             {
-                MoveVec = ClimbSpeed * Ladder.transform.up;
+                MoveVec = ClimbSpeed * LadderUp;
                 ForcePlayerState(CharacterStates.ClimbingUp);
+                IkTools.ClimbingUp();
             }
                 
             // Play animation
         }
         else if (Down)
         {
-            if (this.transform.position.y < LowClimb)
+            if (this.transform.position.y < LowClimb || IkTools.DisableDown)
             {
+                IkTools.FlushIk();
                 NoAnimUpdate = false;
                 SCR_Ladder LadderScript = Ladder.GetComponent<SCR_Ladder>();
                 LadderScript.climbing = false;
                 LadderScript.ReleaseTrigger();
-                if (Ladder.transform.up.x > 0.0f && !LastKeypress) TurnCharacter();
-                else if (Ladder.transform.up.x < 0.0f && LastKeypress) TurnCharacter();
+                if (LadderUp.x > 0.0f && !LastKeypress) TurnCharacter();
+                else if (LadderUp.x < 0.0f && LastKeypress) TurnCharacter();
                 LadderScript.DoRotationCalculations(false);
                 IsClimbing = false;
                 InteractingWith = null;
             }
             else
             {
-                MoveVec = (ClimbSpeed * Ladder.transform.up.normalized) * -1.0f;
-                ForcePlayerState(CharacterStates.ClimbingDown);
+                if (!IkTools.DisableDown)
+                {
+                    MoveVec = (ClimbSpeed * LadderUp.normalized) * -1.0f;
+                    ForcePlayerState(CharacterStates.ClimbingDown);
+                    IkTools.ClimbingDown();
+                }
             }
                 
             // Play animation
@@ -663,6 +652,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
         {
             ForcePlayerState(CharacterStates.Paused);
+            IkTools.Still();
             MoveVec = Vector3.zero;
         }
 
@@ -705,9 +695,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// </summary>
     public void JumpOff()
     {
+        IkTools.FlushIk();
         NoAnimUpdate = false;
         if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
-        MoveVec.y = JumpForce;
+        MoveVec.y = JumpForce + 4.5f;
         if (Left && !Right)
         {
             MoveVec.x = JumpForce / 2 * -1;

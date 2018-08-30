@@ -181,7 +181,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 LerpDir = 2;
                 IkTools.SetEffectorTarget("LeftHand", LeftHandMountEffector);
                 IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.15f, TurnTheCharacter));
+                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.07f, TurnTheCharacter));
             }
         }
     }

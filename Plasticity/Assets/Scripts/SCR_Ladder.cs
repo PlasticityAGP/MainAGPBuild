@@ -8,6 +8,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
 
     [Tooltip("Flags whether or not the player will clamber at the top of the ladder")]
     public bool ClamberEnabled;
+    public GameObject LadderModel;
     [SerializeField]
     [Tooltip("The effectors the players will reach towards as they clamber at the top of the ladder")]
     [ValidateInput("NotEmpty", "We need to have a nonzero number of effectors defined")]
@@ -40,6 +41,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool LadderInXY;
     [SerializeField]
     private float RotationLerpSpeed;
+    [SerializeField]
+    private GameObject[] LeftLadderRungs;
+    [SerializeField]
+    private GameObject[] RightLadderRungs;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -181,6 +186,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
         CharacterManager.InteractingWith = gameObject;
         CharacterManager.StopAnimationChange();
         DoRotationCalculations(true);
+        if(SideOfLadder()) IkTools.InitiateLadderIK(LeftLadderRungs);
+        else IkTools.InitiateLadderIK(RightLadderRungs);
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -192,6 +199,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
+        IkTools.FlushIk();
         if (UsingLowerBarrier) LowerBarrier.SetActive(true);
         ReleaseTrigger();
         climbing = false;
@@ -285,6 +293,14 @@ public class SCR_Ladder : SCR_GameplayStatics {
             CharacterManager.GetRefToModel().transform.rotation = Output;
             yield return null;
         }
+        if (RotationDirection) IkTools.MountLadderIK(SideOfLadder(), false);
         CoroutineDone = true;
+    }
+
+    private bool SideOfLadder()
+    {
+        Vector3 A = Character.transform.position - gameObject.transform.position;
+        float ZValue = Vector3.Cross(gameObject.transform.up, A).z;
+        return ZValue >= 0.0f;
     }
 }

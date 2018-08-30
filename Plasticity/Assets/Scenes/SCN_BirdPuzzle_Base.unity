@@ -4103,7 +4103,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: 0.0211876, y: 0.07067409, z: -0.8643379, w: 0.49746987}
+  m_LocalRotation: {x: 0.009920071, y: -0.10804941, z: 0.86823523, w: 0.4841431}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4568,6 +4568,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClamberEnabled: 0
+  LadderModel: {fileID: 0}
   EffectorTargets:
   - {fileID: 252639756}
   - {fileID: 1291628404}
@@ -4624,6 +4625,8 @@ MonoBehaviour:
   OffTheBottom: 4
   LadderInXY: 0
   RotationLerpSpeed: 0
+  LeftLadderRungs: []
+  RightLadderRungs: []
   climbing: 0
   InsideTop: 0
 --- !u!65 &951345335
@@ -5098,7 +5101,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: 0.0021187854, y: 0.059960656, z: -0.6227311, w: 0.78013223}
+  m_LocalRotation: {x: -0.0008582365, y: 0.011574271, z: -0.40985012, w: 0.9120791}
   m_LocalPosition: {x: -24.754923, y: 1.0333357, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5425,6 +5428,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1069189157}
   - component: {fileID: 1069189154}
+  - component: {fileID: 1069189155}
   m_Layer: 12
   m_Name: Barrier
   m_TagString: Untagged
@@ -5444,6 +5448,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1069189155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1069189153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81c706b7a2fda6e4eaa332d153c2226b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1069189157
 Transform:
   m_ObjectHideFlags: 0
@@ -6008,8 +6023,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1167710954}
-  m_LocalRotation: {x: -0.06298209, y: 0.01865982, z: 0.6970462, w: -0.714011}
-  m_LocalPosition: {x: -0.24126786, y: -0.47661567, z: -2.0622118}
+  m_LocalRotation: {x: 0.028203007, y: 0.019047692, z: -0.29322177, w: 0.95543855}
+  m_LocalPosition: {x: -0.6230764, y: -1.2798364, z: -2.1660764}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999998}
   m_Children:
   - {fileID: 1766970086}
@@ -8627,6 +8642,16 @@ Prefab:
         type: 2}
       propertyPath: LerpingTriggerName
       value: DeactivateLadderTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 65933057752471686, guid: f24d07c278cbd5a4d84516eea9a8bf6b,
+        type: 2}
+      propertyPath: m_Size.y
+      value: 1.936213
+      objectReference: {fileID: 0}
+    - target: {fileID: 65933057752471686, guid: f24d07c278cbd5a4d84516eea9a8bf6b,
+        type: 2}
+      propertyPath: m_Center.y
+      value: 0.46810612
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f24d07c278cbd5a4d84516eea9a8bf6b, type: 2}
