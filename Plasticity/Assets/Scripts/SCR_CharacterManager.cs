@@ -504,7 +504,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             MoveVec.y += maxSwimSpeed * Time.deltaTime;
             if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
         }*/
-        maxSwimSpeed *= 10;
+        maxSwimSpeed *= 5;
         float swimval = maxSwimSpeed * Time.deltaTime;
         float reverseAcc = 10;
         if (Up && !Down)
@@ -536,13 +536,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (MoveVec.x < 0) swimval *= reverseAcc;
             if (MoveVec.x > maxSwimSpeed) swimval = 0;
         }
-        else if (MoveVec.x < (0 - swimval)) // when idling
+        else if (MoveVec.x < 0.05f) // when idling
             swimval *= 2;
-        else if (MoveVec.x > (0 + swimval)) // when idling
+        else if (MoveVec.x > 0.05f) // when idling
             swimval *= -2;
 
         MoveVec.x += swimval;
-        maxSwimSpeed /= 10;
+        maxSwimSpeed /= 5;
         RBody.velocity = MoveVec;
     }
 
