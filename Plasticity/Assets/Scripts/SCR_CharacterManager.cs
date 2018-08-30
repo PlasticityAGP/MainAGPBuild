@@ -175,28 +175,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public float maxTimeUnderWater = 2;
     public float timeUnderWater;
     public float waterHeight;
-
-    private bool NotEmpty(string[] array)
-    {
-        if (array.Length == 0) return false;
-        else return true;
-    }
-    private bool LessThanZero(float input)
-    {
-        return input > 0.0f;
-    }
-    private bool IsNull(GameObject thing)
-    {
-        try
-        {
-            return thing.scene.IsValid();
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     private bool InAnimationOverride = false;
     [HideInInspector]
     public bool StateChangeLocked = false;
