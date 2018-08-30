@@ -15,19 +15,33 @@ public class SCR_IKToolset : MonoBehaviour {
 
     //Reference to the IK component we have attached to our character model
     [SerializeField]
-    private AnimationCurve LadderCurve;
+    private AnimationCurve OnLadderCurve;
+    [SerializeField]
+    private AnimationCurve LadderTransition;
     private FullBodyBipedIK Ik;
     private Coroutine LatestLeftHand;
     private Coroutine LatestRightHand;
     private Coroutine LatestLeftFoot;
     private Coroutine LatestRightFoot;
+    private Coroutine LadderCycle;
     private GameObject[] LadderRungs;
+    private int ClimbState;
+    private bool Direction;
+    private bool LastCycleDirection = false;
+    private bool LadderCycleOn;
+    private bool LadderMounted;
+    private int[] HandRungs;
+    private int[] FeetRungs;
+    private bool SideOfLadder;
+
 
     // Use this for initialization
     void Start () {
         //Find the instance of the IK component attached to our character
         if (gameObject.GetComponentInChildren<FullBodyBipedIK>()) Ik = gameObject.GetComponentInChildren<FullBodyBipedIK>();
         else Debug.LogError("We need a a FullBodyBipedIK component attached to one of the Character's child Game Objects");
+        HandRungs = new int[2];
+        FeetRungs = new int[2];
     }
 
     /// <summary>
@@ -239,23 +253,25 @@ public class SCR_IKToolset : MonoBehaviour {
 
     public void MountLadderIK(bool side, bool ZLadder)
     {
+        LadderMounted = true;
+        SideOfLadder = side;
         GameObject[] ReturnRungs = FindClosestRungs();
         SetEffectorTarget("LeftHand", null);
         SetEffectorTarget("RightHand", null);
-        Vector3[] OffsetHandPoints = FindOffsetPoints(ReturnRungs[0], side, false, ZLadder);
-        Vector3[] OffsetFeetPoints = FindOffsetPoints(ReturnRungs[1], side, true, ZLadder);
+        Vector3[] OffsetHandPoints = FindOffsetPoints(ReturnRungs[0], false, ZLadder);
+        Vector3[] OffsetFeetPoints = FindOffsetPoints(ReturnRungs[1], true, ZLadder);
         SetEffectorLocation("LeftHand", OffsetHandPoints[0]);
         SetEffectorLocation("RightHand", OffsetHandPoints[1]);
         SetEffectorLocation("LeftFoot", OffsetFeetPoints[0]);
         SetEffectorLocation("RightFoot", OffsetFeetPoints[1]);
-        StartEffectorLerp("LeftHand", LadderCurve, 1.0f);
-        StartEffectorLerp("RightHand", LadderCurve, 1.0f);
-        StartEffectorLerp("LeftFoot", LadderCurve, 1.0f);
-        StartEffectorLerp("RightFoot", LadderCurve, 1.0f);
+        StartEffectorLerp("LeftHand", OnLadderCurve, 1.0f);
+        StartEffectorLerp("RightHand", OnLadderCurve, 1.0f);
+        StartEffectorLerp("LeftFoot", OnLadderCurve, 1.0f);
+        StartEffectorLerp("RightFoot", OnLadderCurve, 1.0f);
 
         Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;
         Ik.solver.rightHandEffector.rotation = ReturnRungs[0].transform.rotation;
-        if (side)
+        if (SideOfLadder)
         {
             Vector3 Foot = new Vector3();
             Foot.x = 562.294f;
@@ -287,23 +303,27 @@ public class SCR_IKToolset : MonoBehaviour {
             {
                 ShoulderDistance = (Ik.solver.leftArmMapping.bone1.position - LadderRungs[i].transform.position).magnitude;
                 ShoulderRung = LadderRungs[i];
+                HandRungs[0] = i;
+                HandRungs[1] = i;
             }
             if((Ik.solver.leftLegMapping.bone3.position - LadderRungs[i].transform.position).magnitude < FootDistance)
             {
                 FootDistance = (Ik.solver.leftLegMapping.bone3.position - LadderRungs[i].transform.position).magnitude;
                 FootRung = LadderRungs[i];
+                FeetRungs[0] = i;
+                FeetRungs[1] = i;
             }
         }
         return new GameObject[] {ShoulderRung, FootRung};
     }
 
-    private Vector3[] FindOffsetPoints(GameObject Rung, bool side, bool feet, bool ZLadder)
+    private Vector3[] FindOffsetPoints(GameObject Rung, bool feet, bool ZLadder)
     {
         Vector3 PositionLeft = Rung.transform.position;
         Vector3 PositionRight = Rung.transform.position;
         if (!ZLadder)
         {
-            if (side)
+            if (SideOfLadder)
             {
                 PositionLeft.z += 0.2f;
                 PositionRight.z -= 0.2f;
@@ -320,6 +340,171 @@ public class SCR_IKToolset : MonoBehaviour {
             }
         }
         return new Vector3[] { PositionLeft, PositionRight };
+    }
+
+    private void UpState()
+    {
+        if (ClimbState == 3) ClimbState = 0;
+        else ++ClimbState;
+    }
+
+    private void DownState()
+    {
+        if (ClimbState == 0) ClimbState = 3;
+        else --ClimbState;
+    }
+
+    public void ClimbingUp()
+    {
+        if (LadderMounted)
+        {
+            Direction = true;
+            if (!LadderCycleOn)
+            {
+                LadderCycle = StartCoroutine(ClimbCycle());
+                LadderCycleOn = true;
+            }
+        }
+    }
+
+    public void ClimbingDown()
+    {
+        if (LadderMounted)
+        {
+            Direction = false;
+            if (!LadderCycleOn)
+            {
+                LadderCycle = StartCoroutine(ClimbCycle());
+                LadderCycleOn = true;
+            }
+        }
+    }
+
+    public void Still()
+    {
+        if (LadderMounted)
+        {
+            if (LadderCycleOn)
+            {
+                StopCoroutine(LadderCycle);
+                LadderCycleOn = false;
+            }
+        }
+    }
+
+    IEnumerator ClimbCycle()
+    {
+        while (true)
+        {
+            if(LastCycleDirection != Direction)
+            {
+                if (Direction) DownState();
+                else UpState();
+                LastCycleDirection = Direction;
+            }
+            if (Direction)
+            {
+                UpState();
+            }
+            else
+            {
+                DownState();
+            }
+            MoveHands();
+            yield return new WaitForSeconds(0.25f);
+        }
+    }
+
+    private void MoveHands()
+    {
+        if (Direction)
+        {
+            switch (ClimbState)
+            {
+                case 0:
+                    if (HandRungs[1] == LadderRungs.Length - 1) Still();
+                    else
+                    {
+                        ++HandRungs[1];
+                        SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);                        
+                        Debug.Log("Right Hand is on: " + LadderRungs[HandRungs[1]].name);
+                    }
+                    break;
+                case 1:
+                    if (FeetRungs[1] == LadderRungs.Length - 1) Still();
+                    else
+                    {
+                        ++FeetRungs[1];
+                        SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
+                        Debug.Log("Right Foot is on: " + LadderRungs[FeetRungs[0]].name);
+                    }
+                    break;
+                case 2:
+                    if (HandRungs[0] == LadderRungs.Length - 1) Still();
+                    else
+                    {
+                        ++HandRungs[0];
+                        SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
+                        Debug.Log("Left Hand is on: " + LadderRungs[HandRungs[0]].name);
+                    }
+                    break;
+                case 3:
+                    if (FeetRungs[0] == LadderRungs.Length - 1) Still();
+                    else
+                    {
+                        ++FeetRungs[0];
+                        SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
+                        Debug.Log("Left Foot is on: " + LadderRungs[FeetRungs[1]]);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            switch (ClimbState)
+            {
+                case 0:
+                    if (HandRungs[1] == 0) Still();
+                    else
+                    {
+                        --HandRungs[1];
+                        SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
+                        Debug.Log("Right Hand is on: " + LadderRungs[HandRungs[1]].name);
+                    }
+                    break;
+                case 1:
+                    if (FeetRungs[0] == 0) Still();
+                    else
+                    {
+                        --FeetRungs[1];
+                        SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
+                        Debug.Log("Left Foot is on: " + LadderRungs[FeetRungs[0]].name);
+                    }
+                    break;
+                case 2:
+                    if (HandRungs[0] == 0) Still();
+                    else
+                    {
+                        --HandRungs[0];
+                        SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
+                        Debug.Log("Left Hand is on: " + LadderRungs[HandRungs[0]].name);
+                    }
+                    break;
+                case 3:
+                    if (FeetRungs[1] == 0) Still();
+                    else
+                    {
+                        --FeetRungs[0];
+                        SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
+                        Debug.Log("Right Foot is on: " + LadderRungs[FeetRungs[1]]);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 }

@@ -435,11 +435,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 MoveVec = Vector3.zero;
                 ForcePlayerState(CharacterStates.Paused);
+                IkTools.Still();
             }
             else
             {
                 MoveVec = ClimbSpeed * Ladder.transform.up;
                 ForcePlayerState(CharacterStates.ClimbingUp);
+                IkTools.ClimbingUp();
             }
                 
             // Play animation
@@ -462,6 +464,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             {
                 MoveVec = (ClimbSpeed * Ladder.transform.up.normalized) * -1.0f;
                 ForcePlayerState(CharacterStates.ClimbingDown);
+                IkTools.ClimbingDown();
             }
                 
             // Play animation
@@ -469,6 +472,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
         {
             ForcePlayerState(CharacterStates.Paused);
+            IkTools.Still();
             MoveVec = Vector3.zero;
         }
 
