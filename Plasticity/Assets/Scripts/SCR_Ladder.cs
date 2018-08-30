@@ -41,7 +41,9 @@ public class SCR_Ladder : SCR_GameplayStatics {
     [SerializeField]
     private float RotationLerpSpeed;
     [SerializeField]
-    private GameObject[] LadderRungs;
+    private GameObject[] LeftLadderRungs;
+    [SerializeField]
+    private GameObject[] RightLadderRungs;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -183,6 +185,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
         CharacterManager.InteractingWith = gameObject;
         CharacterManager.StopAnimationChange();
         DoRotationCalculations(true);
+        if(SideOfLadder()) IkTools.InitiateLadderIK(LeftLadderRungs);
+        else IkTools.InitiateLadderIK(RightLadderRungs);
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -287,6 +291,14 @@ public class SCR_Ladder : SCR_GameplayStatics {
             CharacterManager.GetRefToModel().transform.rotation = Output;
             yield return null;
         }
+        if (RotationDirection) IkTools.MountLadderIK(SideOfLadder(), false);
         CoroutineDone = true;
+    }
+
+    private bool SideOfLadder()
+    {
+        Vector3 A = Character.transform.position - gameObject.transform.position;
+        float ZValue = Vector3.Cross(gameObject.transform.up, A).z;
+        return ZValue >= 0.0f;
     }
 }
