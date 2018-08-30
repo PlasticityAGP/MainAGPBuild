@@ -40,6 +40,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool LadderInXY;
     [SerializeField]
     private float RotationLerpSpeed;
+    [SerializeField]
+    private GameObject[] LadderRungs;
 
 
     private SCR_CharacterManager CharacterManager;
