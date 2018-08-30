@@ -505,33 +505,43 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
         }*/
         maxSwimSpeed *= 10;
-
+        float swimval = maxSwimSpeed * Time.deltaTime;
+        float reverseAcc = 10;
         if (Up && !Down)
         {
-            if (MoveVec.y < maxSwimSpeed) MoveVec.y += maxSwimSpeed * Time.deltaTime;
+            if (MoveVec.y < 0) swimval *= reverseAcc;
+            else if (MoveVec.y > maxSwimSpeed) swimval = 0;
         }
         else if (Down && !Up)
         {
-            if (MoveVec.y > maxSwimSpeed * -1) MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+            swimval *= -1;
+            if (MoveVec.y > 0) swimval *= reverseAcc;
+            if (MoveVec.y < maxSwimSpeed * -1) swimval = 0;
         }
-        else if (MoveVec.y > 0.05f)
-            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
-        else if (MoveVec.y < 0.05f)
-            MoveVec.y += maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.y > 0.05f) // When idling
+            swimval *= -2;
+        else if (MoveVec.y < 0.05f) // when idling
+            swimval *= 2;
 
+        MoveVec.y += swimval;
+        swimval = maxSwimSpeed * Time.deltaTime;
         if (Left && !Right)
         {
-            if (MoveVec.x > maxSwimSpeed * -1) MoveVec.x -= maxSwimSpeed * Time.deltaTime;
+            swimval *= -1;
+            if (MoveVec.x > 0) swimval *= reverseAcc;
+            if (MoveVec.x < maxSwimSpeed * -1) swimval = 0;
         }
         else if (Right && !Left)
         {
-            if (MoveVec.x < maxSwimSpeed) MoveVec.x += maxSwimSpeed * Time.deltaTime;
+            if (MoveVec.x < 0) swimval *= reverseAcc;
+            if (MoveVec.x > maxSwimSpeed) swimval = 0;
         }
-        else if (MoveVec.x < (0 - maxSwimSpeed * Time.deltaTime))
-            MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
-        else if (MoveVec.x > (0 + maxSwimSpeed * Time.deltaTime))
-            MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
+        else if (MoveVec.x < (0 - swimval)) // when idling
+            swimval *= 2;
+        else if (MoveVec.x > (0 + swimval)) // when idling
+            swimval *= -2;
 
+        MoveVec.x += swimval;
         maxSwimSpeed /= 10;
         RBody.velocity = MoveVec;
     }
