@@ -11,7 +11,7 @@ struct QueueObject
     public AnimationCurve curve;
 }
 
-public class SCR_IKToolset : MonoBehaviour {
+public class SCR_IKToolset : SCR_GameplayStatics {
 
     //Reference to the IK component we have attached to our character model
     [SerializeField]
@@ -32,6 +32,7 @@ public class SCR_IKToolset : MonoBehaviour {
     private bool LadderMounted;
     private int[] HandRungs;
     private int[] FeetRungs;
+    private float Period = 0.25f;
     private bool SideOfLadder;
 
 
@@ -411,7 +412,7 @@ public class SCR_IKToolset : MonoBehaviour {
                 DownState();
             }
             MoveHands();
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(Period);
         }
     }
 
@@ -425,36 +426,52 @@ public class SCR_IKToolset : MonoBehaviour {
                     if (HandRungs[1] == LadderRungs.Length - 1) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         ++HandRungs[1];
-                        SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);                        
-                        Debug.Log("Right Hand is on: " + LadderRungs[HandRungs[1]].name);
+                        Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
+                        StartCoroutine(LerpLocation(From, To, "RightHand"));
+                        //StartEffectorLerp("RightHand", LadderTransition, Period);
+                        //SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
+                        //StartCoroutine(Timer(Period/2.0f, 0.0f, LadderChangeEffectors));                       
                     }
                     break;
                 case 1:
                     if (FeetRungs[1] == LadderRungs.Length - 1) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         ++FeetRungs[1];
-                        SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
-                        Debug.Log("Right Foot is on: " + LadderRungs[FeetRungs[0]].name);
+                        Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
+                        StartCoroutine(LerpLocation(From, To, "RightFoot"));
+                        //StartEffectorLerp("RightFoot", LadderTransition, Period);
+                        //SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
+                        //StartCoroutine(Timer(Period / 2.0f, 1.0f, LadderChangeEffectors));
                     }
                     break;
                 case 2:
                     if (HandRungs[0] == LadderRungs.Length - 1) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         ++HandRungs[0];
-                        SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
-                        Debug.Log("Left Hand is on: " + LadderRungs[HandRungs[0]].name);
+                        Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
+                        StartCoroutine(LerpLocation(From, To, "LeftHand"));
+                        //StartEffectorLerp("Lefthand", LadderTransition, Period);
+                        //SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
+                        //StartCoroutine(Timer(Period / 2.0f, 2.0f, LadderChangeEffectors));
                     }
                     break;
                 case 3:
                     if (FeetRungs[0] == LadderRungs.Length - 1) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         ++FeetRungs[0];
-                        SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
-                        Debug.Log("Left Foot is on: " + LadderRungs[FeetRungs[1]]);
+                        Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
+                        StartCoroutine(LerpLocation(From, To, "LeftFoot"));
+                        //StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                        //SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
+                        //StartCoroutine(Timer(Period / 2.0f, 3.0f, LadderChangeEffectors));
                     }
                     break;
                 default:
@@ -469,41 +486,94 @@ public class SCR_IKToolset : MonoBehaviour {
                     if (HandRungs[1] == 0) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         --HandRungs[1];
-                        SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
-                        Debug.Log("Right Hand is on: " + LadderRungs[HandRungs[1]].name);
+                        Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
+                        StartCoroutine(LerpLocation(From, To, "RightHand"));
+                        //StartEffectorLerp("RightHand", LadderTransition, Period);
+                        //SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
+                        //StartCoroutine(Timer(Period / 2.0f, 0.0f, LadderChangeEffectors));
                     }
                     break;
                 case 1:
                     if (FeetRungs[0] == 0) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         --FeetRungs[1];
-                        SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
-                        Debug.Log("Left Foot is on: " + LadderRungs[FeetRungs[0]].name);
+                        Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
+                        StartCoroutine(LerpLocation(From, To, "RightFoot"));
+                        //StartEffectorLerp("RightFoot", LadderTransition, Period);
+                        //SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
+                        //StartCoroutine(Timer(Period / 2.0f, 1.0f, LadderChangeEffectors));
                     }
                     break;
                 case 2:
                     if (HandRungs[0] == 0) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         --HandRungs[0];
-                        SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
-                        Debug.Log("Left Hand is on: " + LadderRungs[HandRungs[0]].name);
+                        Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
+                        StartCoroutine(LerpLocation(From, To, "LeftHand"));
+                        //StartEffectorLerp("Lefthand", LadderTransition, Period);
+                        //SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
+                        //StartCoroutine(Timer(Period / 2.0f, 2.0f, LadderChangeEffectors));
                     }
                     break;
                 case 3:
                     if (FeetRungs[1] == 0) Still();
                     else
                     {
+                        Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         --FeetRungs[0];
-                        SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
-                        Debug.Log("Right Foot is on: " + LadderRungs[FeetRungs[1]]);
+                        Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
+                        StartCoroutine(LerpLocation(From, To, "LeftFoot"));
+                        //StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                        //SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
+                        //StartCoroutine(Timer(Period / 2.0f, 3.0f, LadderChangeEffectors));
                     }
                     break;
                 default:
                     break;
             }
+        }
+    }
+
+    IEnumerator LerpLocation(Vector3 PointA, Vector3 PointB, string Effector)
+    {
+        float CurrentTime = 0.0f;
+        while (CurrentTime <= Period)
+        {
+            CurrentTime += Time.deltaTime;
+            float Modifier = CurrentTime * (1.0f / Period);
+            Vector3 OutputPos = Vector3.Lerp(PointA, PointB, Modifier);
+            SetEffectorLocation(Effector, OutputPos);
+            yield return null;
+        }
+    }
+
+    private void LadderChangeEffectors(float value)
+    {
+        if(value == 0.0f)
+        {
+            SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
+            Debug.Log("Right Hand is on: " + LadderRungs[HandRungs[1]].name);
+        }
+        else if (value == 1.0f)
+        {
+            SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
+            Debug.Log("Right Foot is on: " + LadderRungs[FeetRungs[0]].name);
+        }
+        else if (value == 2.0f)
+        {
+            SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
+            Debug.Log("Left Hand is on: " + LadderRungs[HandRungs[0]].name);
+        }
+        else if (value == 3.0f)
+        {
+            SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
+            Debug.Log("Left Foot is on: " + LadderRungs[FeetRungs[1]]);
         }
     }
 
