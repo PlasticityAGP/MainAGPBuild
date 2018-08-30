@@ -43,7 +43,8 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     public Vector3 LadderSlope;
     [HideInInspector]
     public GameObject BodyPos;
-    private bool InitiationComplete;
+    private bool InitiationComplete = false;
+    private bool ShutdownComplete = false;
 
 
     // Use this for initialization
@@ -331,6 +332,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             Ik.solver.leftFootEffector.rotation.eulerAngles = Foot;
             Ik.solver.rightFootEffector.rotation.eulerAngles = Foot;
         }
+        ShutdownComplete = false;
     }
 
     private GameObject[] FindClosestRungs()
@@ -450,7 +452,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     {
         while (true)
         {
-            if (InitiationComplete)
+            if (InitiationComplete && !ShutdownComplete)
             {
                 if (LastCycleDirection != Direction)
                 {
@@ -639,6 +641,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
 
     public void FlushIk()
     {
+        ShutdownComplete = true;
         DisableUp = false;
         DisableDown = false;
         InitiationComplete = false;

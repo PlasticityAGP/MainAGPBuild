@@ -199,6 +199,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
+        IkTools.FlushIk();
         if (UsingLowerBarrier) LowerBarrier.SetActive(true);
         ReleaseTrigger();
         climbing = false;
