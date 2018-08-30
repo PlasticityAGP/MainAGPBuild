@@ -2075,7 +2075,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1624169753059174}
   serializedVersion: 2
-  m_Mass: 0.4
+  m_Mass: 2
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -2127,8 +2127,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6730318, y: 5.0589843, z: 1.7882667}
-  m_Center: {x: -0.07026759, y: 0.22315073, z: -0.39413333}
+  m_Size: {x: 1.850389, y: 5.0589843, z: 1.7882667}
+  m_Center: {x: -0.0027122826, y: 0.22315073, z: -0.39413333}
 --- !u!65 &65021428134174014
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -2200,7 +2200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5f290fedbec444f9f621378fe2f59d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StrengthOfGirl: 15
+  StrengthOfGirl: 80
   LeftHandEffector: {fileID: 1216481222108906}
   RightHandEffector: {fileID: 1550113397297676}
   LeftHandCurves:
@@ -2287,6 +2287,29 @@ MonoBehaviour:
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.61021566
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.2
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -2379,9 +2402,32 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.2
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   SlowDownSpeed: 0.4
   Anchor: {fileID: 1976094566310422}
-  LerpSpeed: 7
+  LerpSpeed: 5
   LeftRightOffset: 0.5
   TimerLength: 0.5
   TriggerOnLerping: 1
@@ -2405,7 +2451,7 @@ MonoBehaviour:
   RightReferencePoint: {fileID: 1596442339153734}
   LeftReferencePoint: {fileID: 1308058644964034}
   SideGrabbingTrigger: {fileID: 1812385394761620}
-  SpeedOfLerp: 7
+  LerpSpeed: 12
   TriggerOnLerping: 1
   LerpingTriggerName: DeactivateLadderTrigger
 --- !u!114 &114616392718005298

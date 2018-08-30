@@ -587,7 +587,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             else
             {
                 MoveVec = ClimbSpeed * LadderUp;
-                ForcePlayerState(CharacterStates.ClimbingUp);
+                ForcePlayerState(CharacterStates.Idling);
                 IkTools.ClimbingUp();
             }
                 
@@ -613,7 +613,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 if (!IkTools.DisableDown)
                 {
                     MoveVec = (ClimbSpeed * LadderUp.normalized) * -1.0f;
-                    ForcePlayerState(CharacterStates.ClimbingDown);
+                    ForcePlayerState(CharacterStates.Idling);
                     IkTools.ClimbingDown();
                 }
             }
@@ -669,7 +669,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         IkTools.FlushIk();
         NoAnimUpdate = false;
         if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
-        MoveVec.y = JumpForce + 4.5f;
+        MoveVec.y = JumpForce + 5.0f;
         if (Left && !Right)
         {
             MoveVec.x = JumpForce / 2 * -1;

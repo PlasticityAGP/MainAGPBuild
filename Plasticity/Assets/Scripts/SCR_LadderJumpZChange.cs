@@ -13,7 +13,7 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
     [SerializeField]
     private GameObject SideGrabbingTrigger;
     [SerializeField]
-    private float SpeedOfLerp;
+    private float LerpSpeed;
     [SerializeField]
     [Tooltip("Specifies whether or not we want to fire an event when the player begins changing plane")]
     private bool TriggerOnLerping;
@@ -28,7 +28,6 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
     private UnityAction<int> UpListener;
     private bool Up;
     private Vector3 GoalPoint;
-    private bool Lerping = false;
 
     private void Awake()
     {
@@ -110,9 +109,16 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
         else return false;
     }
 
-    private void FixedUpdate()
+    IEnumerator LerpVector(Vector3 From, Vector3 To)
     {
-        if (Lerping) DoLerp(Time.deltaTime);
+        float TimeModifier = 0.0f;
+        while (TimeModifier < 1.0f)
+        {
+            TimeModifier += Time.deltaTime * LerpSpeed;
+            Character.transform.position = Vector3.Lerp(From, To, TimeModifier);
+            yield return true;
+        }
+        EndLerp();
     }
 
     private void BeginLerp()
@@ -120,7 +126,7 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
         if (TriggerOnLerping) SCR_EventManager.TriggerEvent("LevelTrigger", LerpingTriggerName);
         CharacterManager.InteractingWith = gameObject;
         CharacterManager.FreezeVelocity();
-        Lerping = true;
+        StartCoroutine(LerpVector(Character.transform.position, GoalPoint));
     }
 
     private void EndLerp()
@@ -134,41 +140,5 @@ public class SCR_LadderJumpZChange : MonoBehaviour {
         if (Up) SCR_EventManager.TriggerEvent("UpKey", 0);
         CharacterManager.InteractingWith = null;
         CharacterManager.UnfreezeVelocity();
-        Lerping = false;
-    }
-
-    private void DoLerp(float DeltaTime)
-    {
-        Vector3 LerpVec = Character.transform.position;
-        bool X, Y, Z;
-        if (Mathf.Abs(Character.transform.position.x - GoalPoint.x) > 0.1f)
-        {
-            if((GoalPoint.normalized.x - Character.transform.position.normalized.x) > 0.0f)
-                LerpVec.x +=  DeltaTime * SpeedOfLerp;
-            else
-                LerpVec.x -= DeltaTime * SpeedOfLerp;
-            X = false;
-        }
-        else X = true;
-        if (Mathf.Abs(Character.transform.position.y - GoalPoint.y) > 0.1f)
-        {
-            if((GoalPoint.normalized.y - Character.transform.position.normalized.y) > 0.0f)
-                LerpVec.y += DeltaTime * SpeedOfLerp;
-            else
-                LerpVec.y -= DeltaTime * SpeedOfLerp;
-            Y = false;
-        }
-        else Y = true;
-        if (Mathf.Abs(Character.transform.position.z - GoalPoint.z) > 0.1f)
-        {
-            if((GoalPoint.normalized.z - Character.transform.position.normalized.z) > 0.0f)
-                LerpVec.z +=  DeltaTime * SpeedOfLerp;
-            else
-                LerpVec.z -= DeltaTime * SpeedOfLerp;
-            Z = false;
-        }
-        else Z = true;
-        Character.transform.position = LerpVec;
-        if (X && Y && Z) EndLerp();
     }
 }

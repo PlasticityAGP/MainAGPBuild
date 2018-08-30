@@ -2135,7 +2135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86ddc666076be654a817d94eaff3cdde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnLadderCurve:
+  OnLadderCurveHands:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -2148,7 +2148,31 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.2
+      time: 0.05
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  OnLadderCurveFeet:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.05
       value: 1
       inSlope: 0
       outSlope: 0
@@ -2876,6 +2900,14 @@ MonoBehaviour:
   ClimbSpeed: 0.65
   BackTarget: {fileID: 1488671882343052}
   Ladder: {fileID: 0}
+  inWater: 0
+  underWater: 0
+  swimming: 0
+  maxSwimSpeed: 0
+  swimAcceleration: 0
+  maxTimeUnderWater: 2
+  timeUnderWater: 0
+  waterHeight: 0
   StateChangeLocked: 0
 --- !u!136 &136348256801458980
 CapsuleCollider:

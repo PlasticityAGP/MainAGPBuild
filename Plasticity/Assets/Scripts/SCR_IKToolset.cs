@@ -15,7 +15,9 @@ public class SCR_IKToolset : SCR_GameplayStatics {
 
     //Reference to the IK component we have attached to our character model
     [SerializeField]
-    private AnimationCurve OnLadderCurve;
+    private AnimationCurve OnLadderCurveHands;
+    [SerializeField]
+    private AnimationCurve OnLadderCurveFeet;
     [SerializeField]
     private AnimationCurve LadderTransition;
     private FullBodyBipedIK Ik;
@@ -306,10 +308,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         SetEffectorLocation("LeftFoot", OffsetFeetPoints[0]);
         SetEffectorLocation("RightFoot", OffsetFeetPoints[1]);
         SetEffectorTarget("Body", BodyPos);
-        StartEffectorLerp("LeftHand", OnLadderCurve, 1.0f);
-        StartEffectorLerp("RightHand", OnLadderCurve, 1.0f);
-        StartEffectorLerp("LeftFoot", OnLadderCurve, 1.0f);
-        StartEffectorLerp("RightFoot", OnLadderCurve, 1.0f);
+        StartEffectorLerp("LeftHand", OnLadderCurveHands, 0.05f);
+        StartEffectorLerp("RightHand", OnLadderCurveHands, 0.05f);
+        StartEffectorLerp("LeftFoot", OnLadderCurveFeet, 0.5f);
+        StartEffectorLerp("RightFoot", OnLadderCurveFeet, 0.5f);
         ForceEffectorWeight("Body", 0.1f);
 
         Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;

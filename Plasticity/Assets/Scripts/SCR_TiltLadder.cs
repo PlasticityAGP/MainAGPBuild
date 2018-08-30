@@ -87,7 +87,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     //When we trigger an event, we need to store the ID of the event that the Ladder script triggers
     private string LadderTriggerName;
     //Which direction are we currently lerping the player
-    private int LerpDir = 0;
+    private bool Lerping = false;
     private int Up;
 
     private void Awake()
@@ -131,8 +131,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
 
     public bool IsLerping()
     {
-        if (LerpDir == 0) return false;
-        else return true;
+        return Lerping;
     }
 
     private void InteractPressed(int value)
@@ -170,18 +169,20 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
             if (ObjectWithHingeJoint.transform.up.x > 0.0f)
             {
                 CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
-                LerpDir = 1;
+                Lerping = true;
+                StartCoroutine(LerpVector(Character.transform.position, LeftTarget.transform.position));
                 IkTools.SetEffectorTarget("RightHand", RightHandMountEffector);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[2], 0.75f);
-                if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.15f, TurnTheCharacter));
+                IkTools.StartEffectorLerp("RightHand", RightHandCurves[3], 0.25f);
+                if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.10f, TurnTheCharacter));
             }
             if (ObjectWithHingeJoint.transform.up.x < 0.0f)
             {
                 CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
-                LerpDir = 2;
+                Lerping = true;
+                StartCoroutine(LerpVector(Character.transform.position, RightTarget.transform.position));
                 IkTools.SetEffectorTarget("LeftHand", LeftHandMountEffector);
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.07f, TurnTheCharacter));
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.25f);
+                if (CharacterManager.MoveDir) StartCoroutine(Timer(0.10f, TurnTheCharacter));
             }
         }
     }
@@ -209,14 +210,6 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
     private void TurnTheCharacter()
     {
         CharacterManager.ForceTurnCharacter();
-    }
-
-    private void FixedUpdate()
-    {
-        if (LerpDir != 0)
-        {
-            DoLerp(Time.deltaTime);
-        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -304,8 +297,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
 
     private void EndLerp()
     {
-        LerpDir = 0;
-        if(Up == 0)
+        Lerping = false;
+        if (Up == 0)
         {
             SCR_EventManager.TriggerEvent("UpKey", 1);
             Up = 0;
@@ -315,58 +308,15 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         CharacterManager.UnfreezeVelocity();
     }
 
-    //Actually calculate every tick where the player's position should be as they slide across z planes.
-    private void DoLerp(float DeltaTime)
+    IEnumerator LerpVector (Vector3 From, Vector3 To)
     {
-        if(LerpDir == 1)
+        float TimeModifier = 0.0f;
+        while (TimeModifier < 1.0f)
         {
-            bool X, Y, Z;
-            Vector3 NewPos = CharacterManager.gameObject.transform.position;
-            if (CharacterManager.gameObject.transform.position.x > LeftTarget.transform.position.x)
-            {
-                NewPos.x -= LerpSpeed * DeltaTime;
-                X = false;
-            }
-            else X = true;
-            if (CharacterManager.gameObject.transform.position.y < LeftTarget.transform.position.y)
-            {
-                NewPos.y += LerpSpeed * DeltaTime;
-                Y = false;
-            }
-            else Y = true;
-            if (CharacterManager.gameObject.transform.position.z < Anchor.transform.position.z)
-            {
-                NewPos.z += LerpSpeed * DeltaTime;
-                Z = false;
-            }
-            else Z = true;
-            CharacterManager.gameObject.transform.position = NewPos;
-            if (X && Y && Z) EndLerp();
+            TimeModifier += (Time.deltaTime * LerpSpeed);
+            Character.transform.position = Vector3.Lerp(From, To, TimeModifier);
+            yield return null;
         }
-        else
-        {
-            bool X, Y, Z;
-            Vector3 NewPos = CharacterManager.gameObject.transform.position;
-            if (CharacterManager.gameObject.transform.position.x < RightTarget.transform.position.x)
-            {
-                NewPos.x += LerpSpeed * DeltaTime;
-                X = false;
-            }
-            else X = true;
-            if (CharacterManager.gameObject.transform.position.y < RightTarget.transform.position.y)
-            {
-                NewPos.y += LerpSpeed * DeltaTime;
-                Y = false;
-            }
-            else Y = true;
-            if (CharacterManager.gameObject.transform.position.z < Anchor.transform.position.z)
-            {
-                NewPos.z += LerpSpeed * DeltaTime;
-                Z = false;
-            }
-            else Z = true;
-            CharacterManager.gameObject.transform.position = NewPos;
-            if (X && Y && Z) EndLerp();
-        }
+        EndLerp();
     }
 }
