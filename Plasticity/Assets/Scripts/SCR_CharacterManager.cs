@@ -971,7 +971,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
                 else MoveVec.y = JumpForce;
                 OnBeginJump();
-                Debug.Log("jumped");
             }
         }
         //If UP has not been pressed and the player is currently on the ground, the y component of their velocity should be zero

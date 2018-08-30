@@ -35,7 +35,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private bool LadderMounted;
     private int[] HandRungs;
     private int[] FeetRungs;
-    private float Period = 0.2f;
+    private float Period = 0.15f;
     private bool SideOfLadder;
     [HideInInspector]
     public bool DisableDown;
@@ -308,10 +308,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         SetEffectorLocation("LeftFoot", OffsetFeetPoints[0]);
         SetEffectorLocation("RightFoot", OffsetFeetPoints[1]);
         SetEffectorTarget("Body", BodyPos);
-        StartEffectorLerp("LeftHand", OnLadderCurveHands, 0.05f);
-        StartEffectorLerp("RightHand", OnLadderCurveHands, 0.05f);
-        StartEffectorLerp("LeftFoot", OnLadderCurveFeet, 0.5f);
-        StartEffectorLerp("RightFoot", OnLadderCurveFeet, 0.5f);
+        ForceEffectorWeight("LeftHand",  1.0f);
+        ForceEffectorWeight("RightHand", 1.0f);
+        ForceEffectorWeight("LeftFoot", 1.0f);
+        ForceEffectorWeight("RightFoot", 1.0f);
         ForceEffectorWeight("Body", 0.1f);
 
         Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;
