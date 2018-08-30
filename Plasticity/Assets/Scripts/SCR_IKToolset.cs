@@ -43,6 +43,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     public Vector3 LadderSlope;
     [HideInInspector]
     public GameObject BodyPos;
+    private bool InitiationComplete;
 
 
     // Use this for initialization
@@ -338,6 +339,8 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         float FootDistance = 1000.0f;
         GameObject ShoulderRung = null;
         GameObject FootRung = null;
+        int TopValue = 0;
+        int BotValue = 0;
         for(int i = 0; i < LadderRungs.Length; ++i)
         {
             if((Ik.solver.leftArmMapping.bone1.position - LadderRungs[i].transform.position).magnitude < ShoulderDistance)
@@ -346,6 +349,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 ShoulderRung = LadderRungs[i];
                 HandRungs[0] = i;
                 HandRungs[1] = i;
+                TopValue = i;
             }
             if((Ik.solver.leftLegMapping.bone3.position - LadderRungs[i].transform.position).magnitude < FootDistance)
             {
@@ -353,9 +357,17 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 FootRung = LadderRungs[i];
                 FeetRungs[0] = i;
                 FeetRungs[1] = i;
+                BotValue = i;
+            }
+            if((TopValue - BotValue) > 2)
+            {
+                FootRung = LadderRungs[BotValue + 1];
+                FeetRungs[0] = BotValue + 1;
+                FeetRungs[1] = BotValue + 1;
             }
         }
         LadderSlope = ShoulderRung.transform.position - FootRung.transform.position;
+        InitiationComplete = true;
         return new GameObject[] {ShoulderRung, FootRung};
     }
 
@@ -438,21 +450,25 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     {
         while (true)
         {
-            if(LastCycleDirection != Direction)
+            if (InitiationComplete)
             {
-                if (Direction) DownState();
-                else UpState();
-                LastCycleDirection = Direction;
+                if (LastCycleDirection != Direction)
+                {
+                    if (Direction) DownState();
+                    else UpState();
+                    LastCycleDirection = Direction;
+                }
+                if (Direction)
+                {
+                    UpState();
+                }
+                else
+                {
+                    DownState();
+                }
+                MoveHands();
+                
             }
-            if (Direction)
-            {
-                UpState();
-            }
-            else
-            {
-                DownState();
-            }
-            MoveHands();
             yield return new WaitForSeconds(Period);
         }
     }
@@ -468,7 +484,6 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     {
                         if(HandRungs[0] == LadderRungs.Length - 1)
                         {
-                            Debug.Log("Can't go up anymore");
                             DisableUp = true;
                             Still();
                         }
@@ -502,7 +517,6 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     {
                         if(HandRungs[1] == LadderRungs.Length - 1)
                         {
-                            Debug.Log("Can't go up anymore");
                             DisableUp = true;
                             Still();
                         }
@@ -556,7 +570,6 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     {
                         if(FeetRungs[0] == 0)
                         {
-                            Debug.Log("Can't go down anymore");
                             DisableDown = true;
                             Still();
                         }
@@ -590,7 +603,6 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     {
                         if (FeetRungs[1] == 0)
                         {
-                            Debug.Log("Can't go down anymore");
                             DisableDown = true;
                             Still();
                         }
@@ -623,5 +635,22 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             SetEffectorLocation(Effector, OutputPos);
             yield return null;
         }
+    }
+
+    public void FlushIk()
+    {
+        DisableUp = false;
+        DisableDown = false;
+        InitiationComplete = false;
+        ForceEffectorWeight("LeftHand", 0.0f);
+        ForceEffectorWeight("RightHand", 0.0f);
+        ForceEffectorWeight("LeftFoot", 0.0f);
+        ForceEffectorWeight("RightFoot", 0.0f);
+        ForceEffectorWeight("Body", 0.0f);
+        SetEffectorTarget("LeftHand", null);
+        SetEffectorTarget("RightHand", null);
+        SetEffectorTarget("LeftFoot", null);
+        SetEffectorTarget("RightFoot", null);
+        SetEffectorTarget("Body", null);
     }
 }

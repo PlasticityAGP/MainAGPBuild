@@ -435,7 +435,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         ChangePlayerState(CharacterStates.Idling);
         if (Up)
         {
-            if (this.transform.position.y > HighClimb)
+            if (this.transform.position.y > HighClimb || IkTools.DisableUp)
             {
                 MoveVec = Vector3.zero;
                 ForcePlayerState(CharacterStates.Paused);
@@ -443,20 +443,18 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             }
             else
             {
-                if (!IkTools.DisableUp)
-                {
-                    MoveVec = ClimbSpeed * LadderUp;
-                    ForcePlayerState(CharacterStates.ClimbingUp);
-                    IkTools.ClimbingUp();
-                }
+                MoveVec = ClimbSpeed * LadderUp;
+                ForcePlayerState(CharacterStates.ClimbingUp);
+                IkTools.ClimbingUp();
             }
                 
             // Play animation
         }
         else if (Down)
         {
-            if (this.transform.position.y < LowClimb)
+            if (this.transform.position.y < LowClimb || IkTools.DisableDown)
             {
+                IkTools.FlushIk();
                 NoAnimUpdate = false;
                 SCR_Ladder LadderScript = Ladder.GetComponent<SCR_Ladder>();
                 LadderScript.climbing = false;
@@ -525,9 +523,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// </summary>
     public void JumpOff()
     {
+        IkTools.FlushIk();
         NoAnimUpdate = false;
         if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
-        MoveVec.y = JumpForce;
+        MoveVec.y = JumpForce + 4.5f;
         if (Left && !Right)
         {
             MoveVec.x = JumpForce / 2 * -1;
