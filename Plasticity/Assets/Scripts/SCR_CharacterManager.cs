@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
-    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing, Pulling}
+    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing, Pulling, ClimbingUp, ClimbingDown, Paused}
     private CharacterStates PlayerState;
 
     //Event listeners per action for receiving events fired by the Input Manager
@@ -171,6 +171,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool IsLockedAnims;
     private bool TurnOverride = false;
     private bool AmInHardFall = false;
+    private bool ForcedAnim = false;
 
     private void Awake()
     {
@@ -202,9 +203,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void ChangePlayerState(CharacterStates state)
     {
-        if (!IsLockedAnims)
+        if (!IsLockedAnims || ForcedAnim)
         {
             if (LastAnim != null) ResetAnim();
+            if (PlayerState == CharacterStates.Paused)
+            {
+                CharacterAnimator.speed = 1.0f;
+            }
             if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Running"))
             {
                 if (state == CharacterStates.Idling) SetAnim("RunningToIdle");
@@ -219,12 +224,16 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 if (state == CharacterStates.Idling) SetAnim("FallingToIdle");
                 else if (state == CharacterStates.Running) SetAnim("FallingToRunning");
                 else if (state == CharacterStates.Lying) SetAnim("FallingToLying");
+                else if (state == CharacterStates.ClimbingUp) SetAnim("FallingToClimbingUp");
+                else if (state == CharacterStates.ClimbingDown) SetAnim("FallingToClimbingDown");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
             {
                 if (state == CharacterStates.Falling) SetAnim("JumpToFalling");
                 else if (state == CharacterStates.Idling) SetAnim("JumpToIdle");
                 else if (state == CharacterStates.Running) SetAnim("JumpToRunning");
+                else if (state == CharacterStates.ClimbingUp) SetAnim("JumpToClimbingUp");
+                else if (state == CharacterStates.ClimbingDown) SetAnim("JumpToClimbingDown");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
             {
@@ -234,6 +243,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Lying) SetAnim("IdleToLying");
                 else if (state == CharacterStates.Pushing) SetAnim("IdleToPush");
                 else if (state == CharacterStates.Pulling) SetAnim("IdleToPull");
+                else if (state == CharacterStates.ClimbingUp) SetAnim("IdleToClimbingUp");
+                else if (state == CharacterStates.ClimbingDown) SetAnim("IdleToClimbingDown");
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("GettingUp"))
             {
@@ -253,8 +264,30 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Idling) SetAnim("PullToIdle");
                 else if (state == CharacterStates.Pushing) SetAnim("PullToPush");
             }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("ClimbingUp"))
+            {
+                if (state == CharacterStates.Idling) SetAnim("ClimbingUpToIdle");
+                else if (state == CharacterStates.Jumping) SetAnim("ClimbingUpToJump");
+                else if (state == CharacterStates.Falling) SetAnim("ClimbingUpToFalling");
+                else if (state == CharacterStates.ClimbingDown) SetAnim("ClimbingUpToClimbingDown");
+            }
+            else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("ClimbingDown"))
+            {
+                if (state == CharacterStates.Idling) SetAnim("ClimbingDownToIdle");
+                else if (state == CharacterStates.Jumping) SetAnim("ClimbingDownToJump");
+                else if (state == CharacterStates.Falling) SetAnim("ClimbingDownToFalling");
+                else if (state == CharacterStates.ClimbingDown) SetAnim("ClimbingDownToClimbingUp");
+            }
+            if (state == CharacterStates.Paused) CharacterAnimator.speed = 0.0f;
             PlayerState = state;
+            ForcedAnim = false;
         }
+    }
+
+    private void ForcePlayerState(CharacterStates state)
+    {
+        ForcedAnim = true;
+        ChangePlayerState(state);
     }
 
     private void LockAnim(CharacterStates anim)
@@ -401,10 +434,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (this.transform.position.y > HighClimb)
             {
                 MoveVec = Vector3.zero;
+                ForcePlayerState(CharacterStates.Paused);
             }
             else
             {
                 MoveVec = ClimbSpeed * Ladder.transform.up;
+                ForcePlayerState(CharacterStates.ClimbingUp);
             }
                 
             // Play animation
@@ -426,12 +461,16 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             else
             {
                 MoveVec = (ClimbSpeed * Ladder.transform.up.normalized) * -1.0f;
+                ForcePlayerState(CharacterStates.ClimbingDown);
             }
                 
             // Play animation
         }
         else
+        {
+            ForcePlayerState(CharacterStates.Paused);
             MoveVec = Vector3.zero;
+        }
 
         if(MoveVec == Vector3.zero && Ladder.GetComponent<SCR_Ladder>().ClamberEnabled)
         {
@@ -502,6 +541,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         IsClimbing = true;
         NoAnimUpdate = true;
         MoveVec.x = 0;
+        ForcePlayerState(CharacterStates.ClimbingUp);
         // TODO: have to change the player's x velocity accordingly.
     }
 
