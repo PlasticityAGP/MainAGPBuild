@@ -488,7 +488,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1596442339153734}
   m_LocalRotation: {x: -0, y: -0, z: 0.25212458, w: 0.9676948}
-  m_LocalPosition: {x: 1.314, y: -1.691, z: 0}
+  m_LocalPosition: {x: 1.32, y: -1.589, z: 0}
   m_LocalScale: {x: 0.87402576, y: 1.2675327, z: 1}
   m_Children: []
   m_Father: {fileID: 4980003499133030}
@@ -1443,6 +1443,6 @@ MonoBehaviour:
   OffTheTop: 2
   OffTheBottom: 5
   LadderInXY: 1
-  RotationLerpSpeed: 3
+  RotationLerpSpeed: 5
   climbing: 0
   InsideTop: 0
