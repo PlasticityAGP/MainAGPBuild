@@ -389,6 +389,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void FixedUpdate()
     {
+        if (inWater)
+        {
+            Swim();
+            return;
+        }
         if (!InAnimationOverride)
         {
             //Do movement calculations. Needs to be in FixedUpdate and not Update because we are messing with physics.
@@ -440,6 +445,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     // TODO: should we allow them to jump if they're treading water?
     private void Swim()
     {
+        /*
         // Determining whether the player is at the water surface or not.
         underWater = false;
         if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
@@ -497,7 +503,37 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         {
             MoveVec.y += maxSwimSpeed * Time.deltaTime;
             if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
+        }*/
+        maxSwimSpeed *= 10;
+
+        if (Up && !Down)
+        {
+            if (MoveVec.y < maxSwimSpeed) MoveVec.y += maxSwimSpeed * Time.deltaTime;
         }
+        else if (Down && !Up)
+        {
+            if (MoveVec.y > maxSwimSpeed * -1) MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+        }
+        else if (MoveVec.y > 0.05f)
+            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+        else if (MoveVec.y < 0.05f)
+            MoveVec.y += maxSwimSpeed * Time.deltaTime;
+
+        if (Left && !Right)
+        {
+            if (MoveVec.x > maxSwimSpeed * -1) MoveVec.x -= maxSwimSpeed * Time.deltaTime;
+        }
+        else if (Right && !Left)
+        {
+            if (MoveVec.x < maxSwimSpeed) MoveVec.x += maxSwimSpeed * Time.deltaTime;
+        }
+        else if (MoveVec.x < (0 - maxSwimSpeed * Time.deltaTime))
+            MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
+        else if (MoveVec.x > (0 + maxSwimSpeed * Time.deltaTime))
+            MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
+
+        maxSwimSpeed /= 10;
+        RBody.velocity = MoveVec;
     }
 
     // Controls for a player that is climbing a ladder.
@@ -687,6 +723,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void CalculateMoveVec()
     {
+        /*
         //Determine whether the player is swimming or not.
         if (inWater || DidAJump) InWater();
         else swimming = false;
@@ -695,6 +732,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             Swim();
             return;
         }
+        */
 
         //If we are on a slope, we need our velocity to be parallel to the slope. We find this through 
         //a cross product of the normal of that slope, and our right and left vectors.
@@ -833,7 +871,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 FallingOff = false;
                 if (DidAJump) OnEndJump();
                 //Need a different jump force if we are moving uphill while jumping.
-                if (!swimming && (GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
+                if ((GroundAngle - 90) > 0 && (GroundAngle < MaxGroundAngle)) MoveVec.y = JumpForce + ((GroundAngle - 90) / 100.0f);
                 else MoveVec.y = JumpForce;
                 OnBeginJump();
                 Debug.Log("jumped");
@@ -852,7 +890,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (!DidAJump) OnBeginJump();
 
             //Different strengths of gravity depending on if player is rising or falling. This can help prevent floaty feeling of jumps
-            if (!PlayerGrounded && !swimming)
+            if (!PlayerGrounded)
             {
                 if (Mathf.Abs(MoveVec.y) < 0.1f && !IsClimbing) FallStartHeight = gameObject.transform.position.y;
                 if (MoveVec.y > 0.0f) MoveVec.y -= UpGravityOnPlayer * DeltaTime;

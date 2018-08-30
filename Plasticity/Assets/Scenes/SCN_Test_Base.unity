@@ -173,7 +173,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4021131397781680, guid: a0adc738eac8a27449ece1ff38bb737c, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -2.51
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4021131397781680, guid: a0adc738eac8a27449ece1ff38bb737c, type: 2}
       propertyPath: m_LocalPosition.z
@@ -651,7 +651,7 @@ Prefab:
     - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
         type: 2}
       propertyPath: maxSwimSpeed
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
         type: 2}
@@ -676,6 +676,11 @@ Prefab:
     - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
         type: 2}
       propertyPath: waterHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: PlayerGrounded
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -763,8 +768,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.054077778, y: -0.010382785, z: 0.00056259334, w: 0.9984826}
+  m_LocalPosition: {x: -2.734923, y: 2.9833357, z: -14.5516615}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
