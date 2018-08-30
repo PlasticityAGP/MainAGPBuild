@@ -2784,6 +2784,11 @@ MonoBehaviour:
   IsClimbing: 0
   ClimbSpeed: 3
   Ladder: {fileID: 0}
+  SwimSlowdown: 4
+  maxSwimSpeed: 4
+  maxTimeUnderWater: 2
+  timeUnderWater: 0
+  waterHeight: 0
   StateChangeLocked: 0
 --- !u!136 &136348256801458980
 CapsuleCollider:

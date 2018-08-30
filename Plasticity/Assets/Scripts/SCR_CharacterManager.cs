@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
-    public enum CharacterStates { Running, Falling, Jumping, Idling, Lying, Pushing, Pulling, ClimbingUp, ClimbingDown, Paused}
+    public enum CharacterStates { Running, Falling, Jumping, Swimming, Idling, SwimIdling, Lying, Pushing, Pulling, ClimbingUp, ClimbingDown, Paused}
     private CharacterStates PlayerState;
 
     //Event listeners per action for receiving events fired by the Input Manager
@@ -164,12 +164,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private float LedgeYTarget;
     private float LedgeXTarget;
 
-    public bool inWater;
-    public bool underWater;
-    public bool swimming;
+	[SerializeField]
+	[Tooltip("How quickly the player decelerates while swimming")]
+	private float SwimSlowdown = 4f;
     private Vector3 swimspeed;
     public float maxSwimSpeed;
-    public float swimAcceleration;
+    //public float swimAcceleration;
     public float maxTimeUnderWater = 2;
     public float timeUnderWater;
     public float waterHeight;
@@ -250,6 +250,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
                 else if (state == CharacterStates.Pushing) SetAnim("RunningToPush");
                 else if (state == CharacterStates.Pulling) SetAnim("RunningToPull");
+				else if (state == CharacterStates.SwimIdling) SetAnim("RunningToSwimIdle");
+
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Falling"))
             {
@@ -258,7 +260,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Lying) SetAnim("FallingToLying");
                 else if (state == CharacterStates.ClimbingUp) SetAnim("FallingToClimbingUp");
                 else if (state == CharacterStates.ClimbingDown) SetAnim("FallingToClimbingDown");
-            }
+				else if (state == CharacterStates.SwimIdling) SetAnim("FallingToSwimIdle");
+			}
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
             {
                 if (state == CharacterStates.Falling) SetAnim("JumpToFalling");
@@ -310,7 +313,15 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Falling) SetAnim("ClimbingDownToFalling");
                 else if (state == CharacterStates.ClimbingDown) SetAnim("ClimbingDownToClimbingUp");
             }
-            if (state == CharacterStates.Paused) CharacterAnimator.speed = 0.0f;
+			else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("SwimIdle")) {
+				if (state == CharacterStates.Swimming)
+					SetAnim("SwimIdleToSwimMove");
+			}
+			else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("SwimMove")) {
+				if (state == CharacterStates.SwimIdling)
+					SetAnim("SwimMoveToSwimIdle");
+			}
+			if (state == CharacterStates.Paused) CharacterAnimator.speed = 0.0f;
             PlayerState = state;
             ForcedAnim = false;
         }
@@ -443,10 +454,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void FixedUpdate()
     {
-        if (inWater)
+        if (PlayerState == CharacterStates.Swimming || PlayerState == CharacterStates.SwimIdling)
         {
             Swim();
-            return;
+			MoveCharacter(Time.deltaTime);
+			return;
         }
         if (!InAnimationOverride)
         {
@@ -469,13 +481,18 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// <param name="sealevel"></param> The surface height of the water body.
     public void IsInWater(bool inwater, float sealevel)
     {
-        inWater = inwater;
-        if(inWater) waterHeight = sealevel;
+		if (inwater) {
+			PlayerState = CharacterStates.SwimIdling;
+			ChangePlayerState(CharacterStates.SwimIdling);
+		}
+		else
+			DeterminePlayerState();
+		waterHeight = sealevel;
     }
 
     // If the player is touching water, this will determine if they are considered swimming
     // or if they are just walking in shallow water/jumping into water.
-    private void InWater()
+    /*private void InWater()
     {
         if (PlayerGrounded)
         {
@@ -493,13 +510,13 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             else
                 swimming = true;
         }
-    }
+    }*/
 
     // Controls for making the player swim
     // TODO: should we allow them to jump if they're treading water?
     private void Swim()
     {
-        /*
+		/*
         // Determining whether the player is at the water surface or not.
         underWater = false;
         if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
@@ -558,37 +575,49 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             MoveVec.y += maxSwimSpeed * Time.deltaTime;
             if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
         }*/
-        maxSwimSpeed *= 10;
+		//maxSwimSpeed *= 10;
 
-        if (Up && !Down)
-        {
-            if (MoveVec.y < maxSwimSpeed) MoveVec.y += maxSwimSpeed * Time.deltaTime;
-        }
-        else if (Down && !Up)
-        {
-            if (MoveVec.y > maxSwimSpeed * -1) MoveVec.y -= maxSwimSpeed * Time.deltaTime;
-        }
-        else if (MoveVec.y > 0.05f)
-            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
-        else if (MoveVec.y < 0.05f)
-            MoveVec.y += maxSwimSpeed * Time.deltaTime;
+		if (Up && !Down) {
+			if (MoveVec.y < maxSwimSpeed)
+				MoveVec.y += maxSwimSpeed * Time.deltaTime;
+			ChangePlayerState(CharacterStates.Swimming);
+		}
+		else if (Down && !Up) {
+			if (MoveVec.y > maxSwimSpeed * -1)
+				MoveVec.y -= maxSwimSpeed * Time.deltaTime;
+			ChangePlayerState(CharacterStates.Swimming);
+		}
+		else if (MoveVec.y > 0.05f) {
+			MoveVec.y -= Time.deltaTime * SwimSlowdown;
+			ChangePlayerState(CharacterStates.SwimIdling);
+		}
+		else if (MoveVec.y < 0.05f) {
+			MoveVec.y += Time.deltaTime * SwimSlowdown;
+			ChangePlayerState(CharacterStates.SwimIdling);
+		}
 
-        if (Left && !Right)
-        {
-            if (MoveVec.x > maxSwimSpeed * -1) MoveVec.x -= maxSwimSpeed * Time.deltaTime;
-        }
-        else if (Right && !Left)
-        {
-            if (MoveVec.x < maxSwimSpeed) MoveVec.x += maxSwimSpeed * Time.deltaTime;
-        }
-        else if (MoveVec.x < (0 - maxSwimSpeed * Time.deltaTime))
-            MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
-        else if (MoveVec.x > (0 + maxSwimSpeed * Time.deltaTime))
-            MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
+		if (Left && !Right) {
+			if (MoveVec.x > maxSwimSpeed * -1)
+				MoveVec.x -= maxSwimSpeed * Time.deltaTime;
+			ChangePlayerState(CharacterStates.Swimming);
+		}
+		else if (Right && !Left) {
+			if (MoveVec.x < maxSwimSpeed)
+				MoveVec.x += maxSwimSpeed * Time.deltaTime;
+			ChangePlayerState(CharacterStates.Swimming);
+		}
+		else if (MoveVec.x > .05f) {
+			MoveVec.x -= Time.deltaTime * SwimSlowdown;
+			ChangePlayerState(CharacterStates.SwimIdling);
+		}
+		else if (MoveVec.x < -.05f) {
+			MoveVec.x += Time.deltaTime * SwimSlowdown;
+			ChangePlayerState(CharacterStates.SwimIdling);
+		}
 
-        maxSwimSpeed /= 10;
-        RBody.velocity = MoveVec;
-    }
+			//maxSwimSpeed /= 10;
+			//RBody.velocity = MoveVec;
+		}
 
     // Controls for a player that is climbing a ladder.
     private void Climb()
@@ -1104,7 +1133,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             JumpingOff = false;
             FallingOff = true;
         }
-        else if (swimming)
+        else if (PlayerState == CharacterStates.Swimming || PlayerState == CharacterStates.SwimIdling)
         {
             if (MoveVec.magnitude > maxSwimSpeed)
                 MoveVec = MoveVec.normalized * maxSwimSpeed;
