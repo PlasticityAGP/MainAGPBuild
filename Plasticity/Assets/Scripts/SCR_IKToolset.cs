@@ -33,8 +33,12 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private bool LadderMounted;
     private int[] HandRungs;
     private int[] FeetRungs;
-    private float Period = 0.25f;
+    private float Period = 0.2f;
     private bool SideOfLadder;
+    [HideInInspector]
+    public bool DisableDown;
+    [HideInInspector]
+    public bool DisableUp;
     [HideInInspector]
     public Vector3 LadderSlope;
     [HideInInspector]
@@ -394,7 +398,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
 
     public void ClimbingUp()
     {
-        if (LadderMounted)
+        if (LadderMounted && !DisableUp)
         {
             Direction = true;
             if (!LadderCycleOn)
@@ -407,7 +411,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
 
     public void ClimbingDown()
     {
-        if (LadderMounted)
+        if (LadderMounted && !DisableDown)
         {
             Direction = false;
             if (!LadderCycleOn)
@@ -449,7 +453,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 DownState();
             }
             MoveHands();
-            yield return new WaitForSeconds(Period-0.1f);
+            yield return new WaitForSeconds(Period);
         }
     }
 
@@ -460,7 +464,15 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             switch (ClimbState)
             {
                 case 0:
-                    if (HandRungs[1] == LadderRungs.Length - 1) Still();
+                    if (HandRungs[1] == LadderRungs.Length - 1)
+                    {
+                        if(HandRungs[0] == LadderRungs.Length - 1)
+                        {
+                            Debug.Log("Can't go up anymore");
+                            DisableUp = true;
+                            Still();
+                        }
+                    }
                     else
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
@@ -473,8 +485,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     }
                     break;
                 case 1:
-                    if (FeetRungs[1] == LadderRungs.Length - 1) Still();
-                    else
+                    if (!(FeetRungs[1] == LadderRungs.Length - 1))
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         ++FeetRungs[1];
@@ -482,11 +493,20 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "RightFoot"));
                         StartEffectorLerp("RightFoot", LadderTransition, Period);
+                        DisableDown = false;
 
                     }
                     break;
                 case 2:
-                    if (HandRungs[0] == LadderRungs.Length - 1) Still();
+                    if (HandRungs[0] == LadderRungs.Length - 1)
+                    {
+                        if(HandRungs[1] == LadderRungs.Length - 1)
+                        {
+                            Debug.Log("Can't go up anymore");
+                            DisableUp = true;
+                            Still();
+                        }
+                    }
                     else
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
@@ -499,8 +519,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     }
                     break;
                 case 3:
-                    if (FeetRungs[0] == LadderRungs.Length - 1) Still();
-                    else
+                    if (!(FeetRungs[0] == LadderRungs.Length - 1))
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         ++FeetRungs[0];
@@ -508,6 +527,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "LeftFoot"));
                         StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                        DisableDown = false;
                     }
                     break;
                 default:
@@ -519,8 +539,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             switch (ClimbState)
             {
                 case 0:
-                    if (HandRungs[1] == 0) Still();
-                    else
+                    if (!(HandRungs[1] == 0)) 
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         --HandRungs[1];
@@ -528,11 +547,20 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "RightHand"));
                         StartEffectorLerp("RightHand", LadderTransition, Period);
+                        DisableUp = false;
 
                     }
                     break;
                 case 1:
-                    if (FeetRungs[1] == 0) Still();
+                    if (FeetRungs[1] == 0)
+                    {
+                        if(FeetRungs[0] == 0)
+                        {
+                            Debug.Log("Can't go down anymore");
+                            DisableDown = true;
+                            Still();
+                        }
+                    }
                     else
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
@@ -545,8 +573,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                     }
                     break;
                 case 2:
-                    if (HandRungs[0] == 0) Still();
-                    else
+                    if (!(HandRungs[0] == 0)) 
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         --HandRungs[0];
@@ -554,11 +581,20 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "LeftHand"));
                         StartEffectorLerp("Lefthand", LadderTransition, Period);
+                        DisableUp = false;
 
                     }
                     break;
                 case 3:
-                    if (FeetRungs[0] == 0) Still();
+                    if (FeetRungs[0] == 0)
+                    {
+                        if (FeetRungs[1] == 0)
+                        {
+                            Debug.Log("Can't go down anymore");
+                            DisableDown = true;
+                            Still();
+                        }
+                    }
                     else
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];

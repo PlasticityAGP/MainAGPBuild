@@ -443,9 +443,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             }
             else
             {
-                MoveVec = ClimbSpeed * LadderUp;
-                ForcePlayerState(CharacterStates.ClimbingUp);
-                IkTools.ClimbingUp();
+                if (!IkTools.DisableUp)
+                {
+                    MoveVec = ClimbSpeed * LadderUp;
+                    ForcePlayerState(CharacterStates.ClimbingUp);
+                    IkTools.ClimbingUp();
+                }
             }
                 
             // Play animation
@@ -466,9 +469,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             }
             else
             {
-                MoveVec = (ClimbSpeed * LadderUp.normalized) * -1.0f;
-                ForcePlayerState(CharacterStates.ClimbingDown);
-                IkTools.ClimbingDown();
+                if (!IkTools.DisableDown)
+                {
+                    MoveVec = (ClimbSpeed * LadderUp.normalized) * -1.0f;
+                    ForcePlayerState(CharacterStates.ClimbingDown);
+                    IkTools.ClimbingDown();
+                }
             }
                 
             // Play animation

@@ -2192,6 +2192,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  DisableDown: 0
+  DisableUp: 0
   LadderSlope: {x: 0, y: 0, z: 0}
   BodyPos: {fileID: 0}
 --- !u!114 &114821809570079128
@@ -2282,7 +2284,7 @@ MonoBehaviour:
       pull: 1
       push: 1
       pushParent: 1
-      reach: 0
+      reach: 0.5
       reachSmoothing: 1
       pushSmoothing: 1
       nodes:
@@ -2332,7 +2334,7 @@ MonoBehaviour:
       pull: 1
       push: 1
       pushParent: 1
-      reach: 0
+      reach: 0.5
       reachSmoothing: 1
       pushSmoothing: 1
       nodes:

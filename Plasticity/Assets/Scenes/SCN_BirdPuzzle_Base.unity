@@ -4103,7 +4103,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 866879265}
-  m_LocalRotation: {x: -0.001913792, y: -0.07187655, z: 0.8560769, w: 0.5118228}
+  m_LocalRotation: {x: -0.0049039973, y: -0.06893396, z: 0.8557747, w: 0.51271224}
   m_LocalPosition: {x: -0.32999992, y: -0.37, z: -6.419999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5101,7 +5101,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: -0.010597668, y: -0.06236875, z: 0.56946266, w: 0.8195793}
+  m_LocalRotation: {x: 0.010389633, y: 0.055625256, z: -0.5381085, w: -0.840974}
   m_LocalPosition: {x: -24.754923, y: 1.0333357, z: -14.531662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -6011,8 +6011,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1167710954}
-  m_LocalRotation: {x: 0.06829764, y: -0.0038856107, z: -0.21771856, w: 0.97361135}
-  m_LocalPosition: {x: -0.51187575, y: -0.3696762, z: -2.0637994}
+  m_LocalRotation: {x: -0.07385356, y: 0.015124448, z: -0.113502905, w: -0.99067354}
+  m_LocalPosition: {x: -0.5472212, y: -0.3871953, z: -2.0654528}
   m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999998}
   m_Children:
   - {fileID: 1766970086}
@@ -8363,6 +8363,94 @@ Prefab:
     - target: {fileID: 4911214937496954, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
       propertyPath: m_RootOrder
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4781576774634666, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4649989128191022, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114821809570079128, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: solver.chain.Array.data[1].reach
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114821809570079128, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: solver.chain.Array.data[2].reach
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MoveDir
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: InteractingWith
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: RBody
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: IsClimbing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: Ladder
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LadderSlope.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LadderSlope.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: BodyPos
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: ClimbSpeed
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LadderSlope.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LadderTransition.m_Curve.Array.data[2].time
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LadderTransition.m_Curve.Array.data[1].time
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114594211292410248, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: LadderTransition.m_Curve.Array.data[1].value
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: PlayerGrounded
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
