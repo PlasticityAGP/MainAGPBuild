@@ -8,6 +8,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
 
     [Tooltip("Flags whether or not the player will clamber at the top of the ladder")]
     public bool ClamberEnabled;
+    public GameObject LadderModel;
     [SerializeField]
     [Tooltip("The effectors the players will reach towards as they clamber at the top of the ladder")]
     [ValidateInput("NotEmpty", "We need to have a nonzero number of effectors defined")]

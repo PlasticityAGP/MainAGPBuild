@@ -23,6 +23,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private Coroutine LatestRightHand;
     private Coroutine LatestLeftFoot;
     private Coroutine LatestRightFoot;
+    private Coroutine LatestBody;
     private Coroutine LadderCycle;
     private GameObject[] LadderRungs;
     private int ClimbState;
@@ -34,6 +35,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private int[] FeetRungs;
     private float Period = 0.25f;
     private bool SideOfLadder;
+    [HideInInspector]
+    public Vector3 LadderSlope;
+    [HideInInspector]
+    public GameObject BodyPos;
 
 
     // Use this for initialization
@@ -71,6 +76,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         {
             Ik.solver.rightFootEffector.position = Loc;
         }
+        else if (ID.Equals("Body") || ID.Equals("body"))
+        {
+            Ik.solver.bodyEffector.position = Loc;
+        }
         else Debug.LogError("We could not find the specified effector!");
     }
 
@@ -104,6 +113,12 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             if (obj == null) Ik.solver.rightFootEffector.target = null;
             else Ik.solver.rightFootEffector.target = obj.transform;
         }
+        else if (ID.Equals("Body") || ID.Equals("body"))
+        {
+            if (obj == null) Ik.solver.bodyEffector.target = null;
+            else Ik.solver.bodyEffector.target = obj.transform;
+        }
+
         else Debug.LogError("We could not find the specified effector!");
     }
 
@@ -136,6 +151,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         {
             if (obj == null) Ik.solver.rightFootEffector.target = null;
             else Ik.solver.rightFootEffector.target = obj;
+        }
+        else if (ID.Equals("Body") || ID.Equals("body"))
+        {
+            if (obj == null) Ik.solver.bodyEffector.target = null;
+            else Ik.solver.bodyEffector.target = obj;
         }
         else Debug.LogError("We could not find the specified effector!");
     }
@@ -174,6 +194,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             Ik.solver.rightFootEffector.positionWeight = weight;
             Ik.solver.rightFootEffector.rotationWeight = weight;
         }
+        else if (ID.Equals("Body") || ID.Equals("body"))
+        {
+            if (LatestBody != null) StopCoroutine(LatestBody);
+            Ik.solver.bodyEffector.positionWeight = weight;
+        }
         else Debug.LogError("We could not find the specified effector!");
     }
 
@@ -192,6 +217,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         else if (ID == "RightHand" || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand")) LatestRightHand = StartCoroutine(IKCoroutine(ID, InsertObject));
         else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
         else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
+        else if (ID == "Body" || ID.Equals("body")) LatestBody = StartCoroutine(IKCoroutine(ID, InsertObject));
     } 
 
     /// <summary>
@@ -209,6 +235,8 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             return Ik.solver.leftFootEffector.positionWeight;
         else if (ID.Equals("RightFoot") || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot"))
             return Ik.solver.rightFootEffector.positionWeight;
+        else if (ID.Equals("Body") || ID.Equals("body"))
+            return Ik.solver.bodyEffector.positionWeight;
         else
         {
             Debug.LogError("We could not find the specified effector!");
@@ -242,6 +270,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 Ik.solver.rightFootEffector.positionWeight = obj.curve.Evaluate(IkTimer);
                 Ik.solver.rightFootEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
             }
+            else if (Effector == "Body")
+            {
+                Ik.solver.bodyEffector.positionWeight = obj.curve.Evaluate(IkTimer);
+                Ik.solver.bodyEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
+            }
             else Debug.LogError("We could not find the specified effector!");
             yield return null;
         }
@@ -259,16 +292,19 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         GameObject[] ReturnRungs = FindClosestRungs();
         SetEffectorTarget("LeftHand", null);
         SetEffectorTarget("RightHand", null);
+        SetEffectorTarget("Body", null);
         Vector3[] OffsetHandPoints = FindOffsetPoints(ReturnRungs[0], false, ZLadder);
         Vector3[] OffsetFeetPoints = FindOffsetPoints(ReturnRungs[1], true, ZLadder);
         SetEffectorLocation("LeftHand", OffsetHandPoints[0]);
         SetEffectorLocation("RightHand", OffsetHandPoints[1]);
         SetEffectorLocation("LeftFoot", OffsetFeetPoints[0]);
         SetEffectorLocation("RightFoot", OffsetFeetPoints[1]);
+        SetEffectorTarget("Body", BodyPos);
         StartEffectorLerp("LeftHand", OnLadderCurve, 1.0f);
         StartEffectorLerp("RightHand", OnLadderCurve, 1.0f);
         StartEffectorLerp("LeftFoot", OnLadderCurve, 1.0f);
         StartEffectorLerp("RightFoot", OnLadderCurve, 1.0f);
+        ForceEffectorWeight("Body", 0.1f);
 
         Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;
         Ik.solver.rightHandEffector.rotation = ReturnRungs[0].transform.rotation;
@@ -315,6 +351,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 FeetRungs[1] = i;
             }
         }
+        LadderSlope = ShoulderRung.transform.position - FootRung.transform.position;
         return new GameObject[] {ShoulderRung, FootRung};
     }
 
@@ -412,7 +449,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 DownState();
             }
             MoveHands();
-            yield return new WaitForSeconds(Period);
+            yield return new WaitForSeconds(Period-0.1f);
         }
     }
 
@@ -429,10 +466,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         ++HandRungs[1];
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
+                        LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "RightHand"));
-                        //StartEffectorLerp("RightHand", LadderTransition, Period);
-                        //SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
-                        //StartCoroutine(Timer(Period/2.0f, 0.0f, LadderChangeEffectors));                       
+                        StartEffectorLerp("RightHand", LadderTransition, Period);
+                      
                     }
                     break;
                 case 1:
@@ -442,10 +479,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         ++FeetRungs[1];
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
+                        LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "RightFoot"));
-                        //StartEffectorLerp("RightFoot", LadderTransition, Period);
-                        //SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
-                        //StartCoroutine(Timer(Period / 2.0f, 1.0f, LadderChangeEffectors));
+                        StartEffectorLerp("RightFoot", LadderTransition, Period);
+
                     }
                     break;
                 case 2:
@@ -455,10 +492,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         ++HandRungs[0];
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
+                        LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "LeftHand"));
-                        //StartEffectorLerp("Lefthand", LadderTransition, Period);
-                        //SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
-                        //StartCoroutine(Timer(Period / 2.0f, 2.0f, LadderChangeEffectors));
+                        StartEffectorLerp("Lefthand", LadderTransition, Period);
+
                     }
                     break;
                 case 3:
@@ -468,10 +505,9 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         ++FeetRungs[0];
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
+                        LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "LeftFoot"));
-                        //StartEffectorLerp("LeftFoot", LadderTransition, Period);
-                        //SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
-                        //StartCoroutine(Timer(Period / 2.0f, 3.0f, LadderChangeEffectors));
+                        StartEffectorLerp("LeftFoot", LadderTransition, Period);
                     }
                     break;
                 default:
@@ -489,23 +525,23 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         --HandRungs[1];
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
+                        LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "RightHand"));
-                        //StartEffectorLerp("RightHand", LadderTransition, Period);
-                        //SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
-                        //StartCoroutine(Timer(Period / 2.0f, 0.0f, LadderChangeEffectors));
+                        StartEffectorLerp("RightHand", LadderTransition, Period);
+
                     }
                     break;
                 case 1:
-                    if (FeetRungs[0] == 0) Still();
+                    if (FeetRungs[1] == 0) Still();
                     else
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         --FeetRungs[1];
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
+                        LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "RightFoot"));
-                        //StartEffectorLerp("RightFoot", LadderTransition, Period);
-                        //SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
-                        //StartCoroutine(Timer(Period / 2.0f, 1.0f, LadderChangeEffectors));
+                        StartEffectorLerp("RightFoot", LadderTransition, Period);
+                        StartEffectorLerp("LeftFoot", LadderTransition, Period);
                     }
                     break;
                 case 2:
@@ -515,23 +551,23 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 From = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         --HandRungs[0];
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
+                        LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "LeftHand"));
-                        //StartEffectorLerp("Lefthand", LadderTransition, Period);
-                        //SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
-                        //StartCoroutine(Timer(Period / 2.0f, 2.0f, LadderChangeEffectors));
+                        StartEffectorLerp("Lefthand", LadderTransition, Period);
+
                     }
                     break;
                 case 3:
-                    if (FeetRungs[1] == 0) Still();
+                    if (FeetRungs[0] == 0) Still();
                     else
                     {
                         Vector3 From = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         --FeetRungs[0];
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
+                        LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "LeftFoot"));
-                        //StartEffectorLerp("LeftFoot", LadderTransition, Period);
-                        //SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
-                        //StartCoroutine(Timer(Period / 2.0f, 3.0f, LadderChangeEffectors));
+                        StartEffectorLerp("LeftFoot", LadderTransition, Period);
+
                     }
                     break;
                 default:
@@ -552,29 +588,4 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             yield return null;
         }
     }
-
-    private void LadderChangeEffectors(float value)
-    {
-        if(value == 0.0f)
-        {
-            SetEffectorLocation("RightHand", FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1]);
-            Debug.Log("Right Hand is on: " + LadderRungs[HandRungs[1]].name);
-        }
-        else if (value == 1.0f)
-        {
-            SetEffectorLocation("RightFoot", FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1]);
-            Debug.Log("Right Foot is on: " + LadderRungs[FeetRungs[0]].name);
-        }
-        else if (value == 2.0f)
-        {
-            SetEffectorLocation("LeftHand", FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0]);
-            Debug.Log("Left Hand is on: " + LadderRungs[HandRungs[0]].name);
-        }
-        else if (value == 3.0f)
-        {
-            SetEffectorLocation("LeftFoot", FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0]);
-            Debug.Log("Left Foot is on: " + LadderRungs[FeetRungs[1]]);
-        }
-    }
-
 }

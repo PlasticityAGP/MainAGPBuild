@@ -155,6 +155,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     //Defines if the player is in the process of hanging from a ledge
     private bool CurrentlyLedging = false;
     public float ClimbSpeed = 3.0f;
+    [SerializeField]
+    private GameObject BackTarget;
     //Defines how high or low a player can climb up a ladder relative to the ladder's scale
     private float HighClimb;
     private float LowClimb;
@@ -428,6 +430,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void Climb()
     {
+        Vector3 LadderUp = IkTools.LadderSlope.normalized;
+        IkTools.BodyPos = BackTarget;
         ChangePlayerState(CharacterStates.Idling);
         if (Up)
         {
@@ -439,7 +443,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             }
             else
             {
-                MoveVec = ClimbSpeed * Ladder.transform.up;
+                MoveVec = ClimbSpeed * LadderUp;
                 ForcePlayerState(CharacterStates.ClimbingUp);
                 IkTools.ClimbingUp();
             }
@@ -454,15 +458,15 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 SCR_Ladder LadderScript = Ladder.GetComponent<SCR_Ladder>();
                 LadderScript.climbing = false;
                 LadderScript.ReleaseTrigger();
-                if (Ladder.transform.up.x > 0.0f && !LastKeypress) TurnCharacter();
-                else if (Ladder.transform.up.x < 0.0f && LastKeypress) TurnCharacter();
+                if (LadderUp.x > 0.0f && !LastKeypress) TurnCharacter();
+                else if (LadderUp.x < 0.0f && LastKeypress) TurnCharacter();
                 LadderScript.DoRotationCalculations(false);
                 IsClimbing = false;
                 InteractingWith = null;
             }
             else
             {
-                MoveVec = (ClimbSpeed * Ladder.transform.up.normalized) * -1.0f;
+                MoveVec = (ClimbSpeed * LadderUp.normalized) * -1.0f;
                 ForcePlayerState(CharacterStates.ClimbingDown);
                 IkTools.ClimbingDown();
             }
