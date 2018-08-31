@@ -198,7 +198,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
 
         else if (ID.Equals("RightFoot") || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot"))
         {
-            if (LatestRightHand != null) StopCoroutine(LatestRightFoot);
+            if (LatestRightFoot != null) StopCoroutine(LatestRightFoot);
             Ik.solver.rightFootEffector.positionWeight = weight;
             Ik.solver.rightFootEffector.rotationWeight = weight;
         }
