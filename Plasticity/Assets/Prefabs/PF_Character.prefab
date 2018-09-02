@@ -2926,14 +2926,11 @@ MonoBehaviour:
   InteractingWith: {fileID: 0}
   RBody: {fileID: 0}
   IsClimbing: 0
-  ClimbSpeed: 0.9
+  ClimbSpeed: 1.5
   BackTarget: {fileID: 1724121126746726}
   Ladder: {fileID: 0}
-  inWater: 0
-  underWater: 0
-  swimming: 0
+  SwimSlowdown: 4
   maxSwimSpeed: 0
-  swimAcceleration: 0
   maxTimeUnderWater: 2
   timeUnderWater: 0
   waterHeight: 0
