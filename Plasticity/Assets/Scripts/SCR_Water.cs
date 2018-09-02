@@ -5,6 +5,7 @@ using UnityEngine;
 public class SCR_Water : MonoBehaviour {
     private float height;
     public Transform trans;
+    public bool swimmable;
 
 	// Use this for initialization
 	void Start () {

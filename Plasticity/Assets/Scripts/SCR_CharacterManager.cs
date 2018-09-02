@@ -171,7 +171,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 	private float SwimSlowdown = 4f;
     private Vector3 swimspeed;
     public float maxSwimSpeed;
-    //public float swimAcceleration;
+    private bool swimming;
     public float maxTimeUnderWater = 2;
     public float timeUnderWater;
     public float waterHeight;
@@ -437,7 +437,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         if (PlayerState == CharacterStates.Swimming || PlayerState == CharacterStates.SwimIdling)
         {
             Swim();
-			MoveCharacter(Time.deltaTime);
 			return;
         }
         if (!InAnimationOverride)
@@ -459,14 +458,19 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     /// </summary>
     /// <param name="inwater"></param> Is the player entering water?
     /// <param name="sealevel"></param> The surface height of the water body.
-    public void IsInWater(bool inwater, float sealevel)
+    public void IsInWater(bool inwater, bool swimmable, float sealevel)
     {
 		if (inwater) {
 			PlayerState = CharacterStates.SwimIdling;
 			ChangePlayerState(CharacterStates.SwimIdling);
+            if (swimmable) swimming = true;
 		}
-		else
-			DeterminePlayerState();
+        else
+        {
+            swimming = false;
+            DeterminePlayerState();
+        }
+			
 		waterHeight = sealevel;
     }
 
@@ -556,8 +560,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
         }*/
         maxSwimSpeed *= 5;
-        float swimval = maxSwimSpeed * Time.deltaTime;
-        float reverseAcc = 10;
+        float swimval = maxSwimSpeed * Time.deltaTime * 2;
+        float reverseAcc = 5;
         if (Up && !Down)
         {
             if (MoveVec.y < 0) swimval *= reverseAcc;
@@ -610,6 +614,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             ChangePlayerState(CharacterStates.SwimIdling);
         }
             
+        // TODO: Player returns to surface.
+        // TODO: Jumping from the top of water.
+        // TODO: Player can walk in shallow water.
+        // TODO: Animations
 
         MoveVec.x += swimval;
         maxSwimSpeed /= 5;
