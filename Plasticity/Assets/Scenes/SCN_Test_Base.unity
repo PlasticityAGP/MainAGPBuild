@@ -705,6 +705,11 @@ Prefab:
       propertyPath: MovingInZ
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114989280144640750, guid: 0bf968594bcb48746b37c0734ddaa3f9,
+        type: 2}
+      propertyPath: MoveWhileJumping
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0bf968594bcb48746b37c0734ddaa3f9, type: 2}
   m_IsPrefabParent: 0
@@ -790,8 +795,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031922988}
-  m_LocalRotation: {x: 0.054077778, y: -0.010382785, z: 0.00056259334, w: 0.9984826}
-  m_LocalPosition: {x: -2.734923, y: 2.9833357, z: -14.5516615}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

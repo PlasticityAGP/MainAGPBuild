@@ -474,91 +474,15 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 		waterHeight = sealevel;
     }
 
-    // If the player is touching water, this will determine if they are considered swimming
-    // or if they are just walking in shallow water/jumping into water.
-    /*private void InWater()
-    {
-        if (PlayerGrounded)
-        {
-            if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
-                swimming = true;
-            else
-                swimming = false;
-        }
-        else if (DidAJump && RBody.velocity.y >= 0)
-            swimming = false;
-        else
-        {
-            if (waterHeight < this.transform.position.y)
-                swimming = false;
-            else
-                swimming = true;
-        }
-    }*/
-
     // Controls for making the player swim
-    // TODO: should we allow them to jump if they're treading water?
     private void Swim()
     {
-		/*
         // Determining whether the player is at the water surface or not.
-        underWater = false;
         if (waterHeight > this.transform.position.y + this.transform.localScale.y * 1.25f)
         {
-            underWater = true; //Head is below water surface.
+            timeUnderWater += Time.deltaTime; //Head is below water surface.
         }
 
-        // Setting base MoveVec
-        MoveVec = RBody.velocity;
-
-        // Records how long the player has been underwater.
-        if (!underWater)
-            timeUnderWater = 0;
-        else
-            timeUnderWater += Time.deltaTime;
-
-        // Calculates vertical swimming movement under normal conditions.
-        maxSwimSpeed *= swimAcceleration;
-
-        if (Up && !Down)
-            MoveVec.y += maxSwimSpeed * Time.deltaTime;
-        else if (Down && !Up)
-            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
-        else if (MoveVec.y > 0.05f)
-            MoveVec.y -= maxSwimSpeed * Time.deltaTime;
-        else if (MoveVec.y < 0.05f)
-            MoveVec.y += maxSwimSpeed * Time.deltaTime;
-
-        // Calculates vertical movement during edge cases.
-        if (!underWater && !DidAJump)
-        {
-            if (MoveVec.y > 0)
-                MoveVec.y = 0;
-        }
-
-        // TODO: Bring them back to surface. For now it's just going to push them upwards.
-        if (timeUnderWater > maxTimeUnderWater && underWater)
-        {
-            
-        }
-
-        if (Left && !Right)
-            MoveVec.x -= maxSwimSpeed * Time.deltaTime;
-        else if (Right && !Left)
-            MoveVec.x += maxSwimSpeed * Time.deltaTime;
-        else if (MoveVec.x < (0 - maxSwimSpeed / swimAcceleration * Time.deltaTime))
-            MoveVec.x += maxSwimSpeed * Time.deltaTime / 3f;
-        else if (MoveVec.x > (0 + maxSwimSpeed / swimAcceleration * Time.deltaTime))
-            MoveVec.x -= maxSwimSpeed * Time.deltaTime / 3f;
-
-        maxSwimSpeed /= swimAcceleration;
-
-        // Forces the player to return to the surface if they've been underwater for too long.
-        if (timeUnderWater > maxTimeUnderWater && underWater)
-        {
-            MoveVec.y += maxSwimSpeed * Time.deltaTime;
-            if (MoveVec.y > maxSwimSpeed) MoveVec.y = maxSwimSpeed;
-        }*/
         maxSwimSpeed *= 5;
         float swimval = maxSwimSpeed * Time.deltaTime * 2;
         float reverseAcc = 5;
@@ -607,21 +531,36 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             swimval *= 2;
             ChangePlayerState(CharacterStates.SwimIdling);
         }
-            
         else if (MoveVec.x > 0.05f)
         {
             swimval *= -2;
             ChangePlayerState(CharacterStates.SwimIdling);
         }
-            
-        // TODO: Player returns to surface.
-        // TODO: Jumping from the top of water.
-        // TODO: Player can walk in shallow water.
-        // TODO: Animations
 
-        MoveVec.x += swimval;
+        // If they are above the surface.
+        if (waterHeight < this.transform.position.y + this.transform.localScale.y * 1.25f)
+        {
+            if (Up && RBody.velocity.y >= 0) MoveVec.y = maxSwimSpeed*1.25f;
+        }
+        // If they have been underwater for too long.
+        if (timeUnderWater > maxTimeUnderWater)
+        {
+            ReturnToSurface();
+        }
+            // TODO: Player returns to surface.
+            // TODO: Jumping from the top of water.
+            // TODO: Player can walk in shallow water.
+            // TODO: Animations
+
+            MoveVec.x += swimval;
         maxSwimSpeed /= 5;
         RBody.velocity = MoveVec;
+    }
+
+    // Returns player to the surface of the water
+    private void ReturnToSurface()
+    {
+
     }
 
     // Controls for a player that is climbing a ladder.
@@ -809,6 +748,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             gameObject.transform.position = NewPos; 
         }
         PlayerGrounded = isGroundedResult;
+
+        if (swimming) PlayerGrounded = true;
     }
     
     public void ForceTurnCharacter()
@@ -841,23 +782,14 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void CalculateMoveVec()
     {
-        /*
-        //Determine whether the player is swimming or not.
-        if (inWater || DidAJump) InWater();
-        else swimming = false;
-        if (swimming)
-        {
-            Swim();
-            return;
-        }
-        */
-
         //If we are on a slope, we need our velocity to be parallel to the slope. We find this through 
         //a cross product of the normal of that slope, and our right and left vectors.
         if (PlayerGrounded)
         {
+            //Vector3 temp = Vector3.Cross(HitInfo.normal, -transform.right);
             if (MoveDir)
             {
+
                 MoveVec = Vector3.Cross(HitInfo.normal, -transform.right);
             }
             else
