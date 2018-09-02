@@ -401,4 +401,9 @@ public class FlockChild : MonoBehaviour
 
     public Vector3 GetWaypoint() { return _wayPoint; }
 
+    public void PlayCustomAnimation(string animationName)
+    {
+        _model.GetComponent<Animation>().Play(animationName);
+    }
+
 }
