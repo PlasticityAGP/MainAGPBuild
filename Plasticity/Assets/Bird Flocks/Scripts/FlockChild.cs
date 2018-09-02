@@ -136,6 +136,7 @@ public class FlockChild : MonoBehaviour
 
     public void SetRandomScale()
     {
+        if (_spawner._minScale == 0 && _spawner._maxScale == 0) return;
         float sc = Random.Range(_spawner._minScale, _spawner._maxScale);
         _thisT.localScale = new Vector3(sc, sc, sc);
     }
@@ -309,7 +310,7 @@ public class FlockChild : MonoBehaviour
             _soar = false;
             animationSpeed();
             if(!ControlledByBolt)
-                SetWaypoint(findWaypoint(), false, "Flap");
+                SetFlyingWaypoint(findWaypoint(), false, "Flap");
             _dived = false;
         }
     }
@@ -329,7 +330,7 @@ public class FlockChild : MonoBehaviour
         {
             _model.GetComponent<Animation>().CrossFade(_spawner._soarAnimation, 1.5f);
             if(!ControlledByBolt)
-                SetWaypoint(findWaypoint(), false, "Soar");
+                SetFlyingWaypoint(findWaypoint(), false, "Soar");
             _soar = true;
         }
     }
@@ -353,7 +354,7 @@ public class FlockChild : MonoBehaviour
         Vector3 tempWp = findWaypoint();
         tempWp.y -= _spawner._diveValue;
         if(!ControlledByBolt)
-            SetWaypoint(tempWp, false, "Dive");
+            SetFlyingWaypoint(tempWp, false, "Dive");
         _dived = true;
     }
 
@@ -372,14 +373,14 @@ public class FlockChild : MonoBehaviour
         }
     }
 
-    public void LandAtSpot(LandingSpot spot, string eventName)
+    public void LandAtSpot(LandingSpot spot, string eventName, bool instant)
     {
         if (_landedSpot)
             _landedSpot.ReleaseFlockChild();
-        if (spot.LandBird(this, false, eventName))
+        if (spot.LandBird(this, instant, eventName))
             _landedSpot = spot;
 
-        SetWaypoint(spot._thisT.position + _landingPosOffset, true, eventName);
+        SetFlyingWaypoint(spot._thisT.position + _landingPosOffset, true, eventName);
     }
 
     public void SetSpawner(FlockController spawner)
@@ -392,7 +393,7 @@ public class FlockChild : MonoBehaviour
         _landedSpot = null;
     }
 
-    public void SetWaypoint(Vector3 newWaypoint, bool isLanding, string eventName)
+    public void SetFlyingWaypoint(Vector3 newWaypoint, bool isLanding, string eventName)
     {
         if (_landedSpot && !isLanding) _landedSpot.ReleaseFlockChild();
         _wayPoint = newWaypoint;
