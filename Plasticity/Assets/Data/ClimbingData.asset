@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70eef4d94c604274987370731593ca59, type: 3}
+  m_Name: ClimbingData
+  m_EditorClassIdentifier: 
+  BodyEffectorPositionWeight: 0.3
+  SpineStifness: 1
+  BodyPullVertical: 1
+  BodyPullHorizontal: 0.3
+  SpineTwistWeight: 1
+  HeadMaintainRot: 1
+  LeftHandMaintainRelativePos: 1
+  LeftArmPull: 1
+  LeftArmReach: 0
+  LeftArmPush: 1
+  LeftArmPushParent: 1
+  LeftArmMaintainRelativeRot: 1
+  RightHandMaintainRelativePos: 1
+  RightArmPull: 1
+  RightArmReach: 0
+  RightArmPush: 1
+  RightArmPushParent: 1
+  RightArmMaintainRelativeRot: 1
+  LeftFootMaintainRelativePos: 0
+  LeftLegPull: 1
+  LeftLegReach: 0
+  LeftLegPush: 1
+  LeftLegPushParent: 1
+  LeftLegMaintainRelativeRot: 1
+  RightFootMaintainRelativePos: 0
+  RightLegPull: 1
+  RightLegReach: 0
+  RightLegPush: 1
+  RightLegPushParent: 1
+  RightLegMaintainRelativeRot: 1

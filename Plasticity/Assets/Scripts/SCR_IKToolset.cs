@@ -47,6 +47,10 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     public GameObject BodyPos;
     private bool InitiationComplete = false;
     private bool ShutdownComplete = false;
+    [SerializeField]
+    private SCR_IKSettingData ClimbingData;
+    [SerializeField]
+    private SCR_IKSettingData DraggingData;
 
 
     // Use this for initialization
@@ -477,9 +481,52 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         }
     }
 
-    public void LoadIKSetting()
+    public void LoadClimbingData()
     {
+        LoadIKSetting(ClimbingData);
+    }
 
+    public void LoadDraggingData()
+    {
+        LoadIKSetting(DraggingData);
+    }
+
+    private void LoadIKSetting(SCR_IKSettingData Data)
+    {
+        Ik.solver.bodyEffector.positionWeight = Data.BodyEffectorPositionWeight;
+        Ik.solver.spineStiffness = Data.SpineStifness;
+        Ik.solver.pullBodyVertical = Data.BodyPullVertical;
+        Ik.solver.pullBodyHorizontal = Data.BodyPullHorizontal;
+        Ik.solver.spineMapping.twistWeight = Data.SpineTwistWeight;
+        Ik.solver.headMapping.maintainRotationWeight = Data.HeadMaintainRot;
+
+        Ik.solver.leftHandEffector.maintainRelativePositionWeight = Data.LeftHandMaintainRelativePos;
+        Ik.solver.leftArmChain.pull = Data.LeftArmPull;
+        Ik.solver.leftArmChain.reach = Data.LeftArmReach;
+        Ik.solver.leftArmChain.push = Data.LeftArmPush;
+        Ik.solver.leftArmChain.pushParent = Data.LeftArmPushParent;
+        Ik.solver.leftArmMapping.maintainRotationWeight = Data.LeftArmMaintainRelativeRot;
+
+        Ik.solver.rightHandEffector.maintainRelativePositionWeight = Data.RightHandMaintainRelativePos;
+        Ik.solver.rightArmChain.pull = Data.RightArmPull;
+        Ik.solver.rightArmChain.reach = Data.RightArmReach;
+        Ik.solver.rightArmChain.push = Data.RightArmPush;
+        Ik.solver.rightArmChain.pushParent = Data.RightArmPushParent;
+        Ik.solver.rightArmMapping.maintainRotationWeight = Data.RightArmMaintainRelativeRot;
+
+        Ik.solver.leftFootEffector.maintainRelativePositionWeight = Data.LeftFootMaintainRelativePos;
+        Ik.solver.leftLegChain.pull = Data.LeftLegPull;
+        Ik.solver.leftLegChain.reach = Data.LeftLegReach;
+        Ik.solver.leftLegChain.push = Data.LeftLegPush;
+        Ik.solver.leftLegChain.pushParent = Data.LeftLegPushParent;
+        Ik.solver.leftLegMapping.maintainRotationWeight = Data.LeftLegMaintainRelativeRot;
+
+        Ik.solver.rightFootEffector.maintainRelativePositionWeight = Data.RightFootMaintainRelativePos;
+        Ik.solver.rightLegChain.pull = Data.RightLegPull;
+        Ik.solver.rightLegChain.reach = Data.RightLegReach;
+        Ik.solver.rightLegChain.push = Data.RightLegPush;
+        Ik.solver.rightLegChain.pushParent = Data.RightLegPushParent;
+        Ik.solver.rightLegMapping.maintainRotationWeight = Data.RightLegMaintainRelativeRot;
     }
 
     private void MoveHands()

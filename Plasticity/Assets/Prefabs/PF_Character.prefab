@@ -2249,6 +2249,8 @@ MonoBehaviour:
   DisableUp: 0
   LadderSlope: {x: 0, y: 0, z: 0}
   BodyPos: {fileID: 0}
+  ClimbingData: {fileID: 11400000, guid: d097de06fe4eb6a4b88ebb543b8b229f, type: 2}
+  DraggingData: {fileID: 11400000, guid: 828498e9c803587408ff2c22b90ded69, type: 2}
 --- !u!114 &114821809570079128
 MonoBehaviour:
   m_ObjectHideFlags: 1

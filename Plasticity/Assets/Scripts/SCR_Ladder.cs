@@ -200,6 +200,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private void OffLadder()
     {
         IkTools.FlushIk();
+        IkTools.LoadDraggingData();
         if (UsingLowerBarrier) LowerBarrier.SetActive(true);
         ReleaseTrigger();
         climbing = false;
@@ -293,7 +294,11 @@ public class SCR_Ladder : SCR_GameplayStatics {
             CharacterManager.GetRefToModel().transform.rotation = Output;
             yield return null;
         }
-        if (RotationDirection) IkTools.MountLadderIK(SideOfLadder(), false);
+        if (RotationDirection)
+        {
+            IkTools.LoadClimbingData();
+            IkTools.MountLadderIK(SideOfLadder(), false);
+        }
         CoroutineDone = true;
     }
 
