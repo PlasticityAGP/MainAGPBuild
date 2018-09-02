@@ -37,8 +37,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private float OffTheTop;
     [SerializeField]
     private float OffTheBottom;
-    [SerializeField]
-    private bool LadderInXY;
+    public bool LadderInXY;
     [SerializeField]
     private float RotationLerpSpeed;
     [SerializeField]
@@ -186,8 +185,11 @@ public class SCR_Ladder : SCR_GameplayStatics {
         CharacterManager.InteractingWith = gameObject;
         CharacterManager.StopAnimationChange();
         DoRotationCalculations(true);
-        if(SideOfLadder()) IkTools.InitiateLadderIK(LeftLadderRungs);
-        else IkTools.InitiateLadderIK(RightLadderRungs);
+        if (LadderInXY)
+        {
+            if (SideOfLadder()) IkTools.InitiateLadderIK(LeftLadderRungs);
+            else IkTools.InitiateLadderIK(RightLadderRungs);
+        }
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -199,7 +201,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
-        IkTools.FlushIk();
+        if(LadderInXY) IkTools.FlushIk();
         IkTools.LoadDraggingData();
         if (UsingLowerBarrier) LowerBarrier.SetActive(true);
         ReleaseTrigger();
@@ -297,7 +299,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
         if (RotationDirection)
         {
             IkTools.LoadClimbingData();
-            IkTools.MountLadderIK(SideOfLadder(), false);
+            if (LadderInXY) IkTools.MountLadderIK(SideOfLadder(), false);
+            else IkTools.MountLadderIK(false, true);
         }
         CoroutineDone = true;
     }

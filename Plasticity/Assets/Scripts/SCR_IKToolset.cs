@@ -299,46 +299,49 @@ public class SCR_IKToolset : SCR_GameplayStatics {
 
     public void MountLadderIK(bool side, bool ZLadder)
     {
-        LadderMounted = true;
-        SideOfLadder = side;
-        GameObject[] ReturnRungs = FindClosestRungs();
-        SetEffectorTarget("LeftHand", null);
-        SetEffectorTarget("RightHand", null);
-        SetEffectorTarget("Body", null);
-        Vector3[] OffsetHandPoints = FindOffsetPoints(ReturnRungs[0], false, ZLadder);
-        Vector3[] OffsetFeetPoints = FindOffsetPoints(ReturnRungs[1], true, ZLadder);
-        SetEffectorLocation("LeftHand", OffsetHandPoints[0]);
-        SetEffectorLocation("RightHand", OffsetHandPoints[1]);
-        SetEffectorLocation("LeftFoot", OffsetFeetPoints[0]);
-        SetEffectorLocation("RightFoot", OffsetFeetPoints[1]);
-        SetEffectorTarget("Body", BodyPos);
-        ForceEffectorWeight("LeftHand", 1.0f);
-        ForceEffectorWeight("RightHand", 1.0f);
-        ForceEffectorWeight("LeftFoot", 1.0f);
-        ForceEffectorWeight("RightFoot", 1.0f);
-        ForceEffectorWeight("Body", 0.1f);
+        if (!ZLadder)
+        {
+            LadderMounted = true;
+            SideOfLadder = side;
+            GameObject[] ReturnRungs = FindClosestRungs();
+            SetEffectorTarget("LeftHand", null);
+            SetEffectorTarget("RightHand", null);
+            SetEffectorTarget("Body", null);
+            Vector3[] OffsetHandPoints = FindOffsetPoints(ReturnRungs[0], false, ZLadder);
+            Vector3[] OffsetFeetPoints = FindOffsetPoints(ReturnRungs[1], true, ZLadder);
+            SetEffectorLocation("LeftHand", OffsetHandPoints[0]);
+            SetEffectorLocation("RightHand", OffsetHandPoints[1]);
+            SetEffectorLocation("LeftFoot", OffsetFeetPoints[0]);
+            SetEffectorLocation("RightFoot", OffsetFeetPoints[1]);
+            SetEffectorTarget("Body", BodyPos);
+            ForceEffectorWeight("LeftHand", 1.0f);
+            ForceEffectorWeight("RightHand", 1.0f);
+            ForceEffectorWeight("LeftFoot", 1.0f);
+            ForceEffectorWeight("RightFoot", 1.0f);
+            ForceEffectorWeight("Body", 0.1f);
 
-        Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;
-        Ik.solver.rightHandEffector.rotation = ReturnRungs[0].transform.rotation;
-        if (SideOfLadder)
-        {
-            Vector3 Foot = new Vector3();
-            Foot.x = 562.294f;
-            Foot.y = 270.977f;
-            Foot.z = -0.367981f;
-            Ik.solver.leftFootEffector.rotation.eulerAngles = Foot;
-            Ik.solver.rightFootEffector.rotation.eulerAngles = Foot;
+            Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;
+            Ik.solver.rightHandEffector.rotation = ReturnRungs[0].transform.rotation;
+            if (SideOfLadder)
+            {
+                Vector3 Foot = new Vector3();
+                Foot.x = 562.294f;
+                Foot.y = 270.977f;
+                Foot.z = -0.367981f;
+                Ik.solver.leftFootEffector.rotation.eulerAngles = Foot;
+                Ik.solver.rightFootEffector.rotation.eulerAngles = Foot;
+            }
+            else
+            {
+                Vector3 Foot = new Vector3();
+                Foot.x = -63.609f;
+                Foot.y = -445.793f;
+                Foot.z = -187.84f;
+                Ik.solver.leftFootEffector.rotation.eulerAngles = Foot;
+                Ik.solver.rightFootEffector.rotation.eulerAngles = Foot;
+            }
+            ShutdownComplete = false;
         }
-        else
-        {
-            Vector3 Foot = new Vector3();
-            Foot.x = -63.609f;
-            Foot.y = -445.793f;
-            Foot.z = -187.84f;
-            Ik.solver.leftFootEffector.rotation.eulerAngles = Foot;
-            Ik.solver.rightFootEffector.rotation.eulerAngles = Foot;
-        }
-        ShutdownComplete = false;
     }
 
     private GameObject[] FindClosestRungs()

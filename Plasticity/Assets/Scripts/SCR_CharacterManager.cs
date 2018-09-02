@@ -603,7 +603,9 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     // Controls for a player that is climbing a ladder.
     private void Climb()
     {
-        Vector3 LadderUp = IkTools.LadderSlope.normalized;
+        Vector3 LadderUp;
+        if (Ladder.GetComponent<SCR_Ladder>().LadderInXY) LadderUp = IkTools.LadderSlope.normalized;
+        else LadderUp = Ladder.transform.up.normalized;
         IkTools.BodyPos = BackTarget;
         ChangePlayerState(CharacterStates.Idling);
         if (Up)
