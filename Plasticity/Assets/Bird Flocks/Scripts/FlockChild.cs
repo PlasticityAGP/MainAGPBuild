@@ -46,7 +46,11 @@ public class FlockChild : MonoBehaviour
 
     public Vector3 _landingPosOffset;
 
+
+#pragma warning disable 0414
     private LandingSpot _landedSpot; // Current spot we are landed at if landed
+#pragma warning restore 0414
+
 
     public void Start()
     {

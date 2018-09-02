@@ -278,7 +278,6 @@ GameObject:
   - component: {fileID: 320254449606247934}
   - component: {fileID: 95765767005333306}
   - component: {fileID: 65966418135440994}
-  - component: {fileID: 114238813758400906}
   - component: {fileID: 54263911951857252}
   m_Layer: 2
   m_Name: GuyAI
@@ -1351,18 +1350,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114238813758400906
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1372757564825740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd9e561fc9907014d8c24407ba01a630, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnlyTriggerOnce: 0
 --- !u!114 &114376984221920444
 MonoBehaviour:
   m_ObjectHideFlags: 1

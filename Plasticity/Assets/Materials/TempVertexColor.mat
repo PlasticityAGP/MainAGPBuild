@@ -7,8 +7,8 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: TempVertexColor
-  m_Shader: {fileID: 4800000, guid: d0cdcefd98ff38b41b9678abdff5cbcb, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: 21d31f01a531bf5439071462f69c0830, type: 3}
+  m_ShaderKeywords: _VERTEXCOLOR
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -62,6 +62,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _IntensityVC: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1

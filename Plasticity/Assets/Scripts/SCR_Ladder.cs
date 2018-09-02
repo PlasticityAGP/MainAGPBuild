@@ -8,6 +8,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
 
     [Tooltip("Flags whether or not the player will clamber at the top of the ladder")]
     public bool ClamberEnabled;
+    public GameObject LadderModel;
     [SerializeField]
     [Tooltip("The effectors the players will reach towards as they clamber at the top of the ladder")]
     [ValidateInput("NotEmpty", "We need to have a nonzero number of effectors defined")]
@@ -36,6 +37,14 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private float OffTheTop;
     [SerializeField]
     private float OffTheBottom;
+    [SerializeField]
+    private bool LadderInXY;
+    [SerializeField]
+    private float RotationLerpSpeed;
+    [SerializeField]
+    private GameObject[] LeftLadderRungs;
+    [SerializeField]
+    private GameObject[] RightLadderRungs;
 
 
     private SCR_CharacterManager CharacterManager;
@@ -49,6 +58,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     private bool ClamberDir;
     private bool AmLerpingCharacter;
     private bool Inside;
+    [HideInInspector]
+    public bool InsideTop;
+    private bool RotationDirection;
+    private bool CoroutineDone = true;
 
 
 
@@ -137,14 +150,14 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The "up" key is pressed while the player is inside the ladder's trigger.
     private void Up(int val)
     {
+        if (InsideTop && reaching) OffLadder();
         if (Inside)
         {
             if (reaching)
             {
                 OffLadder();
             }
-
-            else if (val == 1 && !climbing)
+            else if (val == 1 && !climbing && !InsideTop)
             {
                 InitiateClimb();
             }
@@ -171,6 +184,10 @@ public class SCR_Ladder : SCR_GameplayStatics {
     {
         CharacterManager.Ladder = gameObject;
         CharacterManager.InteractingWith = gameObject;
+        CharacterManager.StopAnimationChange();
+        DoRotationCalculations(true);
+        if(SideOfLadder()) IkTools.InitiateLadderIK(LeftLadderRungs);
+        else IkTools.InitiateLadderIK(RightLadderRungs);
         climbing = true;
         SCR_EventManager.StartListening("LeftKey", HorizontalListener);
         SCR_EventManager.StartListening("RightKey", HorizontalListener);
@@ -182,6 +199,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     // The player hops off the ladder.
     private void OffLadder()
     {
+        IkTools.FlushIk();
         if (UsingLowerBarrier) LowerBarrier.SetActive(true);
         ReleaseTrigger();
         climbing = false;
@@ -189,7 +207,24 @@ public class SCR_Ladder : SCR_GameplayStatics {
         SCR_EventManager.StopListening("LeftKey", HorizontalListener);
         SCR_EventManager.StopListening("RightKey", HorizontalListener);
         CharacterManager.InteractingWith = null;
+        CharacterManager.ResumeAnimationChange();
         CharacterManager.JumpOff();
+        DoRotationCalculations(false);
+    }
+
+    public void DoRotationCalculations(bool IsOn)
+    {
+        if (LadderInXY && (CharacterManager.InteractingWith == gameObject || CharacterManager.InteractingWith == null))
+        {
+            RotationDirection = IsOn;
+            if (CoroutineDone)
+            {
+                CoroutineDone = false;
+                StartCoroutine(PlayerRotation(Quaternion.FromToRotation(CharacterManager.GetRefToModel().transform.up, Character.transform.up) * CharacterManager.GetRefToModel().transform.rotation,
+                    Quaternion.FromToRotation(CharacterManager.GetRefToModel().transform.up, gameObject.transform.up)
+                    * CharacterManager.GetRefToModel().transform.rotation));
+            }
+        }
     }
 
     private void EndLerp()
@@ -242,5 +277,30 @@ public class SCR_Ladder : SCR_GameplayStatics {
     void Update()
     {
         if (AmLerpingCharacter) LerpCharacter(Time.deltaTime);
+    }
+
+    IEnumerator PlayerRotation(Quaternion Base, Quaternion Tilted)
+    {
+        float TimeSlice = 0.0f;
+        bool LastTick = RotationDirection;
+        while (TimeSlice < 1.0f)
+        {
+            if (LastTick != RotationDirection) TimeSlice = 1.0f - TimeSlice;
+            TimeSlice += Time.deltaTime * RotationLerpSpeed;
+            Quaternion Output;
+            if (RotationDirection) Output = Quaternion.Lerp(Base, Tilted, TimeSlice);
+            else Output = Quaternion.Lerp(Tilted, Base, TimeSlice);
+            CharacterManager.GetRefToModel().transform.rotation = Output;
+            yield return null;
+        }
+        if (RotationDirection) IkTools.MountLadderIK(SideOfLadder(), false);
+        CoroutineDone = true;
+    }
+
+    private bool SideOfLadder()
+    {
+        Vector3 A = Character.transform.position - gameObject.transform.position;
+        float ZValue = Vector3.Cross(gameObject.transform.up, A).z;
+        return ZValue >= 0.0f;
     }
 }

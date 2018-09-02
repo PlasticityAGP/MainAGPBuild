@@ -9,6 +9,7 @@ public class PairObject
 {
     public GameObject ObjToSet;
     public int State;
+    public string Flag;
 }
 
 [System.Serializable]
@@ -74,7 +75,8 @@ public class SCR_SceneLoader : MonoBehaviour {
             }
             else if(Data.Settings[i].State == 2)
             {
-                SCR_EventManager.TriggerEvent("Timeline", Data.Settings[i].ObjToSet.name);
+                SCR_EventManager.TriggerEvent("Timeline", Data.Settings[i].Flag);
+                SCR_EventManager.TriggerEvent("TimelineInstruction", "Resume");
             }
         }
     }
