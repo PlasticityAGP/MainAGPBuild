@@ -21,6 +21,8 @@ public class LandingSpot : MonoBehaviour
 
     public bool _gotcha;
 
+    private string landingEventName = "";
+
     public void Start()
     {
         if (_thisT == null) _thisT = transform;
@@ -92,7 +94,10 @@ public class LandingSpot : MonoBehaviour
                 {
                     _idle = true;
                     if (landingChild)
+                    {
                         landingChild._model.GetComponent<Animation>().CrossFade(landingChild._spawner._idleAnimation, .55f);
+                        Bolt.CustomEvent.Trigger(landingChild.gameObject, landingEventName);
+                    }
 
                 }
                 if (distance > _controller._snapLandDistance)
@@ -216,12 +221,13 @@ public class LandingSpot : MonoBehaviour
             }
         }
 
-        LandBird(fChild, false);
+        LandBird(fChild, false, "LandRandomBird");
     }
 
-    public bool LandBird(FlockChild fChild, bool instant)
+    public bool LandBird(FlockChild fChild, bool instant, string eventName)
     {
         bool landBeginSuccess = false;
+        landingEventName = eventName;
 
         if (_controller._flock.gameObject.activeInHierarchy && (landingChild == null))
         {
