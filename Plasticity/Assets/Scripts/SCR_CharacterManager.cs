@@ -430,6 +430,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
         Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
+        IkTools.LoadDraggingData();
     }
 
     private void FixedUpdate()
@@ -627,6 +628,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             if (this.transform.position.y < LowClimb || IkTools.DisableDown)
             {
                 IkTools.FlushIk();
+                IkTools.LoadDraggingData();
                 NoAnimUpdate = false;
                 SCR_Ladder LadderScript = Ladder.GetComponent<SCR_Ladder>();
                 LadderScript.climbing = false;
@@ -696,6 +698,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public void JumpOff()
     {
         IkTools.FlushIk();
+        IkTools.LoadDraggingData();
         NoAnimUpdate = false;
         if (Ladder.GetComponent<SCR_Ladder>().ReleaseLadderDoTrigger) Ladder.GetComponent<SCR_Ladder>().ReleaseTrigger();
         MoveVec.y = JumpForce + 5.0f;

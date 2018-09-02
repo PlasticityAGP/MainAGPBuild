@@ -2249,6 +2249,8 @@ MonoBehaviour:
   DisableUp: 0
   LadderSlope: {x: 0, y: 0, z: 0}
   BodyPos: {fileID: 0}
+  ClimbingData: {fileID: 11400000, guid: d097de06fe4eb6a4b88ebb543b8b229f, type: 2}
+  DraggingData: {fileID: 11400000, guid: 828498e9c803587408ff2c22b90ded69, type: 2}
 --- !u!114 &114821809570079128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2926,14 +2928,11 @@ MonoBehaviour:
   InteractingWith: {fileID: 0}
   RBody: {fileID: 0}
   IsClimbing: 0
-  ClimbSpeed: 0.9
+  ClimbSpeed: 1.5
   BackTarget: {fileID: 1724121126746726}
   Ladder: {fileID: 0}
-  inWater: 0
-  underWater: 0
-  swimming: 0
+  SwimSlowdown: 4
   maxSwimSpeed: 0
-  swimAcceleration: 0
   maxTimeUnderWater: 2
   timeUnderWater: 0
   waterHeight: 0
