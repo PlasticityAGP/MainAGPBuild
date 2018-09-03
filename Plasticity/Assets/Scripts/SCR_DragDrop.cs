@@ -89,6 +89,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
     private LayerMask GroundLayer;
     [SerializeField]
+    private float ClamberLerpThreshold;
+    [SerializeField]
     private GameObject MeshCollider;
     [SerializeField]
     private bool BoxCanFall;
@@ -109,11 +111,12 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
     private bool LockedOut;
+    private bool ClamberAllowed = true;
     private bool Moving;
     private bool BoxGrounded = true;
     private RaycastHit Output;
-    private string OnTopOfName;
-    Vector3[] PositionDifferences;
+    private GameObject OnTopOfBox;
+    Vector3 PositionDifferences;
 
     private void Awake()
     {
@@ -138,6 +141,17 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         SCR_EventManager.StopListening("InteractKey", InteractListener);
         SCR_EventManager.StopListening("UpKey", UpListener);
         SCR_EventManager.StopListening("CharacterTurn", TurnListener);
+    }
+
+    private void FallBoxTriggers()
+    {
+        MeshCollider.GetComponent<BoxCollider>().enabled = true;
+        gameObject.transform.parent.gameObject.GetComponent<BoxCollider>().enabled = false;
+    }
+    private void DragBoxTriggers()
+    {
+        MeshCollider.GetComponent<BoxCollider>().enabled = false;
+        gameObject.transform.parent.gameObject.GetComponent<BoxCollider>().enabled = true;
     }
 
     private void InteractPressed(int value)
@@ -168,9 +182,17 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }            
     }
 
+    private void WithinThreshold()
+    {
+        if ((gameObject.transform.position.y - Character.transform.position.y) > ClamberLerpThreshold) ClamberAllowed = false;
+        else ClamberAllowed = true;
+    }
+
+
     private void UpPressed(int value)
     {
-        if (value == 1 && Inside && LerpWhilePlayerClose && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && !Lerping)
+        if (BoxCanFall) WithinThreshold();
+        if (value == 1 && Inside && LerpWhilePlayerClose && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && !Lerping && ClamberAllowed)
         {
             if(!CharacterManager.InteractingWith == gameObject)
             {
@@ -181,7 +203,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             CharacterManager.InteractingWith = gameObject;
             Lerping = true;
             StartCoroutine(ClamberLerp());
-            StartCoroutine(Timer(1.0f/LerpSpeed - (Character.transform.position.y - gameObject.transform.position.y + 0.35f), ReleaseHands));
             CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         }
     }
@@ -216,6 +237,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         InitialSpeed = CharacterManager.GetSpeed();
         IsZ = false;
         Inside = false;
+        if (BoxCanFall) FallBoxTriggers();
+        else DragBoxTriggers();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -257,7 +280,17 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (other.gameObject.tag == "Character")
         {
-            //Call method that allows box movement.
+            if(BoxCanFall && !(OnTopOfBox == null))
+            {
+                if (OnTopOfBox.GetComponentInChildren<SCR_DragDrop>().Inside && !LockedOut)
+                {
+                    LockedOut = true;
+                }
+                else if (!OnTopOfBox.GetComponentInChildren<SCR_DragDrop>().Inside && LockedOut)
+                {
+                    LockedOut = false;
+                }
+            }
             InTrigger(other.gameObject);
         }
     }
@@ -367,28 +400,53 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         RaycastHit Result;
         if (Physics.Raycast(CenterPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
         {
-            if (Result.collider.gameObject.tag == "PuzzleBox")
+            if (BoxCanFall)
             {
-                if(OnTopOfName != Result.collider.gameObject.transform.parent.transform.parent.name)
+                if (Result.collider.gameObject.tag == "PuzzleBox")
                 {
-                    OnTopOfName = Result.collider.gameObject.transform.parent.transform.parent.name;
+                    if ((OnTopOfBox == null))
+                    {
+                        OnTopOfBox = Result.collider.gameObject;
+                        SCR_DragDrop Current = OnTopOfBox.GetComponentInChildren<SCR_DragDrop>();
+                        Current.LockedOut = true;
+                        Current.ClamberAllowed = false;
+                    }
+                    else
+                    {
+                        if (OnTopOfBox.name != Result.collider.gameObject.name)
+                        {
+                            Debug.Log("Switch Happened");
+                            SCR_DragDrop Current = Result.collider.gameObject.GetComponentInChildren<SCR_DragDrop>();
+                            Current.LockedOut = true;
+                            Current.ClamberAllowed = false;
+                            SCR_DragDrop Old = OnTopOfBox.GetComponentInChildren<SCR_DragDrop>();
+                            Old.LockedOut = false;
+                            Old.ClamberAllowed = true;
+                            OnTopOfBox = Result.collider.gameObject;
+                        }
+                    }
                 }
+                if (!BoxGrounded) StartCoroutine(Timer(LagAfterGrounded, PositionDifferences, BoxStopFall));
+                BoxGrounded = true;
             }
-            if (!BoxGrounded) StartCoroutine(Timer(LagAfterGrounded, PositionDifferences, BoxStopFall));
-            BoxGrounded = true;
+
         }
         else
         {
-            if (BoxGrounded)
+            if (BoxCanFall)
             {
-                PositionDifferences = new Vector3[Siblings.Length];
-                for (int i = 0; i < PositionDifferences.Length; ++i)
+                if (BoxGrounded)
                 {
-                    PositionDifferences[i] = Siblings[i].transform.position - MeshCollider.transform.position;
+                    PositionDifferences = MeshCollider.transform.localPosition;
+                    //PositionDifferences = new Vector3[Siblings.Length];
+                    //for (int i = 0; i < PositionDifferences.Length; ++i)
+                    //{
+                    //    PositionDifferences[i] = Siblings[i].transform.position - MeshCollider.transform.position;
+                    //}
+                    StartCoroutine(Timer(LagBeforeFall, BoxStartFall));
                 }
-                StartCoroutine(Timer(LagBeforeFall, BoxStartFall));
+                BoxGrounded = false;
             }
-            BoxGrounded = false;
         }
         Output = Result;
     }
@@ -398,7 +456,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         NullHands();
         StartCoroutine(Timer(0.75f, CharacterManager.UnfreezeVelocity));
-        RBody.velocity = Vector3.zero;
         Interact = false;
         CharacterManager.StopPushing();
         if (Inside && !LockedOut)
@@ -407,25 +464,31 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
         }
         Rigidbody MeshBody = MeshCollider.GetComponent<Rigidbody>();
+        RBody.velocity = Vector3.zero;
+        MeshBody.velocity = Vector3.zero;
         MeshBody.constraints = (~RigidbodyConstraints.FreezePositionX & ~RigidbodyConstraints.FreezePositionZ & ~RigidbodyConstraints.FreezePositionY) &
                 (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | ~RigidbodyConstraints.FreezeRotationZ);
         MeshBody.useGravity = true;
     }
 
-    private void BoxStopFall(Vector3[] Diffs)
+    private void BoxStopFall(Vector3 Diff)
     {
+        SCR_DragDrop Old = OnTopOfBox.GetComponentInChildren<SCR_DragDrop>();
+        Old.LockedOut = false;
+        Old.ClamberAllowed = true;
         Vector3 Adjustment = new Vector3(0.0f, LandedYAdjustment, 0.0f);
-        for (int i = 0; i < Siblings.Length; ++i)
-        {
-            //Debug.Log(Diffs[i]);
-            Siblings[i].transform.position = (MeshCollider.transform.position + Diffs[i]);
-        }
-        gameObject.transform.position = MeshCollider.transform.position + Adjustment;
+        gameObject.transform.parent.position = MeshCollider.transform.position + Adjustment;
+        MeshCollider.transform.localPosition = Diff;
+
         Rigidbody MeshBody = MeshCollider.GetComponent<Rigidbody>();
         MeshBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) |
                 (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
         MeshBody.useGravity = false;
         FreezeAll();
+        LockedOut = false;
+        ClamberAllowed = true;
+        BoxCanFall = false;
+        DragBoxTriggers();
     }
 
     private void NullHands()
@@ -552,11 +615,13 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         Vector3 StartPoint = Character.transform.position;
         Vector3 MidPoint = ReferencePoint.transform.position;
         Vector3 EndPoint = MidPoint;
+        bool DoOnce = false;
         MidPoint.x = Character.transform.position.x;
         while (TimeSlice < 1.0f)
         {
             TimeSlice += Time.deltaTime * LerpSpeed;
             Character.transform.position = Vector3.Lerp(StartPoint, MidPoint, TimeSlice);
+            if(TimeSlice < 0.5f && !DoOnce) ReleaseHands();
             yield return null;
         }
         TimeSlice = 0.0f;
@@ -570,7 +635,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         CharacterManager.StopPushing();
         CharacterManager.InteractingWith = null;
         CharacterManager.UnfreezeVelocity();
-        StartCoroutine(Timer(0.25f, NullHands));
+        StartCoroutine(Timer(0.15f, NullHands));
     }
 
     private void FixedUpdate()

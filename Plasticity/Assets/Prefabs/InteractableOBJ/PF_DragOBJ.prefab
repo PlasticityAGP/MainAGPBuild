@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 54393071884448896}
   m_Layer: 0
   m_Name: crate (1)
-  m_TagString: Untagged
+  m_TagString: PuzzleBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -180,6 +180,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4252114140715862}
   - component: {fileID: 54781432785182046}
+  - component: {fileID: 65653472696005734}
   m_Layer: 10
   m_Name: PF_DragOBJ
   m_TagString: PuzzleBox
@@ -317,7 +318,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1989205209241488}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.048, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4252114140715862}
@@ -621,10 +622,10 @@ BoxCollider:
   m_GameObject: {fileID: 1220043270897790}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
-  m_Size: {x: 0.690128, y: 0.65192467, z: 0.690128}
-  m_Center: {x: 0.00031049602, y: 0.028809384, z: 0.000000035512436}
+  m_Size: {x: 0.690128, y: 0.70314527, z: 0.690128}
+  m_Center: {x: 0.00031049605, y: 0.0031990432, z: 0.00000003550815}
 --- !u!65 &65268067467558486
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -649,6 +650,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.9168155, y: 0.3795, z: 0.95624936}
   m_Center: {x: 0.024988653, y: 0.16317607, z: -0.0054383776}
+--- !u!65 &65653472696005734
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1516003365626394}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 0.964886, y: 0.9792216, z: 1}
+  m_Center: {x: -0.017556947, y: 0.19716586, z: 0}
 --- !u!114 &114169623914369940
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -903,16 +916,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  GroundTraceDistance: 0.7
+  GroundTraceDistance: 0.8
   YTraceOffset: 0.05
   MaxGroundAngle: 0
   GroundLayer:
     serializedVersion: 2
     m_Bits: 5121
+  ClamberLerpThreshold: 1.5
   MeshCollider: {fileID: 1220043270897790}
+  BoxCanFall: 1
   Siblings:
   - {fileID: 1482594972527246}
   - {fileID: 1403506751055544}
   - {fileID: 1326667090337524}
   - {fileID: 1257496432202606}
+  LandedYAdjustment: -0.2
+  LagBeforeFall: 0.2
+  LagAfterGrounded: 0.45
   CharacterManager: {fileID: 0}
