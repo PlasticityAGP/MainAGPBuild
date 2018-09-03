@@ -444,7 +444,6 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
         Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
-        IkTools.LoadDraggingData();
     }
 
     private void FixedUpdate()
