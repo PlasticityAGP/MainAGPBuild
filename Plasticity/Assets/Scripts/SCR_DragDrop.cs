@@ -98,6 +98,12 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [SerializeField]
     [ShowIf("BoxCanFall")]
     private float LandedYAdjustment;
+    [SerializeField]
+    [ShowIf("BoxCanFall")]
+    private float LagBeforeFall;
+    [SerializeField]
+    [ShowIf("BoxCanFall")]
+    private float LagAfterGrounded;
 
 
     [HideInInspector]
@@ -105,6 +111,9 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private bool LockedOut;
     private bool Moving;
     private bool BoxGrounded = true;
+    private RaycastHit Output;
+    private string OnTopOfName;
+    Vector3[] PositionDifferences;
 
     private void Awake()
     {
@@ -329,7 +338,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (CharacterManager.PlayerGrounded)
         {
-            RaycastHit Output = FireTrace();
             if (BoxGrounded)
             {
                 Vector3 VelocityDir;
@@ -351,32 +359,45 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }
     }
 
-    public RaycastHit FireTrace()
+
+    private void FireTraceDown()
     {
-        //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
-        //or not the character is on an object.
         Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
         Vector3 CenterPosition = MeshCollider.transform.position + YOffset;
         RaycastHit Result;
-        Vector3 End = CenterPosition;
-        Vector3 Temp = CenterPosition + Vector3.down * GroundTraceDistance;
-        End.y -= GroundTraceDistance;
-        Debug.DrawLine(CenterPosition, Temp, Color.red, 0.5f);
         if (Physics.Raycast(CenterPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
         {
-            if (!BoxGrounded) StartCoroutine(Timer(0.5f, BoxStopFall));
+            if (Result.collider.gameObject.tag == "PuzzleBox")
+            {
+                if(OnTopOfName != Result.collider.gameObject.transform.parent.transform.parent.name)
+                {
+                    OnTopOfName = Result.collider.gameObject.transform.parent.transform.parent.name;
+                }
+            }
+            if (!BoxGrounded) StartCoroutine(Timer(LagAfterGrounded, PositionDifferences, BoxStopFall));
             BoxGrounded = true;
         }
         else
         {
-            if (BoxGrounded) StartCoroutine(Timer(0.1f, BoxStartFall));
+            if (BoxGrounded)
+            {
+                PositionDifferences = new Vector3[Siblings.Length];
+                for (int i = 0; i < PositionDifferences.Length; ++i)
+                {
+                    PositionDifferences[i] = Siblings[i].transform.position - MeshCollider.transform.position;
+                }
+                StartCoroutine(Timer(LagBeforeFall, BoxStartFall));
+            }
             BoxGrounded = false;
         }
-        return Result;
+        Output = Result;
     }
 
     private void BoxStartFall()
     {
+        CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
+        NullHands();
+        StartCoroutine(Timer(0.75f, CharacterManager.UnfreezeVelocity));
         RBody.velocity = Vector3.zero;
         Interact = false;
         CharacterManager.StopPushing();
@@ -391,18 +412,20 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         MeshBody.useGravity = true;
     }
 
-    private void BoxStopFall()
+    private void BoxStopFall(Vector3[] Diffs)
     {
         Vector3 Adjustment = new Vector3(0.0f, LandedYAdjustment, 0.0f);
         for (int i = 0; i < Siblings.Length; ++i)
         {
-            Siblings[i].transform.position = MeshCollider.transform.position + Adjustment;
+            //Debug.Log(Diffs[i]);
+            Siblings[i].transform.position = (MeshCollider.transform.position + Diffs[i]);
         }
-        gameObject.transform.position = MeshCollider.transform.position;
+        gameObject.transform.position = MeshCollider.transform.position + Adjustment;
         Rigidbody MeshBody = MeshCollider.GetComponent<Rigidbody>();
         MeshBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) |
                 (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
         MeshBody.useGravity = false;
+        FreezeAll();
     }
 
     private void NullHands()
@@ -552,6 +575,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void FixedUpdate()
     {
+        FireTraceDown();
         EffectorCalculations();
         if(!LockedOut && (Moving || !BoxGrounded)) CalculateDir();
     }

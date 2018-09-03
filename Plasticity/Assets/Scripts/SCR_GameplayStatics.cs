@@ -17,6 +17,12 @@ public class SCR_GameplayStatics : MonoBehaviour
         callBack(value);
     }
 
+    public IEnumerator Timer(float time, Vector3[] value, System.Action<Vector3[]> callBack)
+    {
+        yield return new WaitForSeconds(time);
+        callBack(value);
+    }
+
     public static bool NotEmpty (string[] array)
     {
         if (array.Length == 0) return false;
