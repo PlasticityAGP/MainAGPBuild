@@ -185,6 +185,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool AmInHardFall = false;
     private bool ForcedAnim = false;
 
+    // Coyote
+    private float coyote_beginFallTime = 0;
+    [SerializeField]
+    private float coyote_duration = 0.5f;
+    private bool coyote_enabled = false;
+
     private void Awake()
     {
         //Register the callback functions related to each listener. These will be called as
@@ -302,9 +308,17 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 					SetAnim("SwimMoveToSwimIdle");
 			}
 			if (state == CharacterStates.Paused) CharacterAnimator.speed = 0.0f;
+            
+            // Coyote
+            if (state == CharacterStates.Falling && PlayerState != CharacterStates.Jumping)
+            {
+                coyote_beginFallTime = Time.time;
+            }
+            
             PlayerState = state;
             ForcedAnim = false;
         }
+
     }
 
     private void ForcePlayerState(CharacterStates state)
@@ -435,6 +449,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void FixedUpdate()
     {
+        //Coyote
+        if (Input.GetKey(KeyCode.C) && Input.GetKey(KeyCode.O) && 
+            Input.GetKey(KeyCode.Y) && Input.GetKey(KeyCode.T) &&
+            Input.GetKeyDown(KeyCode.E)) coyote_enabled = !coyote_enabled;
+
         if (PlayerState == CharacterStates.Swimming || PlayerState == CharacterStates.SwimIdling)
         {
             Swim();
@@ -994,8 +1013,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             CalculateMoveVec();
         }
 
+        bool coyote_canJump = (Time.time - coyote_beginFallTime) < coyote_duration && Up && coyote_enabled;
+
         //If the player has pressed an UP key and the player is currently standing on the ground
-        if (Up && PlayerGrounded && !StateChangeLocked)
+        if ((Up && PlayerGrounded && !StateChangeLocked) || coyote_canJump)
         {
             if (CanJump)
             {
