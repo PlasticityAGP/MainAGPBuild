@@ -45,6 +45,7 @@ public class FlockChild : MonoBehaviour
     public Transform _thisT;                    //Reference to the transform component
 
     public Vector3 _landingPosOffset;
+    private string waypointEventName = "";
 
 
 #pragma warning disable 0414
@@ -135,6 +136,7 @@ public class FlockChild : MonoBehaviour
 
     public void SetRandomScale()
     {
+        if (_spawner._minScale == 0 && _spawner._maxScale == 0) return;
         float sc = Random.Range(_spawner._minScale, _spawner._maxScale);
         _thisT.localScale = new Vector3(sc, sc, sc);
     }
@@ -158,6 +160,12 @@ public class FlockChild : MonoBehaviour
 
     public void CheckForDistanceToWaypoint()
     {
+        if((_thisT.position - _wayPoint).magnitude < _spawner._waypointDistance)
+        {
+            // reached waypoint
+            Bolt.CustomEvent.Trigger(gameObject, waypointEventName);
+        }
+
         if (!_landing && (_thisT.position - _wayPoint).magnitude < _spawner._waypointDistance + _stuckCounter)
         {
             Wander(0.0f);
@@ -269,7 +277,7 @@ public class FlockChild : MonoBehaviour
 
     public void Wander(float delay)
     {
-        if (!_landing && !ControlledByBolt)
+        if (!_landing)
         {
             _damping = Random.Range(_spawner._minDamping, _spawner._maxDamping);
             _targetSpeed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed);
@@ -302,7 +310,7 @@ public class FlockChild : MonoBehaviour
             _soar = false;
             animationSpeed();
             if(!ControlledByBolt)
-                SetWaypoint(findWaypoint());
+                SetFlyingWaypoint(findWaypoint(), false, "Flap");
             _dived = false;
         }
     }
@@ -322,7 +330,7 @@ public class FlockChild : MonoBehaviour
         {
             _model.GetComponent<Animation>().CrossFade(_spawner._soarAnimation, 1.5f);
             if(!ControlledByBolt)
-                SetWaypoint(findWaypoint());
+                SetFlyingWaypoint(findWaypoint(), false, "Soar");
             _soar = true;
         }
     }
@@ -346,7 +354,7 @@ public class FlockChild : MonoBehaviour
         Vector3 tempWp = findWaypoint();
         tempWp.y -= _spawner._diveValue;
         if(!ControlledByBolt)
-            SetWaypoint(tempWp);
+            SetFlyingWaypoint(tempWp, false, "Dive");
         _dived = true;
     }
 
@@ -365,10 +373,14 @@ public class FlockChild : MonoBehaviour
         }
     }
 
-    public void LandAtSpot(LandingSpot spot)
+    public void LandAtSpot(LandingSpot spot, string eventName, bool instant)
     {
-        if (spot.LandBird(this, false))
+        if (_landedSpot)
+            _landedSpot.ReleaseFlockChild();
+        if (spot.LandBird(this, instant, eventName))
             _landedSpot = spot;
+
+        SetFlyingWaypoint(spot._thisT.position + _landingPosOffset, true, eventName);
     }
 
     public void SetSpawner(FlockController spawner)
@@ -381,12 +393,18 @@ public class FlockChild : MonoBehaviour
         _landedSpot = null;
     }
 
-    public void SetWaypoint(Vector3 newWaypoint)
+    public void SetFlyingWaypoint(Vector3 newWaypoint, bool isLanding, string eventName)
     {
-        //if (_landedSpot) _landedSpot.ReleaseFlockChild();
+        if (_landedSpot && !isLanding) _landedSpot.ReleaseFlockChild();
         _wayPoint = newWaypoint;
+        waypointEventName = eventName;
     }
 
     public Vector3 GetWaypoint() { return _wayPoint; }
+
+    public void PlayCustomAnimation(string animationName)
+    {
+        _model.GetComponent<Animation>().Play(animationName);
+    }
 
 }
