@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
 
 [System.Serializable]
 public class PairObject
@@ -80,7 +81,7 @@ public class SCR_SceneLoader : MonoBehaviour {
             }
             else if(Data.Settings[i].State == 3)
             {
-                Data.Settings[i].ObjToSet.GetComponent<Animator>().SetTrigger("DoOnce");
+                Data.Settings[i].ObjToSet.GetComponentInChildren<PlayableDirector>().Play();
             }
         }
     }
