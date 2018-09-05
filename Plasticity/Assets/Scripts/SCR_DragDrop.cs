@@ -89,12 +89,34 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [Tooltip("Layermask that signifies what objects are considered to be the ground.")]
     private LayerMask GroundLayer;
     [SerializeField]
+    private float ClamberLerpThreshold;
+    [SerializeField]
+    private GameObject MeshCollider;
+    [SerializeField]
+    private bool BoxCanFall;
+    [SerializeField]
+    [ShowIf("BoxCanFall")]
+    private GameObject[] Siblings;
+    [SerializeField]
+    [ShowIf("BoxCanFall")]
+    private float LandedYAdjustment;
+    [SerializeField]
+    [ShowIf("BoxCanFall")]
+    private float LagBeforeFall;
+    [SerializeField]
+    [ShowIf("BoxCanFall")]
+    private float LagAfterGrounded;
 
 
     [HideInInspector]
     public SCR_CharacterManager CharacterManager;
     private bool LockedOut;
+    private bool ClamberAllowed = true;
     private bool Moving;
+    private bool BoxGrounded = true;
+    private RaycastHit Output;
+    private GameObject OnTopOfBox;
+    Vector3 PositionDifferences;
 
     private void Awake()
     {
@@ -121,13 +143,24 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         SCR_EventManager.StopListening("CharacterTurn", TurnListener);
     }
 
+    private void FallBoxTriggers()
+    {
+        MeshCollider.GetComponent<BoxCollider>().enabled = true;
+        gameObject.transform.parent.gameObject.GetComponent<BoxCollider>().enabled = false;
+    }
+    private void DragBoxTriggers()
+    {
+        MeshCollider.GetComponent<BoxCollider>().enabled = false;
+        gameObject.transform.parent.gameObject.GetComponent<BoxCollider>().enabled = true;
+    }
+
     private void InteractPressed(int value)
     {
         //The value passed by the event indicates whether or not the key is pressed down.
         if (value == 1)
         {
             Interact = true;
-            if (Inside && !LockedOut)
+            if (Inside && !LockedOut && BoxGrounded)
             {
                 EnteredAndInteracted();
             }
@@ -135,9 +168,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             {
                 EnteredAndInteracted();
             }
-        }
-        
-            
+        } 
         else
         {
             Interact = false;
@@ -151,9 +182,17 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }            
     }
 
+    private void WithinThreshold()
+    {
+        if ((gameObject.transform.position.y - Character.transform.position.y) > ClamberLerpThreshold) ClamberAllowed = false;
+        else ClamberAllowed = true;
+    }
+
+
     private void UpPressed(int value)
     {
-        if (value == 1 && Inside && LerpWhilePlayerClose && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject))
+        if (BoxCanFall) WithinThreshold();
+        if (value == 1 && Inside && LerpWhilePlayerClose && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && !Lerping && ClamberAllowed)
         {
             if(!CharacterManager.InteractingWith == gameObject)
             {
@@ -163,7 +202,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             }
             CharacterManager.InteractingWith = gameObject;
             Lerping = true;
-            StartCoroutine(Timer(1.0f/LerpSpeed - (Character.transform.position.y - gameObject.transform.position.y + 0.35f), ReleaseHands));
+            StartCoroutine(ClamberLerp());
             CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
         }
     }
@@ -198,6 +237,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         InitialSpeed = CharacterManager.GetSpeed();
         IsZ = false;
         Inside = false;
+        if (BoxCanFall) FallBoxTriggers();
+        else DragBoxTriggers();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -212,7 +253,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                     IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
                     IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
                 }
-                EnteredAndInteracted();
+                if(BoxGrounded) EnteredAndInteracted();
             }
         }
         else Inside = false;
@@ -239,9 +280,17 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (other.gameObject.tag == "Character")
         {
-            //Debug.Log("Testing");
-
-            //Call method that allows box movement.
+            if(BoxCanFall && !(OnTopOfBox == null))
+            {
+                if (OnTopOfBox.GetComponentInChildren<SCR_DragDrop>().Inside && !LockedOut)
+                {
+                    LockedOut = true;
+                }
+                else if (!OnTopOfBox.GetComponentInChildren<SCR_DragDrop>().Inside && LockedOut)
+                {
+                    LockedOut = false;
+                }
+            }
             InTrigger(other.gameObject);
         }
     }
@@ -322,36 +371,124 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     {
         if (CharacterManager.PlayerGrounded)
         {
-            RaycastHit Output = FireTrace();
-            Vector3 VelocityDir;
-            float GroundAngle;
-            if (CharacterManager.MoveDir)
+            if (BoxGrounded)
             {
-                VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude;
-                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+                Vector3 VelocityDir;
+                float GroundAngle;
+                if (CharacterManager.MoveDir)
+                {
+                    VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude;
+                    GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+                }
+                else
+                {
+                    VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude * -1.0f;
+                    GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+                    GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
+                }
+                gameObject.transform.parent.localEulerAngles = new Vector3(0.0f, 0.0f, -(GroundAngle - 90.0f));
+                RBody.velocity = VelocityDir;
             }
-            else
-            {
-                VelocityDir = Vector3.Cross(Output.normal, gameObject.transform.parent.forward).normalized * CharacterManager.RBody.velocity.magnitude * -1.0f;
-                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
-                GroundAngle = Vector3.Angle(Output.normal, new Vector3(-1.0f, 0.0f, 0.0f));
-            }
-            gameObject.transform.parent.localEulerAngles = new Vector3(0.0f, 0.0f, -(GroundAngle - 90.0f));
-            RBody.velocity = VelocityDir;
         }
     }
 
-    public RaycastHit FireTrace()
+
+    private void FireTraceDown()
     {
-        //Create two locations to trace from so that we can have a little bit of 'dangle' as to whether
-        //or not the character is on an object.
         Vector3 YOffset = new Vector3(0.0f, YTraceOffset, 0.0f);
-        Vector3 CenterPosition = transform.position + YOffset;
+        Vector3 CenterPosition = MeshCollider.transform.position + YOffset;
         RaycastHit Result;
-        Vector3 End = CenterPosition;
-        End.y -= GroundTraceDistance;
-        Physics.Raycast(CenterPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer);
-        return Result;
+        if (Physics.Raycast(CenterPosition, Vector3.down, out Result, GroundTraceDistance, GroundLayer))
+        {
+            if (BoxCanFall)
+            {
+                if (Result.collider.gameObject.tag == "PuzzleBox")
+                {
+                    if ((OnTopOfBox == null))
+                    {
+                        OnTopOfBox = Result.collider.gameObject;
+                        SCR_DragDrop Current = OnTopOfBox.GetComponentInChildren<SCR_DragDrop>();
+                        Current.LockedOut = true;
+                        Current.ClamberAllowed = false;
+                    }
+                    else
+                    {
+                        if (OnTopOfBox.name != Result.collider.gameObject.name)
+                        {
+                            Debug.Log("Switch Happened");
+                            SCR_DragDrop Current = Result.collider.gameObject.GetComponentInChildren<SCR_DragDrop>();
+                            Current.LockedOut = true;
+                            Current.ClamberAllowed = false;
+                            SCR_DragDrop Old = OnTopOfBox.GetComponentInChildren<SCR_DragDrop>();
+                            Old.LockedOut = false;
+                            Old.ClamberAllowed = true;
+                            OnTopOfBox = Result.collider.gameObject;
+                        }
+                    }
+                }
+                if (!BoxGrounded) StartCoroutine(Timer(LagAfterGrounded, PositionDifferences, BoxStopFall));
+                BoxGrounded = true;
+            }
+
+        }
+        else
+        {
+            if (BoxCanFall)
+            {
+                if (BoxGrounded)
+                {
+                    PositionDifferences = MeshCollider.transform.localPosition;
+                    //PositionDifferences = new Vector3[Siblings.Length];
+                    //for (int i = 0; i < PositionDifferences.Length; ++i)
+                    //{
+                    //    PositionDifferences[i] = Siblings[i].transform.position - MeshCollider.transform.position;
+                    //}
+                    StartCoroutine(Timer(LagBeforeFall, BoxStartFall));
+                }
+                BoxGrounded = false;
+            }
+        }
+        Output = Result;
+    }
+
+    private void BoxStartFall()
+    {
+        CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
+        NullHands();
+        StartCoroutine(Timer(0.75f, CharacterManager.UnfreezeVelocity));
+        Interact = false;
+        CharacterManager.StopPushing();
+        if (Inside && !LockedOut)
+        {
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
+            IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+        }
+        Rigidbody MeshBody = MeshCollider.GetComponent<Rigidbody>();
+        RBody.velocity = Vector3.zero;
+        MeshBody.velocity = Vector3.zero;
+        MeshBody.constraints = (~RigidbodyConstraints.FreezePositionX & ~RigidbodyConstraints.FreezePositionZ & ~RigidbodyConstraints.FreezePositionY) &
+                (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | ~RigidbodyConstraints.FreezeRotationZ);
+        MeshBody.useGravity = true;
+    }
+
+    private void BoxStopFall(Vector3 Diff)
+    {
+        SCR_DragDrop Old = OnTopOfBox.GetComponentInChildren<SCR_DragDrop>();
+        Old.LockedOut = false;
+        Old.ClamberAllowed = true;
+        Vector3 Adjustment = new Vector3(0.0f, LandedYAdjustment, 0.0f);
+        gameObject.transform.parent.position = MeshCollider.transform.position + Adjustment;
+        MeshCollider.transform.localPosition = Diff;
+
+        Rigidbody MeshBody = MeshCollider.GetComponent<Rigidbody>();
+        MeshBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) |
+                (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
+        MeshBody.useGravity = false;
+        FreezeAll();
+        LockedOut = false;
+        ClamberAllowed = true;
+        BoxCanFall = false;
+        DragBoxTriggers();
     }
 
     private void NullHands()
@@ -404,7 +541,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
             //Freeze rigidbody via constraints, and return the player to their original speed
             CharacterManager.SetSpeed(InitialSpeed);
-            RBody.constraints = RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) |
+            RBody.constraints = (RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY) |
                 (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
         }
     }
@@ -424,7 +561,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         {
             //Bitwise boolean logic that essentially only allows the boc to move in x and y directions. 
             RBody.constraints = ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY)
-                | (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ); ;
+                | (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ);
             Moving = true;
         }
     }
@@ -472,41 +609,39 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         }
     }
 
-    private void ClamberLerp(float DeltaTime)
+    IEnumerator ClamberLerp()
     {
-        if(Mathf.Abs(ReferencePoint.transform.position.y - Character.transform.position.y) <= 0.05f)
+        float TimeSlice = 0.0f;
+        Vector3 StartPoint = Character.transform.position;
+        Vector3 MidPoint = ReferencePoint.transform.position;
+        Vector3 EndPoint = MidPoint;
+        bool DoOnce = false;
+        MidPoint.x = Character.transform.position.x;
+        while (TimeSlice < 1.0f)
         {
-            if(Mathf.Abs(ReferencePoint.transform.position.x - Character.transform.position.x) <= 0.05f)
-            {
-                Lerping = false;
-                CharacterManager.StopPushing();
-                CharacterManager.InteractingWith = null;
-                CharacterManager.UnfreezeVelocity();
-                NullHands();
-            }
-            else
-            {
-                Vector3 NewPos = Character.transform.position;
-                if (ReferencePoint.transform.position.x - Character.transform.position.x > 0.0f) NewPos.x += DeltaTime * LerpSpeed;
-                else NewPos.x -= DeltaTime * LerpSpeed;
-                Character.transform.position = NewPos;
-            }
+            TimeSlice += Time.deltaTime * LerpSpeed;
+            Character.transform.position = Vector3.Lerp(StartPoint, MidPoint, TimeSlice);
+            if(TimeSlice < 0.5f && !DoOnce) ReleaseHands();
+            yield return null;
         }
-        else
+        TimeSlice = 0.0f;
+        while (TimeSlice < 1.0f)
         {
-            if (ReferencePoint.transform.position.y - Character.transform.position.y > 0.0f)
-            {
-                Vector3 NewPos = Character.transform.position;
-                NewPos.y += DeltaTime * LerpSpeed;
-                Character.transform.position = NewPos;
-            }
+            TimeSlice += Time.deltaTime * LerpSpeed;
+            Character.transform.position = Vector3.Lerp(MidPoint, EndPoint, TimeSlice);
+            yield return null;
         }
+        Lerping = false;
+        CharacterManager.StopPushing();
+        CharacterManager.InteractingWith = null;
+        CharacterManager.UnfreezeVelocity();
+        StartCoroutine(Timer(0.15f, NullHands));
     }
 
     private void FixedUpdate()
     {
+        FireTraceDown();
         EffectorCalculations();
-        if (Lerping) ClamberLerp(Time.deltaTime);
-        if(Moving && !LockedOut) CalculateDir();
+        if(!LockedOut && (Moving || !BoxGrounded)) CalculateDir();
     }
 }

@@ -60,6 +60,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         else Debug.LogError("We need a a FullBodyBipedIK component attached to one of the Character's child Game Objects");
         HandRungs = new int[2];
         FeetRungs = new int[2];
+        LoadDraggingData();
     }
 
     /// <summary>
@@ -318,7 +319,6 @@ public class SCR_IKToolset : SCR_GameplayStatics {
             ForceEffectorWeight("RightHand", 1.0f);
             ForceEffectorWeight("LeftFoot", 1.0f);
             ForceEffectorWeight("RightFoot", 1.0f);
-            ForceEffectorWeight("Body", 0.1f);
 
             Ik.solver.leftHandEffector.rotation = ReturnRungs[0].transform.rotation;
             Ik.solver.rightHandEffector.rotation = ReturnRungs[0].transform.rotation;
@@ -370,11 +370,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 FeetRungs[1] = i;
                 BotValue = i;
             }
-            if ((TopValue - BotValue) > 2)
+            if ((TopValue - BotValue) >= 5)
             {
-                FootRung = LadderRungs[BotValue + 1];
-                FeetRungs[0] = BotValue + 1;
-                FeetRungs[1] = BotValue + 1;
+                ShoulderRung = LadderRungs[TopValue - 1];
+                HandRungs[0] = TopValue - 1;
+                HandRungs[1] = TopValue - 1;
             }
         }
         LadderSlope = ShoulderRung.transform.position - FootRung.transform.position;
