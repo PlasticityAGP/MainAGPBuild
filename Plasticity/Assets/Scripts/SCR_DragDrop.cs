@@ -11,6 +11,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private UnityAction<int> InteractListener;
     private UnityAction<int> UpListener;
     private UnityAction<int> TurnListener;
+    private UnityAction<int> DisableListener;
     private bool Interact = false;
     private SCR_IKToolset IkTools;
     //The rigidbody of the object we will be moving
@@ -95,7 +96,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     [SerializeField]
     private bool BoxCanFall;
     [SerializeField]
-    [ShowIf("BoxCanFall")]
     private GameObject[] Siblings;
     [SerializeField]
     [ShowIf("BoxCanFall")]
@@ -125,6 +125,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         InteractListener = new UnityAction<int>(InteractPressed);
         UpListener = new UnityAction<int>(UpPressed);
         TurnListener = new UnityAction<int>(CharacterTurned);
+        DisableListener = new UnityAction<int>(DisableSiblingGameObjects);
     }
 
     private void OnEnable()
@@ -133,6 +134,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         SCR_EventManager.StartListening("InteractKey", InteractListener);
         SCR_EventManager.StartListening("UpKey", UpListener);
         SCR_EventManager.StartListening("CharacterTurn", TurnListener);
+        SCR_EventManager.StartListening("DisableBox", DisableListener);
     }
 
     private void OnDisable()
@@ -141,14 +143,15 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         SCR_EventManager.StopListening("InteractKey", InteractListener);
         SCR_EventManager.StopListening("UpKey", UpListener);
         SCR_EventManager.StopListening("CharacterTurn", TurnListener);
+        SCR_EventManager.StopListening("DisableBox", DisableListener);
     }
 
-    private void FallBoxTriggers()
+    private void FallBoxColliders()
     {
         MeshCollider.GetComponent<BoxCollider>().enabled = true;
         gameObject.transform.parent.gameObject.GetComponent<BoxCollider>().enabled = false;
     }
-    private void DragBoxTriggers()
+    private void DragBoxColliders()
     {
         MeshCollider.GetComponent<BoxCollider>().enabled = false;
         gameObject.transform.parent.gameObject.GetComponent<BoxCollider>().enabled = true;
@@ -188,6 +191,19 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         else ClamberAllowed = true;
     }
 
+    private void DisableSiblingGameObjects(int garbage)
+    {
+        ReleaseHands();
+        CharacterManager.StopPushing();
+        RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+        FreezeAll();
+        for (int i = 0; i < Siblings.Length; ++i)
+        {
+            Siblings[i].SetActive(false);
+        }
+        FallBoxColliders();
+        gameObject.SetActive(false);
+    }
 
     private void UpPressed(int value)
     {
@@ -237,8 +253,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         InitialSpeed = CharacterManager.GetSpeed();
         IsZ = false;
         Inside = false;
-        if (BoxCanFall) FallBoxTriggers();
-        else DragBoxTriggers();
+        if (BoxCanFall) FallBoxColliders();
+        else DragBoxColliders();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -488,7 +504,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         LockedOut = false;
         ClamberAllowed = true;
         BoxCanFall = false;
-        DragBoxTriggers();
+        DragBoxColliders();
     }
 
     private void NullHands()
