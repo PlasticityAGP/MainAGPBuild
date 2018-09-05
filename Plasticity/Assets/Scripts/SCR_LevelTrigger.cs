@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 [System.Serializable]
 public struct DataPair
 {
-    public string Tag;
+    public string Name;
     public int IndexToWrite;
     public string Value;
 };
@@ -28,7 +28,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
     private int PuzzleNumber;
     [SerializeField]
     [HideIf("ThisTrigger", TypeOfTrigger.CharacterTransform)]
-    private string[] TagsOfTriggeringObject;
+    private string[] NamesOfTriggeringObject;
     [SerializeField]
     bool WriteToStateData;
     [SerializeField]
@@ -92,10 +92,10 @@ public class SCR_LevelTrigger : MonoBehaviour {
     {
         if(ThisTrigger == TypeOfTrigger.Loader)
         {
-            if (IsIn(other.tag, TagsOfTriggeringObject))
+            if (IsIn(other.gameObject.name, NamesOfTriggeringObject))
             {
                 SCR_EventManager.TriggerEvent("LevelTrigger", TriggerName);
-                if (ShouldFreezeBoxOnEnter && other.gameObject.GetComponent<SCR_DragDrop>())
+                if (ShouldFreezeBoxOnEnter && other.gameObject.GetComponentInChildren<SCR_DragDrop>())
                 {
                     other.gameObject.GetComponentInChildren<SCR_DragDrop>().Lockout();
                 }
@@ -103,7 +103,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
         }
         else if(ThisTrigger == TypeOfTrigger.StateChange)
         {
-            if (IsIn(other.tag, TagsOfTriggeringObject))
+            if (IsIn(other.gameObject.name, NamesOfTriggeringObject))
             {
                 SCR_EventManager.TriggerEvent("SceneStateTrigger", PuzzleNumber);
             }
@@ -121,7 +121,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
         {
             for (int i = 0; i < StatesToChange.Length; ++i)
             {
-                if(other.tag == StatesToChange[i].Tag)
+                if(other.gameObject.name == StatesToChange[i].Name)
                     LevelData.PuzzleStates[StatesToChange[i].IndexToWrite] = StatesToChange[i].Value;
             }
         }
