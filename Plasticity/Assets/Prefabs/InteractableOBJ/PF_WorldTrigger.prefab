@@ -9,60 +9,77 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1995002099864056}
+  m_RootGameObject: {fileID: 1285102056260602}
   m_IsPrefabParent: 1
---- !u!1 &1995002099864056
+--- !u!1 &1285102056260602
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4755434781468656}
-  - component: {fileID: 65933057752471686}
-  - component: {fileID: 114296132509773522}
+  - component: {fileID: 4301834958030102}
+  - component: {fileID: 65888343452369024}
+  - component: {fileID: 114806246402135094}
   m_Layer: 2
-  m_Name: WorldTrigger
+  m_Name: PF_WorldTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4755434781468656
+--- !u!4 &4301834958030102
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1995002099864056}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.18, y: 1.99, z: -0.07}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_GameObject: {fileID: 1285102056260602}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.59, y: -0.66, z: 1.94}
+  m_LocalScale: {x: 8.329676, y: 3.0378675, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &65933057752471686
+--- !u!65 &65888343452369024
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1995002099864056}
+  m_GameObject: {fileID: 1285102056260602}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 2.444543, z: 1.5456363}
-  m_Center: {x: 0, y: 0.72227144, z: -0.06340939}
---- !u!114 &114296132509773522
+  m_Size: {x: 1, y: 1.936213, z: 1.5456363}
+  m_Center: {x: 0, y: 0.46810612, z: -0.06340939}
+--- !u!114 &114806246402135094
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1995002099864056}
+  m_GameObject: {fileID: 1285102056260602}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b4684a71595a0e40865e8bdc9de0b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TriggerID: 1
-  TagOfTriggeringObject: Character
+  ThisTrigger: 2
+  TriggerName: 
+  ShouldFreezeBoxOnEnter: 0
+  PuzzleNumber: 0
+  TagsOfTriggeringObject: []
+  WriteToStateData: 0
+  LevelData: {fileID: 0}
+  StatesToChange: []
+  TransformX: 0
+  TransformY: 0
+  TransformZ: 1
+  XPosition: 0
+  YPosition: 0
+  ZPosition: 0.11
+  XLerpSpeed: 0
+  YLerpSpeed: 0
+  ZLerpSpeed: 5
+  TriggerOnLerping: 1
+  LerpingTriggerName: DeactivateLadderTrigger
