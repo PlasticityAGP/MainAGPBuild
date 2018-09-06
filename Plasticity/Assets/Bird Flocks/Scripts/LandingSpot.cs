@@ -21,6 +21,8 @@ public class LandingSpot : MonoBehaviour
 
     public bool _gotcha;
 
+    private string landingEventName = "";
+
     public void Start()
     {
         if (_thisT == null) _thisT = transform;
@@ -81,18 +83,21 @@ public class LandingSpot : MonoBehaviour
                         landingChild._model.GetComponent<Animation>().CrossFade(landingChild._spawner._flapAnimation, .5f);
                 }
                 landingChild._targetSpeed = landingChild._spawner._maxSpeed * _controller._landingSpeedModifier;
-                landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
+                //landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
                 landingChild._damping = _controller._landingTurnSpeedModifier;
                 landingChild._avoid = false;
             }
             else if (distance <= .5f)
             {
-                landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
+                //landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
                 if (distance < _controller._snapLandDistance && !_idle)
                 {
                     _idle = true;
                     if (landingChild)
+                    {
                         landingChild._model.GetComponent<Animation>().CrossFade(landingChild._spawner._idleAnimation, .55f);
+                        Bolt.CustomEvent.Trigger(landingChild.gameObject, landingEventName);
+                    }
 
                 }
                 if (distance > _controller._snapLandDistance)
@@ -116,7 +121,7 @@ public class LandingSpot : MonoBehaviour
             else
             {
                 //Move towards landing spot
-                landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
+                //landingChild.SetWaypoint(_thisT.position + landingChild._landingPosOffset);
                 landingChild._targetSpeed = landingChild._spawner._maxSpeed;
             }
             if (landingChild)
@@ -216,12 +221,13 @@ public class LandingSpot : MonoBehaviour
             }
         }
 
-        LandBird(fChild, false);
+        LandBird(fChild, false, "LandRandomBird");
     }
 
-    public bool LandBird(FlockChild fChild, bool instant)
+    public bool LandBird(FlockChild fChild, bool instant, string eventName)
     {
         bool landBeginSuccess = false;
+        landingEventName = eventName;
 
         if (_controller._flock.gameObject.activeInHierarchy && (landingChild == null))
         {
