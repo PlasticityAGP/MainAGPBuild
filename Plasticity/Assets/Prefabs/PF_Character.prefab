@@ -2929,11 +2929,7 @@ MonoBehaviour:
   ClimbSpeed: 0.9
   BackTarget: {fileID: 1724121126746726}
   Ladder: {fileID: 0}
-  inWater: 0
-  underWater: 0
-  swimming: 0
-  maxSwimSpeed: 0
-  swimAcceleration: 0
+  maxSwimSpeed: 0.3
   maxTimeUnderWater: 2
   timeUnderWater: 0
   waterHeight: 0

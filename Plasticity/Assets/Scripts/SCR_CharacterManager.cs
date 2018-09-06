@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 public class SCR_CharacterManager : SCR_GameplayStatics
 {
     [HideInInspector]
-    public enum CharacterStates { Running, Falling, Jumping, Swimming, Idling, SwimIdling, Lying, Pushing, Pulling, ClimbingUp, ClimbingDown, Paused}
+    public enum CharacterStates { Running, Falling, Jumping, Swimming, Idling, Lying, Pushing, Pulling, ClimbingUp, ClimbingDown, Paused}
     private CharacterStates PlayerState;
 
     //Event listeners per action for receiving events fired by the Input Manager
@@ -165,10 +165,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool DoLedgeLerp = false;
     private float LedgeYTarget;
     private float LedgeXTarget;
-
-	[SerializeField]
-	[Tooltip("How quickly the player decelerates while swimming")]
-	private float SwimSlowdown = 4f;
+	
     private Vector3 swimspeed;
     public float maxSwimSpeed;
     private bool swimming;
@@ -230,7 +227,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Lying) SetAnim("RunningToLying");
                 else if (state == CharacterStates.Pushing) SetAnim("RunningToPush");
                 else if (state == CharacterStates.Pulling) SetAnim("RunningToPull");
-				else if (state == CharacterStates.SwimIdling) SetAnim("RunningToSwimIdle");
+				else if (state == CharacterStates.Swimming) SetAnim("RunningToSwimming");
 
             }
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Falling"))
@@ -240,7 +237,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Lying) SetAnim("FallingToLying");
                 else if (state == CharacterStates.ClimbingUp) SetAnim("FallingToClimbingUp");
                 else if (state == CharacterStates.ClimbingDown) SetAnim("FallingToClimbingDown");
-				else if (state == CharacterStates.SwimIdling) SetAnim("FallingToSwimIdle");
+				else if (state == CharacterStates.Swimming) SetAnim("FallingToSwimming");
 			}
             else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
             {
@@ -293,13 +290,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
                 else if (state == CharacterStates.Falling) SetAnim("ClimbingDownToFalling");
                 else if (state == CharacterStates.ClimbingDown) SetAnim("ClimbingDownToClimbingUp");
             }
-			else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("SwimIdle")) {
-				if (state == CharacterStates.Swimming)
-					SetAnim("SwimIdleToSwimMove");
-			}
-			else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("SwimMove")) {
-				if (state == CharacterStates.SwimIdling)
-					SetAnim("SwimMoveToSwimIdle");
+			else if (CharacterAnimator.GetCurrentAnimatorStateInfo(0).IsName("Swimming")) {
+				if (state == CharacterStates.Jumping) SetAnim("SwimmingToJumping");
 			}
 			if (state == CharacterStates.Paused) CharacterAnimator.speed = 0.0f;
             PlayerState = state;
@@ -434,9 +426,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     private void FixedUpdate()
     {
-        if (PlayerState == CharacterStates.Swimming || PlayerState == CharacterStates.SwimIdling)
+        if (PlayerState == CharacterStates.Swimming)
         {
             Swim();
+			Grounded(); //still need to know if we're ground when we leave water (currently for testing, may not be necessary)
 			return;
         }
         if (!InAnimationOverride)
@@ -461,13 +454,12 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     public void IsInWater(bool inwater, bool swimmable, float sealevel)
     {
 		if (inwater) {
-			PlayerState = CharacterStates.SwimIdling;
-			ChangePlayerState(CharacterStates.SwimIdling);
+			ChangePlayerState(CharacterStates.Swimming);
             if (swimmable) swimming = true;
 		}
         else
         {
-            swimming = false;
+			swimming = false;
             DeterminePlayerState();
         }
 			
@@ -490,57 +482,50 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         {
             if (MoveVec.y < 0) swimval *= reverseAcc;
             else if (MoveVec.y > maxSwimSpeed) swimval = 0;
-            ChangePlayerState(CharacterStates.Swimming);
         }
         else if (Down && !Up)
         {
             swimval *= -1;
             if (MoveVec.y > 0) swimval *= reverseAcc;
             if (MoveVec.y < maxSwimSpeed * -1) swimval = 0;
-            ChangePlayerState(CharacterStates.Swimming);
         }
         else if (MoveVec.y > 0.05f)
         {
             swimval *= -2;
-            ChangePlayerState(CharacterStates.SwimIdling);
         }
         else if (MoveVec.y < 0.05f)
         {
             swimval *= 2;
-            ChangePlayerState(CharacterStates.SwimIdling);
         }
             
 
         MoveVec.y += swimval;
-        swimval = maxSwimSpeed * Time.deltaTime;
-        if (Left && !Right)
-        {
-            swimval *= -1;
-            if (MoveVec.x > 0) swimval *= reverseAcc;
-            if (MoveVec.x < maxSwimSpeed * -1) swimval = 0;
-            ChangePlayerState(CharacterStates.Swimming);
-        }
-        else if (Right && !Left)
-        {
-            if (MoveVec.x < 0) swimval *= reverseAcc;
-            if (MoveVec.x > maxSwimSpeed) swimval = 0;
-            ChangePlayerState(CharacterStates.Swimming);
-        }
-        else if (MoveVec.x < 0.05f)
-        {
-            swimval *= 2;
-            ChangePlayerState(CharacterStates.SwimIdling);
-        }
-        else if (MoveVec.x > 0.05f)
-        {
-            swimval *= -2;
-            ChangePlayerState(CharacterStates.SwimIdling);
-        }
-
+        swimval = 0;
+		if (Left && !Right) {
+			swimval = -maxSwimSpeed * Time.deltaTime;
+			if (MoveVec.x > 0)
+				swimval *= reverseAcc;
+			if (MoveVec.x < maxSwimSpeed * -1)
+				swimval = 0;
+		}
+		else if (Right && !Left) {
+			swimval = maxSwimSpeed * Time.deltaTime;
+			if (MoveVec.x < 0)
+				swimval *= reverseAcc;
+			if (MoveVec.x > maxSwimSpeed)
+				swimval = 0;
+		}
+		else if (MoveVec.x < -0.05f) {
+			swimval = 2 * maxSwimSpeed * Time.deltaTime;
+		}
+		else if (MoveVec.x > 0.05f) {
+			swimval = -2 * maxSwimSpeed * Time.deltaTime;
+		}
+	
         // If they are above the surface.
         if (waterHeight < this.transform.position.y + this.transform.localScale.y * 1.25f)
         {
-            if (Up && RBody.velocity.y >= 0) MoveVec.y = maxSwimSpeed*1.25f;
+            if (Up && RBody.velocity.y >= 0) MoveVec.y = maxSwimSpeed*2f;
         }
         // If they have been underwater for too long.
         if (timeUnderWater > maxTimeUnderWater)
@@ -551,9 +536,20 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             // TODO: Jumping from the top of water.
             // TODO: Player can walk in shallow water.
             // TODO: Animations
+			
+        MoveVec.x += swimval;
+		if ((MoveVec.x < 0) ? (MoveDir == true) : (MoveDir == false)) {
+			ForceTurnCharacter();
+		}
 
-            MoveVec.x += swimval;
-        maxSwimSpeed /= 5;
+		/*Vector3 newEulers = new Vector3(-180 * Mathf.Asin(MoveVec.y / MoveVec.magnitude) / Mathf.PI, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+		print(180 * Mathf.Asin(MoveVec.y / MoveVec.magnitude) / Mathf.PI);
+		Quaternion newrot = transform.rotation;
+		newrot.eulerAngles = newEulers;
+		transform.rotation = newrot;*/
+		CharacterAnimator.SetFloat("VelX", Mathf.Abs(MoveVec.x / maxSwimSpeed));
+		CharacterAnimator.SetFloat("VelY", Mathf.Abs(MoveVec.y / maxSwimSpeed));
+		maxSwimSpeed /= 5;
         RBody.velocity = MoveVec;
     }
 
@@ -749,7 +745,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         }
         PlayerGrounded = isGroundedResult;
 
-        if (swimming) PlayerGrounded = true;
+        //if (swimming) PlayerGrounded = true;
     }
     
     public void ForceTurnCharacter()
@@ -1080,7 +1076,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             JumpingOff = false;
             FallingOff = true;
         }
-        else if (PlayerState == CharacterStates.Swimming || PlayerState == CharacterStates.SwimIdling)
+        else if (PlayerState == CharacterStates.Swimming)
         {
             if (MoveVec.magnitude > maxSwimSpeed)
                 MoveVec = MoveVec.normalized * maxSwimSpeed;
