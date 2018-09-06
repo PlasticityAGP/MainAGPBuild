@@ -65,10 +65,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ThisTrigger: 2
-  TriggerName: 
+  TriggerPairs: []
   ShouldFreezeBoxOnEnter: 0
-  PuzzleNumber: 0
-  TagsOfTriggeringObject: []
   WriteToStateData: 0
   LevelData: {fileID: 0}
   StatesToChange: []
