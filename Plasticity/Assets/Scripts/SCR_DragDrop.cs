@@ -205,6 +205,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             }
             FallBoxColliders();
             gameObject.SetActive(false);
+            SCR_EventManager.TriggerEvent("LeftKey", 0);
+            SCR_EventManager.TriggerEvent("RightKey", 0);
         }
     }
 

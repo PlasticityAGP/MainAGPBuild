@@ -947,13 +947,27 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     public void UnrestrictTurning()
     {
-        IsTurnRestricted = false;
-        if ((MoveDirAtRestricted == 1 && !MoveDir) || (MoveDirAtRestricted == 2 && MoveDir))
+        
+        if (MoveDirAtRestricted == 1 && !MoveDir)
         {
-            Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
-            RefToModel.transform.Rotate(TurnAround);
+            if (Left)
+            {
+                Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+                RefToModel.transform.Rotate(TurnAround);
+            }
+            else TurnCharacter();
+        }
+        else if(MoveDirAtRestricted == 2 && MoveDir)
+        {
+            if (Right)
+            {
+                Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+                RefToModel.transform.Rotate(TurnAround);
+            }
+            else TurnCharacter();
         }
         MoveDirAtRestricted = 0;
+        IsTurnRestricted = false;
     }
 
     public void StopAnimationChange()
@@ -989,7 +1003,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = true;
         UnlockAnim();
-        if (LastKeypress != MoveDir) TurnCharacter();
+        if (LastKeypress != MoveDir)
+        {
+            if (!LastKeypress && Right) TurnCharacter();
+            else if (LastKeypress && Left) TurnCharacter();
+        }
         if ((Left || Right) && PlayerGrounded) ChangePlayerState(CharacterStates.Running);
         else if (PlayerGrounded) ChangePlayerState(CharacterStates.Idling);
         else ChangePlayerState(CharacterStates.Falling);
