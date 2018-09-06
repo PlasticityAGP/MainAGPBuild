@@ -81,7 +81,7 @@ public class SCR_SceneLoader : MonoBehaviour {
             }
             else if(Data.Settings[i].State == 3)
             {
-                if (Data.Settings[i].Flag == "DisableBox") SCR_EventManager.TriggerEvent("DisableBox", 0);
+                if (Data.Settings[i].Flag == "DisableBox") SCR_EventManager.TriggerEvent("DisableBox", Data.Settings[i].ObjToSet.name);
                 Data.Settings[i].ObjToSet.GetComponentInChildren<PlayableDirector>().Play();
             }
         }

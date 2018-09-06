@@ -11,7 +11,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private UnityAction<int> InteractListener;
     private UnityAction<int> UpListener;
     private UnityAction<int> TurnListener;
-    private UnityAction<int> DisableListener;
+    private UnityAction<string> DisableListener;
     private bool Interact = false;
     private SCR_IKToolset IkTools;
     //The rigidbody of the object we will be moving
@@ -125,7 +125,7 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         InteractListener = new UnityAction<int>(InteractPressed);
         UpListener = new UnityAction<int>(UpPressed);
         TurnListener = new UnityAction<int>(CharacterTurned);
-        DisableListener = new UnityAction<int>(DisableSiblingGameObjects);
+        DisableListener = new UnityAction<string>(DisableSiblingGameObjects);
     }
 
     private void OnEnable()
@@ -191,18 +191,21 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         else ClamberAllowed = true;
     }
 
-    private void DisableSiblingGameObjects(int garbage)
+    private void DisableSiblingGameObjects(string BoxName)
     {
-        ReleaseHands();
-        CharacterManager.StopPushing();
-        RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
-        FreezeAll();
-        for (int i = 0; i < Siblings.Length; ++i)
+        if(BoxName == gameObject.transform.parent.name)
         {
-            Siblings[i].SetActive(false);
+            ReleaseHands();
+            CharacterManager.StopPushing();
+            RBody.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+            FreezeAll();
+            for (int i = 0; i < Siblings.Length; ++i)
+            {
+                Siblings[i].SetActive(false);
+            }
+            FallBoxColliders();
+            gameObject.SetActive(false);
         }
-        FallBoxColliders();
-        gameObject.SetActive(false);
     }
 
     private void UpPressed(int value)
