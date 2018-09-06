@@ -1121,7 +1121,7 @@ Transform:
   m_GameObject: {fileID: 1488671882343052}
   m_LocalRotation: {x: -0.16724391, y: -0.000000017439417, z: -0.000000042690527,
     w: 0.9859156}
-  m_LocalPosition: {x: -0, y: 1.339, z: -0.083}
+  m_LocalPosition: {x: -0, y: 1.08, z: -0.42}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4539022572668930}
@@ -2249,6 +2249,8 @@ MonoBehaviour:
   DisableUp: 0
   LadderSlope: {x: 0, y: 0, z: 0}
   BodyPos: {fileID: 0}
+  ClimbingData: {fileID: 0}
+  DraggingData: {fileID: 0}
 --- !u!114 &114821809570079128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2926,7 +2928,7 @@ MonoBehaviour:
   InteractingWith: {fileID: 0}
   RBody: {fileID: 0}
   IsClimbing: 0
-  ClimbSpeed: 0.9
+  ClimbSpeed: 0.95
   BackTarget: {fileID: 1724121126746726}
   Ladder: {fileID: 0}
   maxSwimSpeed: 0.3
