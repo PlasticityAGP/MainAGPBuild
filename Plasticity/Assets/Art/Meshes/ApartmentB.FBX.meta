@@ -16,6 +16,8 @@ ModelImporter:
     3300002: ClothingLine
     4300000: ApartmentB
     4300002: ClothingLine
+    6400000: ApartmentB
+    6400002: ClothingLine
   externalObjects: {}
   materials:
     importMaterials: 0

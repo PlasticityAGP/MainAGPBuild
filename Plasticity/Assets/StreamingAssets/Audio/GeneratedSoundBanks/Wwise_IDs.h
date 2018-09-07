@@ -16,6 +16,21 @@ namespace AK
         static const AkUniqueID FOOTSTEP = 1866025847U;
     } // namespace EVENTS
 
+    namespace SWITCHES
+    {
+        namespace FOOTSTEP
+        {
+            static const AkUniqueID GROUP = 1866025847U;
+
+            namespace SWITCH
+            {
+                static const AkUniqueID DIRT = 2195636714U;
+                static const AkUniqueID WOOD = 2058049674U;
+            } // namespace SWITCH
+        } // namespace FOOTSTEP
+
+    } // namespace SWITCHES
+
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;

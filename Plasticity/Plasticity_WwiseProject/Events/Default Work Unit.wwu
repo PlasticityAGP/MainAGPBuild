@@ -13,7 +13,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="Footstep_Concrete" ID="{5DB66F95-A497-4FCD-A28B-DEFE31D71528}" WorkUnitID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}"/>
+											<ObjectRef Name="Footstep" ID="{9FC3A616-F4FC-4D1D-B1B4-D1B158CE6BEB}" WorkUnitID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
