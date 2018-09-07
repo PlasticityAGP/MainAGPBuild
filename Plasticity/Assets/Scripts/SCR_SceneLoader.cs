@@ -1,5 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+    using UnityEditor.SceneManagement;
+#endif
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -98,10 +100,21 @@ public class SCR_SceneLoader : MonoBehaviour {
     }
 
     void Start () {
+#if UNITY_EDITOR
+        if (EditorSceneManager.loadedSceneCount > 1) {
+            foreach (var scene in EditorSceneManager.GetAllScenes()) {
+                if (!scene.name.Contains("Base")) {
+                    EditorSceneManager.UnloadSceneAsync(scene);
+                }
+            }
+        }
+#endif
+        
         //Grab the array from our saved data asset.
         LevelArray = LevelData.LevelArray;
         //Below is an example of how we can edit data asset at runtime.
         //LevelData.CurrentLevel = "NotCharacter";
+
         LoadScenes();
 	}
 	
