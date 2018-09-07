@@ -1102,7 +1102,7 @@ GameObject:
   - component: {fileID: 106621752}
   - component: {fileID: 106621753}
   - component: {fileID: 106621754}
-  m_Layer: 12
+  m_Layer: 2
   m_Name: FishMarketTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3060,8 +3060,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 310255222}
-  m_LocalRotation: {x: -0.060418602, y: 0.28059968, z: 0.017701661, w: 0.9577579}
-  m_LocalPosition: {x: 0.08802223, y: -18.735939, z: -13.454238}
+  m_LocalRotation: {x: -0.06948476, y: 0.16384433, z: 0.011570502, w: 0.983968}
+  m_LocalPosition: {x: -27.026867, y: -12.844228, z: -14.32437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 271959677}
@@ -3155,7 +3155,7 @@ GameObject:
   - component: {fileID: 329936994}
   - component: {fileID: 329936996}
   - component: {fileID: 329936995}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: RightmostGroundTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3503,7 +3503,7 @@ GameObject:
   - component: {fileID: 363818470}
   - component: {fileID: 363818471}
   - component: {fileID: 363818472}
-  m_Layer: 12
+  m_Layer: 2
   m_Name: BridgeTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4669,8 +4669,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 479034933}
-  m_LocalRotation: {x: -0.060418602, y: 0.28059968, z: 0.017701661, w: 0.9577579}
-  m_LocalPosition: {x: 0.08802223, y: -18.735939, z: -13.454238}
+  m_LocalRotation: {x: -0.06948476, y: 0.16384433, z: 0.011570502, w: 0.983968}
+  m_LocalPosition: {x: -27.026867, y: -12.844228, z: -14.32437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 271959677}
@@ -5230,7 +5230,7 @@ GameObject:
   - component: {fileID: 545962935}
   - component: {fileID: 545962936}
   - component: {fileID: 545962937}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LeftmostGroundTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6402,8 +6402,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 775131374}
-  m_LocalRotation: {x: -0.11267538, y: 0.20852819, z: 0.024193047, w: 0.97120285}
-  m_LocalPosition: {x: 2.5136385, y: -20.581318, z: -14.390713}
+  m_LocalRotation: {x: -0.06948476, y: 0.16384433, z: 0.011570502, w: 0.983968}
+  m_LocalPosition: {x: -27.026867, y: -12.844228, z: -14.32437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 271959677}
@@ -7617,7 +7617,7 @@ GameObject:
   - component: {fileID: 949292567}
   - component: {fileID: 949292568}
   - component: {fileID: 949292569}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: GroundTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9868,8 +9868,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1296630605}
-  m_LocalRotation: {x: -0.060418602, y: 0.28059968, z: 0.017701661, w: 0.9577579}
-  m_LocalPosition: {x: 0.08802223, y: -18.735939, z: -13.454238}
+  m_LocalRotation: {x: -0.06948476, y: 0.16384433, z: 0.011570502, w: 0.983968}
+  m_LocalPosition: {x: -27.026867, y: -12.844228, z: -14.32437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 271959677}
@@ -10443,8 +10443,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1336785298}
-  m_LocalRotation: {x: -0.060418602, y: 0.28059968, z: 0.017701661, w: 0.9577579}
-  m_LocalPosition: {x: 0.08802223, y: -18.735939, z: -13.454238}
+  m_LocalRotation: {x: -0.06948476, y: 0.16384433, z: 0.011570502, w: 0.983968}
+  m_LocalPosition: {x: -27.026867, y: -12.844228, z: -14.32437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 271959677}
@@ -10738,8 +10738,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1399123953}
-  m_LocalRotation: {x: -0.060418602, y: 0.28059968, z: 0.017701661, w: 0.9577579}
-  m_LocalPosition: {x: 0.08802223, y: -18.735939, z: -13.454238}
+  m_LocalRotation: {x: -0.06948476, y: 0.16384433, z: 0.011570502, w: 0.983968}
+  m_LocalPosition: {x: -27.026867, y: -12.844228, z: -14.32437}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 271959677}
@@ -16957,7 +16957,7 @@ GameObject:
   - component: {fileID: 2115001303}
   - component: {fileID: 2115001305}
   - component: {fileID: 2115001304}
-  m_Layer: 12
+  m_Layer: 2
   m_Name: BalconyTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
