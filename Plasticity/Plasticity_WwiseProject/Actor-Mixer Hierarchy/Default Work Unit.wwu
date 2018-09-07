@@ -1,6 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}" SchemaVersion="89">
 	<AudioObjects>
-		<WorkUnit Name="Default Work Unit" ID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}" PersistMode="Standalone">
+			<ChildrenList>
+				<RandomSequenceContainer Name="Footstep_Concrete" ID="{5DB66F95-A497-4FCD-A28B-DEFE31D71528}" ShortID="16619459">
+					<PropertyList>
+						<Property Name="Lowpass" Type="int16">
+							<ModifierList>
+								<ModifierInfo>
+									<Modifier Name="" ID="{144A056E-04A6-4947-BDF9-069780490402}">
+										<PropertyList>
+											<Property Name="Enabled" Type="bool" Value="True"/>
+											<Property Name="Max" Type="Real64" Value="50"/>
+											<Property Name="Min" Type="Real64" Value="-50"/>
+										</PropertyList>
+									</Modifier>
+								</ModifierInfo>
+							</ModifierList>
+						</Property>
+						<Property Name="Pitch" Type="int32">
+							<ModifierList>
+								<ModifierInfo>
+									<Modifier Name="" ID="{D1F81F20-2641-45D1-B27F-C95543CDD4E6}">
+										<PropertyList>
+											<Property Name="Enabled" Type="bool" Value="True"/>
+											<Property Name="Max" Type="Real64" Value="500"/>
+											<Property Name="Min" Type="Real64" Value="-500"/>
+										</PropertyList>
+									</Modifier>
+								</ModifierInfo>
+							</ModifierList>
+						</Property>
+						<Property Name="RandomAvoidRepeating" Type="bool" Value="False"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549" ID="{8BE23BA6-64B2-487E-A7E2-32F4A904F914}" ShortID="30925707">
+							<PropertyList>
+								<Property Name="Lowpass" Type="int16">
+									<ValueList>
+										<Value>45</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-5</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549" ID="{FB86E0CB-D795-4C1A-B9AD-3352578B93A9}" ShortID="219756915">
+									<Language>SFX</Language>
+									<AudioFile>Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549" ID="{FB86E0CB-D795-4C1A-B9AD-3352578B93A9}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot" ID="{00ED5787-054B-4F49-B295-786E04F05DE9}" ShortID="902791435">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot" ID="{40D35BE4-6A97-45A7-A114-16D9F67788AC}" ShortID="523568926">
+									<Language>SFX</Language>
+									<AudioFile>Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot" ID="{40D35BE4-6A97-45A7-A114-16D9F67788AC}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</RandomSequenceContainer>
+				<RandomSequenceContainer Name="Footstep_Wood" ID="{8964E083-80F6-416F-A962-5422A2EBE89D}" ShortID="391357858">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Footsteps on carpet or rug in bare feet stepping heavily left" ID="{C6F4C142-126B-49D0-A454-5DFC4FF3DC9E}" ShortID="17269460">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-5</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Footsteps on carpet or rug in bare feet stepping heavily left" ID="{D1867D79-4C32-4AC6-83F0-CF7F4332944C}" ShortID="1037285715">
+									<Language>SFX</Language>
+									<AudioFile>Footsteps on carpet or rug in bare feet stepping heavily left.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Footsteps on carpet or rug in bare feet stepping heavily left" ID="{D1867D79-4C32-4AC6-83F0-CF7F4332944C}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</RandomSequenceContainer>
+			</ChildrenList>
+		</WorkUnit>
 	</AudioObjects>
 </WwiseDocument>

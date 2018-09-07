@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{070E9921-BE6B-4F0C-B021-98DFA0387A44}" SchemaVersion="89">
 	<InteractiveMusic>
-		<WorkUnit Name="Default Work Unit" ID="{070E9921-BE6B-4F0C-B021-98DFA0387A44}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{070E9921-BE6B-4F0C-B021-98DFA0387A44}" PersistMode="Standalone">
+			<ChildrenList>
+				<MusicSegment Name="Plasticity - Ambient Track (v1)" ID="{3BB527AA-E3E9-4596-B3C0-BE3CDDAAA3B7}" ShortID="410365744">
+					<PropertyList>
+						<Property Name="EndPosition" Type="Real64" Value="172058.833333333"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<MusicTrack Name="Plasticity - Ambient Track (v1)" ID="{EDDDD7FB-FDE6-4034-A83B-EFC3AAF7D0E2}" ShortID="33842501">
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Plasticity - Ambient Track (v1)" ID="{5C31401D-46D1-46F9-A09A-6D3A04B972F9}" ShortID="715514497">
+									<Language>SFX</Language>
+									<AudioFile>Plasticity - Ambient Track (v1).wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{6E3364E5-18C4-4BF2-966C-D69E2D0C872F}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<SequenceList>
+								<MusicTrackSequence Name="" ID="{D37ED911-75DB-4D68-8B44-DE4B75F0FC1F}">
+									<ClipList>
+										<MusicClip Name="Plasticity - Ambient Track (v1)" ID="{B22D2067-C682-412F-9433-A63696951836}">
+											<PropertyList>
+												<Property Name="EndTrimOffset" Type="Real64" Value="172058.833333333"/>
+												<Property Name="FadeInMode" Type="int16" Value="0"/>
+												<Property Name="FadeOutMode" Type="int16" Value="0"/>
+											</PropertyList>
+											<AudioSourceRef Name="Plasticity - Ambient Track (v1)" ID="{5C31401D-46D1-46F9-A09A-6D3A04B972F9}"/>
+										</MusicClip>
+									</ClipList>
+								</MusicTrackSequence>
+							</SequenceList>
+						</MusicTrack>
+					</ChildrenList>
+					<CueList>
+						<MusicCue Name="Entry Cue" ID="{4C361C21-0E29-4A05-A62C-D5EFC382E0C3}"/>
+						<MusicCue Name="Exit Cue" ID="{140AE217-7AC0-4E51-A76D-A5C26D4C07FA}">
+							<PropertyList>
+								<Property Name="CueType" Type="int16" Value="1"/>
+								<Property Name="TimeMs" Type="Real64" Value="172058.833333333"/>
+							</PropertyList>
+						</MusicCue>
+					</CueList>
+				</MusicSegment>
+			</ChildrenList>
+		</WorkUnit>
 	</InteractiveMusic>
 </WwiseDocument>

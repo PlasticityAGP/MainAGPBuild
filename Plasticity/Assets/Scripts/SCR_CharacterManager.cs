@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
@@ -184,6 +185,9 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool TurnOverride = false;
     private bool AmInHardFall = false;
     private bool ForcedAnim = false;
+    
+    //[HideInInspector]
+//    private string []
 
     // Coyote
     private float coyote_beginFallTime = 0;
@@ -1326,6 +1330,22 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             //Dismount from ledge once we have make it on top
             DoLedgeLerp = false;
             LedgeDismount(true);
+        }
+    }
+
+    private static readonly string[] AUDIO_EVENT_NAMES = new string[] {"Footstep"};
+
+    /// <summary>
+    /// Plays audio dictated by animation event triggers.
+    /// Will only play sound if it matches one of the predefined event names. 
+    /// </summary>
+    /// <param name="eventName"></param>
+    public void HandleAudioEvent(string eventName) {
+        if (AUDIO_EVENT_NAMES.Contains(eventName)) {
+            AkSoundEngine.PostEvent(eventName, gameObject);
+        }
+        else {
+            Debug.LogWarning("CharacterManager cannot find audio event named " + eventName);
         }
     }
 }

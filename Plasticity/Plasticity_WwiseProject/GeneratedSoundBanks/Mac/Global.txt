@@ -1,0 +1,3 @@
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	715514497	Plasticity - Ambient Track (v1)	Y:\PlasticityMainAGPBuild\Plasticity\Plasticity_WwiseProject\.cache\Mac\SFX\Plasticity - Ambient Track (v1)_8956FC97.wem		\Interactive Music Hierarchy\Default Work Unit\Plasticity - Ambient Track (v1)\Plasticity - Ambient Track (v1)		33035360
+

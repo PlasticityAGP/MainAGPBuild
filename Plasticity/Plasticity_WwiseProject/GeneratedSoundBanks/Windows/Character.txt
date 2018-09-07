@@ -1,0 +1,7 @@
+Event	ID	Name			Wwise Object Path	Notes
+	1866025847	Footstep			\Default Work Unit\Character\Footstep	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	219756915	Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549	Y:\PlasticityMainAGPBuild\Plasticity\Plasticity_WwiseProject\.cache\Windows\SFX\Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549_56D34C19.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep_Concrete\Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549		67356
+	523568926	Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot	Y:\PlasticityMainAGPBuild\Plasticity\Plasticity_WwiseProject\.cache\Windows\SFX\Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot_56D34C19.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep_Concrete\Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot		68672
+
