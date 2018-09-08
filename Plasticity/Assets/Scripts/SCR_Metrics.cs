@@ -10,8 +10,8 @@ using UnityEngine.Events;
 public class SCR_Metrics : MonoBehaviour
 {
     // You'll have more interesting metrics, and they will be better named.
-    private int m_metric1;
-    private float m_metric2;
+    private int TimesFlippedMetric;
+    private float LengthOfPuzzle;
     [SerializeField]
     private string PlaytestIdentifier;
     private UnityAction<float> GameTimerListener;
@@ -44,19 +44,19 @@ public class SCR_Metrics : MonoBehaviour
 
     private void LadderAction(int value)
     {
-        m_metric1 = value;
+        TimesFlippedMetric = value;
     }
 
     // Public method to add to Metric 1.
     private void AddToMetric1(int valueToAdd)
     {
-        m_metric1 += valueToAdd;
+        TimesFlippedMetric += valueToAdd;
     }
 
     // Public method to add to Metric 2.
     private void AddToMetric2(float valueToAdd)
     {
-        m_metric2 += valueToAdd;
+        LengthOfPuzzle += valueToAdd;
     }
 
 
@@ -65,8 +65,8 @@ public class SCR_Metrics : MonoBehaviour
     private string ConvertMetricsToStringRepresentation()
     {
         string metrics = "Here are my metrics:\n";
-        metrics += "The ladder was flipped " + m_metric1.ToString() + " times\n";
-        if (m_metric2 != 0.0f) metrics += "This is how long it took to do the first puzzle: " + m_metric2.ToString() + " seconds\n";
+        metrics += "The ladder was flipped " + TimesFlippedMetric.ToString() + " times\n";
+        if (LengthOfPuzzle != 0.0f) metrics += "This is how long it took to do the first puzzle: " + LengthOfPuzzle.ToString() + " seconds\n";
         else metrics += "The player did not complete the first puzzle";
         return metrics;
     }

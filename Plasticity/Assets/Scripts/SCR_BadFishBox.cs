@@ -27,6 +27,14 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
     [SerializeField]
     [ShowIf("FireEventAtFinish")]
     private string EventValue;
+    [SerializeField]
+    bool WriteToStateData;
+    [SerializeField]
+    [ShowIf("WriteToStateData")]
+    private SCR_LevelStates LevelData;
+    [SerializeField]
+    [ShowIf("WriteToStateData")]
+    private DataPair[] StatesToChange;
 
     private void Awake()
     {
@@ -147,6 +155,13 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
         {
             Done = true;
             if(FireEventAtFinish) SCR_EventManager.TriggerEvent(EventName, EventValue);
+        }
+        if (WriteToStateData)
+        {
+            for (int i = 0; i < StatesToChange.Length; ++i)
+            {
+                    LevelData.PuzzleStates[StatesToChange[i].IndexToWrite] = StatesToChange[i].Value;
+            }
         }
         CharacterManager.SetSpeed(OriginalSpeed);
         CharacterManager.StopPushing();
