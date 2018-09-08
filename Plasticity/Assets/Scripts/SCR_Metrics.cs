@@ -69,7 +69,7 @@ public class SCR_Metrics : MonoBehaviour
         dateTime = dateTime.Replace("/", "_");
         dateTime = dateTime.Replace(":", "_");
         dateTime = dateTime.Replace(" ", "___");
-        return "Metrics/" + PlaytestIdentifier + "_metrics_" + dateTime + ".txt";
+        return "Metrics/" + PlaytestIdentifier + "_" + dateTime + "_metrics_.txt";
     }
 
     // Generate the report that will be saved out to a file.
