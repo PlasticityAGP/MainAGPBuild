@@ -32,6 +32,7 @@ public class SCR_SceneLoader : MonoBehaviour {
     private UnityAction<int> LevelStateListener;
     [SerializeField]
     private SettingsArray[] LevelSettings;
+    private float GameTimer = 0.0f;
 
     private void Awake()
     {
@@ -55,6 +56,7 @@ public class SCR_SceneLoader : MonoBehaviour {
 
     private void LevelStateChange (int ID)
     {
+        SCR_EventManager.TriggerEvent("GameTimerResult", GameTimer);
         string[] PuzzleStates = LevelData.PuzzleStates;
         ActivateOnTrigger(LevelSettings[FindByName(PuzzleStates[ID])]);
     }
@@ -120,7 +122,7 @@ public class SCR_SceneLoader : MonoBehaviour {
 	
 
 	void Update () {
-		
+        GameTimer += Time.deltaTime;
 	}
 
 
