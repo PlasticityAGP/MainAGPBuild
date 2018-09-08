@@ -61,6 +61,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
     public bool InsideTop;
     private bool RotationDirection;
     private bool CoroutineDone = true;
+    private bool LadderDirection = true;
+    private int TimesLadderFlipped;
 
 
 
@@ -280,6 +282,7 @@ public class SCR_Ladder : SCR_GameplayStatics {
     void Update()
     {
         if (AmLerpingCharacter) LerpCharacter(Time.deltaTime);
+        LadderFlipped();
     }
 
     IEnumerator PlayerRotation(Quaternion Base, Quaternion Tilted)
@@ -310,5 +313,27 @@ public class SCR_Ladder : SCR_GameplayStatics {
         Vector3 A = Character.transform.position - gameObject.transform.position;
         float ZValue = Vector3.Cross(gameObject.transform.up, A).z;
         return ZValue >= 0.0f;
+    }
+
+    private void LadderFlipped()
+    {
+        if (gameObject.transform.up.x < -0.1f)
+        {
+            if (LadderDirection)
+            {
+                ++TimesLadderFlipped;
+                LadderDirection = !LadderDirection;
+                SCR_EventManager.TriggerEvent("LadderFlipped", TimesLadderFlipped);
+            }
+        }
+        if (gameObject.transform.up.x > 0.1f)
+        {
+            if (!LadderDirection)
+            {
+                ++TimesLadderFlipped;
+                LadderDirection = !LadderDirection;
+                SCR_EventManager.TriggerEvent("LadderFlipped", TimesLadderFlipped);
+            }
+        }
     }
 }

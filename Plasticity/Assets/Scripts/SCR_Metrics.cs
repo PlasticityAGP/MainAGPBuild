@@ -15,27 +15,36 @@ public class SCR_Metrics : MonoBehaviour
     [SerializeField]
     private string PlaytestIdentifier;
     private UnityAction<float> GameTimerListener;
+    private UnityAction<int> LadderFlippedListener;
 
 
 
     private void Awake()
     {
         GameTimerListener = new UnityAction<float>(GameTimerDone);
+        LadderFlippedListener = new UnityAction<int>(LadderAction);
     }
 
     private void OnEnable()
     {
         SCR_EventManager.StartListening("GameTimerResult", GameTimerListener);
+        SCR_EventManager.StartListening("LadderFlipped", LadderFlippedListener);
     }
 
     private void OnDisable()
     {
         SCR_EventManager.StopListening("GameTimerResult", GameTimerListener);
+        SCR_EventManager.StopListening("LadderFlipped", LadderFlippedListener);
     }
 
     private void GameTimerDone(float Input)
     {
         AddToMetric2(Input);
+    }
+
+    private void LadderAction(int value)
+    {
+        m_metric1 = value;
     }
 
     // Public method to add to Metric 1.
@@ -56,8 +65,9 @@ public class SCR_Metrics : MonoBehaviour
     private string ConvertMetricsToStringRepresentation()
     {
         string metrics = "Here are my metrics:\n";
-        //metrics += "Metric 1: " + m_metric1.ToString() + "\n";
-        metrics += "This is how long it took to do the first puzzle: " + m_metric2.ToString() + " seconds\n";
+        metrics += "The ladder was flipped " + m_metric1.ToString() + " times\n";
+        if (m_metric2 != 0.0f) metrics += "This is how long it took to do the first puzzle: " + m_metric2.ToString() + " seconds\n";
+        else metrics += "The player did not complete the first puzzle";
         return metrics;
     }
 
