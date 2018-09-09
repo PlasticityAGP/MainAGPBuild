@@ -47,7 +47,6 @@ public class SCR_Lever : MonoBehaviour {
     {
         if (value == 1)
         {
-            Debug.Log("interac");
             Interact = true;
             if (Inside)
                 GrabLever();
@@ -65,69 +64,12 @@ public class SCR_Lever : MonoBehaviour {
     {
         Up = value;
         Actuate();
-        /*if(CharacterManager.InteractingWith == gameObject)
-        {
-            if (Up == 1 && Down == 1)
-            {
-                direction = 0;
-                elevator.Neutral();
-            }
-            else if (Up == 0 && Down == 1)
-            {
-                direction = -1;
-                elevator.Down();
-            }
-            else if (Up == 1 && Down == 0)
-            {
-                direction = 1;
-                elevator.Up();
-            }
-            else if (Up == 0)
-            {
-                if (direction != -1) direction = 0;
-                    elevator.Neutral();
-            }
-        }*/
-        
     }
 
     private void DownPressed(int value)
     {
         Down = value;
         Actuate();
-
-        /*if (CharacterManager.InteractingWith == gameObject)
-        {
-            if (Up == 1 && Down == 1)
-            {
-                direction = 0;
-                elevator.Neutral();
-            }
-            else if (Up == 0 && Down == 1)
-            {
-                direction = -1;
-                elevator.Down();
-            }
-            else if (Up == 1 && Down == 0)
-            {
-                direction = 1;
-                elevator.Up();
-            }
-            else if (Up == 0)
-            {
-                if (direction != -1) direction = 0;
-                elevator.Neutral();
-            }
-
-
-            direction = -1;
-            elevator.Down();
-        }
-        else if (value == 0)
-        {
-            if (direction != 1) direction = 0;
-            elevator.Neutral();
-        }*/
     }
 
     // Use this for initialization
@@ -154,8 +96,6 @@ public class SCR_Lever : MonoBehaviour {
                 IkTools = Character.GetComponent<SCR_IKToolset>();
                 CharacterManager = Character.GetComponent<SCR_CharacterManager>();
             }
-            
-            //Need to structure it this way in case interact is held down by the player before entering trigger
         }
     }
 

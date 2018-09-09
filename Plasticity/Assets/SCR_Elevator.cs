@@ -43,14 +43,11 @@ public class SCR_Elevator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (direction == 1) Debug.Log("A");
         // Stop if they reach the top or bottom.
         if(currentHeight >= floors[numFloors - 1])
             if (!actuatedDown) direction = 0;
         if(currentHeight <= floors[0])
             if (!actuatedUp) direction = 0;
-
-        if (direction == 1) Debug.Log("B");
 
         // Going up
         if (direction == 1)
@@ -70,12 +67,8 @@ public class SCR_Elevator : MonoBehaviour {
                 direction = 0;
         }
 
-        if (direction == 1) Debug.Log("C");
-
         currentHeight = this.transform.position.y;
         DetermineNextFloor();
-
-        if (direction == 1) Debug.Log("D");
     }
 
     // Configures the nextFloor variable
@@ -122,6 +115,7 @@ public class SCR_Elevator : MonoBehaviour {
         }
     }
 
+    //Public function to make the elevator stop
     public void Neutral()
     {
         actuatedUp = false;
