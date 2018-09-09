@@ -509,6 +509,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         Ik.solver.leftArmChain.push = Data.LeftArmPush;
         Ik.solver.leftArmChain.pushParent = Data.LeftArmPushParent;
         Ik.solver.leftArmMapping.maintainRotationWeight = Data.LeftArmMaintainRelativeRot;
+        Ik.solver.leftArmChain.bendConstraint.weight = Data.LeftArmBendGoal;
 
         Ik.solver.rightHandEffector.maintainRelativePositionWeight = Data.RightHandMaintainRelativePos;
         Ik.solver.rightArmChain.pull = Data.RightArmPull;
@@ -516,6 +517,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         Ik.solver.rightArmChain.push = Data.RightArmPush;
         Ik.solver.rightArmChain.pushParent = Data.RightArmPushParent;
         Ik.solver.rightArmMapping.maintainRotationWeight = Data.RightArmMaintainRelativeRot;
+        Ik.solver.rightArmChain.bendConstraint.weight = Data.RightArmBendGoal;
 
         Ik.solver.leftFootEffector.maintainRelativePositionWeight = Data.LeftFootMaintainRelativePos;
         Ik.solver.leftLegChain.pull = Data.LeftLegPull;

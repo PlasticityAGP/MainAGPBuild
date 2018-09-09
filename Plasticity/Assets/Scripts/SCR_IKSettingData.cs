@@ -20,6 +20,7 @@ public class SCR_IKSettingData : ScriptableObject
     public float LeftArmPush;
     public float LeftArmPushParent;
     public float LeftArmMaintainRelativeRot;
+    public float LeftArmBendGoal;
     [Title("Right Arm")]
     public float RightHandMaintainRelativePos;
     public float RightArmPull;
@@ -27,6 +28,7 @@ public class SCR_IKSettingData : ScriptableObject
     public float RightArmPush;
     public float RightArmPushParent;
     public float RightArmMaintainRelativeRot;
+    public float RightArmBendGoal;
     [Title("Left Leg")]
     public float LeftFootMaintainRelativePos;
     public float LeftLegPull;
