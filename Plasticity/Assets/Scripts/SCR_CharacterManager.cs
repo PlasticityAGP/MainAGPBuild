@@ -429,8 +429,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         if (PlayerState == CharacterStates.Swimming)
         {
+            Grounded(); //still need to know if we're ground when we leave water (currently for testing, may not be necessary)
             Swim();
-			Grounded(); //still need to know if we're ground when we leave water (currently for testing, may not be necessary)
 			return;
         }
         if (!InAnimationOverride)
@@ -461,6 +461,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
         {
 			swimming = false;
+            Grounded();
             DeterminePlayerState();
         }
 			

@@ -7,6 +7,8 @@ public class SCR_Water : MonoBehaviour {
     public Transform trans;
     public bool swimmable;
 
+    public SCR_Elevator elevator;
+
 	// Use this for initialization
 	void Start () {
         height = trans.position.y + trans.localScale.y/2;
@@ -20,17 +22,12 @@ public class SCR_Water : MonoBehaviour {
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Character")
-        {
-            Debug.Log("In water");
             other.GetComponent<SCR_CharacterManager>().IsInWater(true, swimmable, height);
-        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.tag == "Character")
-        {
             other.GetComponent<SCR_CharacterManager>().IsInWater(false, swimmable, -1);
-        }
     }
 }
