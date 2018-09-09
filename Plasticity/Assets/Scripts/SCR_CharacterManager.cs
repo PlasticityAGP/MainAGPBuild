@@ -572,7 +572,7 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 		newrot.eulerAngles = newEulers;
 		transform.rotation = newrot;*/
 		CharacterAnimator.SetFloat("VelX", Mathf.Abs(MoveVec.x / maxSwimSpeed));
-		CharacterAnimator.SetFloat("VelY", Mathf.Abs(MoveVec.y / maxSwimSpeed));
+		CharacterAnimator.SetFloat("VelY", MoveVec.y / maxSwimSpeed);
 		maxSwimSpeed /= 5;
         RBody.velocity = MoveVec;
     }
