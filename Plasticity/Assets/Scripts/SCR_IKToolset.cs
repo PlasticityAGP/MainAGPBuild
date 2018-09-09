@@ -51,6 +51,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private SCR_IKSettingData ClimbingData;
     [SerializeField]
     private SCR_IKSettingData DraggingData;
+    private bool Reverse;
 
 
     // Use this for initialization
@@ -231,6 +232,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
         else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
         else if (ID == "Body" || ID.Equals("body")) LatestBody = StartCoroutine(IKCoroutine(ID, InsertObject));
+    }
+
+    public void ReverseEffectorLerp(string ID, AnimationCurve curve, float duration)
+    {
+
     }
 
     /// <summary>
