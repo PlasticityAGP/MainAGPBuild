@@ -11,7 +11,7 @@ public class SCR_Elevator : MonoBehaviour {
     public float speed;
     bool actuatedUp;
     bool actuatedDown;
-    float[] floors;
+    public float[] floors;
     float nextFloor;
     float currentHeight;
     int currentFloor;
@@ -37,20 +37,23 @@ public class SCR_Elevator : MonoBehaviour {
         nextFloor = floors[startFloor - 1];
 
         // Determining the height of the floors
-        for (int i = 0; i < startFloor; i++)
+        for (int i = 0; i < numFloors; i++)
             floors[i] = floors[startFloor - 1] + (i - (startFloor - 1)) * distanceBetweenFloors;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (direction == 1) Debug.Log("A");
         // Stop if they reach the top or bottom.
         if(currentHeight >= floors[numFloors - 1])
             if (!actuatedDown) direction = 0;
         if(currentHeight <= floors[0])
             if (!actuatedUp) direction = 0;
 
+        if (direction == 1) Debug.Log("B");
+
         // Going up
-        if(direction == 1)
+        if (direction == 1)
         {
             if (actuatedUp || currentHeight < nextFloor)
                 this.transform.Translate(new Vector3(0, distanceBetweenFloors * speed * Time.deltaTime, 0));
@@ -67,9 +70,13 @@ public class SCR_Elevator : MonoBehaviour {
                 direction = 0;
         }
 
+        if (direction == 1) Debug.Log("C");
+
         currentHeight = this.transform.position.y;
         DetermineNextFloor();
-	}
+
+        if (direction == 1) Debug.Log("D");
+    }
 
     // Configures the nextFloor variable
     void DetermineNextFloor()
