@@ -22,13 +22,15 @@ MonoBehaviour:
   LeftArmReach: 0.25
   LeftArmPush: 0.75
   LeftArmPushParent: 0.75
-  LeftArmMaintainRelativeRot: 1
+  LeftArmMaintainRelativeRot: 0
+  LeftArmBendGoal: 0.6
   RightHandMaintainRelativePos: 1
   RightArmPull: 0.25
   RightArmReach: 0.25
   RightArmPush: 0.75
   RightArmPushParent: 0.75
-  RightArmMaintainRelativeRot: 1
+  RightArmMaintainRelativeRot: 0
+  RightArmBendGoal: 0.6
   LeftFootMaintainRelativePos: 0
   LeftLegPull: 0.8
   LeftLegReach: 0.2

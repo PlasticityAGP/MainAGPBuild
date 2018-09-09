@@ -51,6 +51,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private SCR_IKSettingData ClimbingData;
     [SerializeField]
     private SCR_IKSettingData DraggingData;
+    private bool Reverse;
 
 
     // Use this for initialization
@@ -231,6 +232,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
         else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
         else if (ID == "Body" || ID.Equals("body")) LatestBody = StartCoroutine(IKCoroutine(ID, InsertObject));
+    }
+
+    public void ReverseEffectorLerp(string ID, AnimationCurve curve, float duration)
+    {
+
     }
 
     /// <summary>
@@ -509,6 +515,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         Ik.solver.leftArmChain.push = Data.LeftArmPush;
         Ik.solver.leftArmChain.pushParent = Data.LeftArmPushParent;
         Ik.solver.leftArmMapping.maintainRotationWeight = Data.LeftArmMaintainRelativeRot;
+        Ik.solver.leftArmChain.bendConstraint.weight = Data.LeftArmBendGoal;
 
         Ik.solver.rightHandEffector.maintainRelativePositionWeight = Data.RightHandMaintainRelativePos;
         Ik.solver.rightArmChain.pull = Data.RightArmPull;
@@ -516,6 +523,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         Ik.solver.rightArmChain.push = Data.RightArmPush;
         Ik.solver.rightArmChain.pushParent = Data.RightArmPushParent;
         Ik.solver.rightArmMapping.maintainRotationWeight = Data.RightArmMaintainRelativeRot;
+        Ik.solver.rightArmChain.bendConstraint.weight = Data.RightArmBendGoal;
 
         Ik.solver.leftFootEffector.maintainRelativePositionWeight = Data.LeftFootMaintainRelativePos;
         Ik.solver.leftLegChain.pull = Data.LeftLegPull;
