@@ -382,6 +382,12 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 HandRungs[0] = TopValue - 1;
                 HandRungs[1] = TopValue - 1;
             }
+            if ((TopValue - BotValue) <= 2)
+            {
+                ShoulderRung = LadderRungs[TopValue + 1];
+                HandRungs[0] = TopValue + 1;
+                HandRungs[1] = TopValue + 1;
+            }
         }
         LadderSlope = ShoulderRung.transform.position - FootRung.transform.position;
         InitiationComplete = true;
