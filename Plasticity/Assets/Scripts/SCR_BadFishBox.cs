@@ -96,7 +96,7 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
         if (value == 1)
         {
             Interact = true;
-            if (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject)
+            if ((CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && !Done)
             {
                 CharacterManager.InteractingWith = gameObject;
                 IKTools.SetEffectorTarget("LeftHand", IKTargets[CurrentIndex]);
@@ -110,7 +110,7 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
                 DoIfBothPressed();
             }
         }
-        else
+        else if (!Done)
         {
             Interact = false;
             CharacterManager.SetSpeed(OriginalSpeed);
