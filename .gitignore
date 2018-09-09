@@ -14,6 +14,10 @@ Plasticity/.idea
 Plasticity/Assets/Plugins/Editor/JetBrains/
 JetBrains.meta
 
+# Wwise cache file
+Plasticity/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset
+
+Plasticity/Metrics/*_metrics_.txt
 Plasticity/Assets/Plugins/Sirenix/Assemblies/AOT
 Plasticity/Assets/Plugins/RootMotion/FinalIK/_DEMOS
 Plasticity/Assets/Plugins/RootMotion/FinalIK/_DEMOS.meta

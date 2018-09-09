@@ -1,0 +1,212 @@
+fileFormatVersion: 2
+guid: 3a0f835deea929b41913a2e3a9fb87ee
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Pole1
+    100002: Pole2
+    100004: Pole3
+    100006: Pole4
+    100008: Pole5
+    100010: //RootNode
+    100012: Wire
+    100014: Wire.001
+    100016: Wire.002
+    100018: Wire.003
+    100020: Wire.004
+    100022: Wire.005
+    100024: Wire.006
+    100026: Wire.007
+    100028: Wire.008
+    100030: Wire10
+    100032: Wire11
+    100034: Wire12
+    100036: Wire13
+    100038: Wire14
+    100040: Wire9
+    400000: Pole1
+    400002: Pole2
+    400004: Pole3
+    400006: Pole4
+    400008: Pole5
+    400010: //RootNode
+    400012: Wire
+    400014: Wire.001
+    400016: Wire.002
+    400018: Wire.003
+    400020: Wire.004
+    400022: Wire.005
+    400024: Wire.006
+    400026: Wire.007
+    400028: Wire.008
+    400030: Wire10
+    400032: Wire11
+    400034: Wire12
+    400036: Wire13
+    400038: Wire14
+    400040: Wire9
+    2100000: Wire
+    2100002: Metal2
+    2100004: Metal
+    2100006: Wood
+    2300000: Pole1
+    2300002: Pole2
+    2300004: Pole3
+    2300006: Pole4
+    2300008: Pole5
+    2300010: Wire
+    2300012: Wire.001
+    2300014: Wire.002
+    2300016: Wire.003
+    2300018: Wire.004
+    2300020: Wire.005
+    2300022: Wire.006
+    2300024: Wire.007
+    2300026: Wire.008
+    2300028: Wire10
+    2300030: Wire11
+    2300032: Wire12
+    2300034: Wire13
+    2300036: Wire14
+    2300038: Wire9
+    3300000: Pole1
+    3300002: Pole2
+    3300004: Pole3
+    3300006: Pole4
+    3300008: Pole5
+    3300010: Wire
+    3300012: Wire.001
+    3300014: Wire.002
+    3300016: Wire.003
+    3300018: Wire.004
+    3300020: Wire.005
+    3300022: Wire.006
+    3300024: Wire.007
+    3300026: Wire.008
+    3300028: Wire10
+    3300030: Wire11
+    3300032: Wire12
+    3300034: Wire13
+    3300036: Wire14
+    3300038: Wire9
+    4300000: Wire9
+    4300002: Wire10
+    4300004: Wire11
+    4300006: Wire12
+    4300008: Wire13
+    4300010: Pole1
+    4300012: Pole5
+    4300014: Wire14
+    4300016: Wire.008
+    4300018: Wire.007
+    4300020: Wire.006
+    4300022: Wire.005
+    4300024: Wire.004
+    4300026: Wire.003
+    4300028: Wire.002
+    4300030: Wire.001
+    4300032: Wire
+    4300034: Pole4
+    4300036: Pole3
+    4300038: Pole2
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Metal
+    second: {fileID: 2100000, guid: c3f6ceb89b0e0364ca0b74b2abe0efd9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Metal2
+    second: {fileID: 2100000, guid: e12955582263c9847a15b9aca400631a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wire
+    second: {fileID: 2100000, guid: 23dcc8256c82d624dae763f58412efee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wood
+    second: {fileID: 2100000, guid: d0fa524769ba4da48b6a81d8675630c0, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

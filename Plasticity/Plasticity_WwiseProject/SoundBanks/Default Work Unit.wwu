@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{C969F62E-B9C0-4DA2-9534-835518743C2A}" SchemaVersion="89">
 	<SoundBanks>
-		<WorkUnit Name="Default Work Unit" ID="{C969F62E-B9C0-4DA2-9534-835518743C2A}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{C969F62E-B9C0-4DA2-9534-835518743C2A}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="Global" ID="{AAC8E971-EDD8-4C98-8B68-B5B1896C1390}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Plasticity - Ambient Track (v1)" ID="{3BB527AA-E3E9-4596-B3C0-BE3CDDAAA3B7}" WorkUnitID="{070E9921-BE6B-4F0C-B021-98DFA0387A44}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+				<SoundBank Name="Character" ID="{8BB749FA-BB72-4553-9545-EA1E3F37A692}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Footstep" ID="{8612D582-F788-4FA0-9706-806E0BC2B28A}" WorkUnitID="{8E1FE01F-0764-4209-BEE7-05C98684CACE}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
 	</SoundBanks>
 </WwiseDocument>

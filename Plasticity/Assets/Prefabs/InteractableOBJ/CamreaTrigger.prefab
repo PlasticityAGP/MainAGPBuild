@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4122779616641222}
   - component: {fileID: 65134184149637094}
   - component: {fileID: 114574151472779580}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CamreaTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,8 +35,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1660724548036910}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30.099, y: -0.9, z: 0}
-  m_LocalScale: {x: 4.7964263, y: 2.2365472, z: 2.2365472}
+  m_LocalPosition: {x: -10.32, y: 1.6, z: 1.31}
+  m_LocalScale: {x: 9.940163, y: 7.4619308, z: 6.1269646}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -64,7 +64,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ab581bc075e09d4d9b12a7ecf97266c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UsingOnEnter: 1
   EnterTagToPlay: PanIn
+  UsingOnEnter: 1
   UsingOnExit: 1
-  ExitTagToPlay: PanOut

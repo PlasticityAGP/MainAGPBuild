@@ -13,13 +13,29 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID BOTTLE_CLINK = 2784117219U;
+        static const AkUniqueID FOOTSTEP = 1866025847U;
     } // namespace EVENTS
+
+    namespace SWITCHES
+    {
+        namespace FOOTSTEP
+        {
+            static const AkUniqueID GROUP = 1866025847U;
+
+            namespace SWITCH
+            {
+                static const AkUniqueID DIRT = 2195636714U;
+                static const AkUniqueID WOOD = 2058049674U;
+            } // namespace SWITCH
+        } // namespace FOOTSTEP
+
+    } // namespace SWITCHES
 
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;
-        static const AkUniqueID TEST = 3157003241U;
+        static const AkUniqueID CHARACTER = 436743010U;
+        static const AkUniqueID GLOBAL = 1465331116U;
     } // namespace BANKS
 
     namespace BUSSES

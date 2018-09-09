@@ -6,9 +6,17 @@ using Sirenix.OdinInspector;
 [System.Serializable]
 public struct DataPair
 {
-    public string Tag;
+    public string Name;
     public int IndexToWrite;
     public string Value;
+};
+
+[System.Serializable]
+public struct TriggerPair
+{
+    public string TriggerName;
+    public string TriggeringObjectName;
+    public int PuzzleNumber;
 };
 
 public class SCR_LevelTrigger : MonoBehaviour {
@@ -16,19 +24,12 @@ public class SCR_LevelTrigger : MonoBehaviour {
     private enum TypeOfTrigger {Loader, StateChange, CharacterTransform};
     [SerializeField]
     private TypeOfTrigger ThisTrigger;
-
     [SerializeField]
-    [ShowIf("ThisTrigger", TypeOfTrigger.Loader)]
-    private string TriggerName;
+    [HideIf("ThisTrigger", TypeOfTrigger.CharacterTransform)]
+    private TriggerPair[] TriggerPairs;
     [SerializeField]
     [ShowIf("ThisTrigger", TypeOfTrigger.Loader)]
     private bool ShouldFreezeBoxOnEnter;
-    [SerializeField]
-    [ShowIf("ThisTrigger", TypeOfTrigger.StateChange)]
-    private int PuzzleNumber;
-    [SerializeField]
-    [HideIf("ThisTrigger", TypeOfTrigger.CharacterTransform)]
-    private string[] TagsOfTriggeringObject;
     [SerializeField]
     bool WriteToStateData;
     [SerializeField]
@@ -79,23 +80,24 @@ public class SCR_LevelTrigger : MonoBehaviour {
         if (LerpBool) DoLerp(Time.deltaTime);
     }
 
-    private bool IsIn(string Item, string[] Array)
+    private int IsIn(string GameObjectName, TriggerPair[] Array)
     {
         for (int i = 0; i < Array.Length; ++i)
         {
-            if (Array[i] == Item) return true;
+            if (Array[i].TriggeringObjectName == GameObjectName) return i;
         }
-        return false;
+        return -1;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if(ThisTrigger == TypeOfTrigger.Loader)
         {
-            if (IsIn(other.tag, TagsOfTriggeringObject))
+            int Index = IsIn(other.gameObject.name, TriggerPairs);
+            if (Index != -1)
             {
-                SCR_EventManager.TriggerEvent("LevelTrigger", TriggerName);
-                if (ShouldFreezeBoxOnEnter && other.gameObject.GetComponent<SCR_DragDrop>())
+                SCR_EventManager.TriggerEvent("LevelTrigger", TriggerPairs[Index].TriggerName);
+                if (ShouldFreezeBoxOnEnter && other.gameObject.GetComponentInChildren<SCR_DragDrop>())
                 {
                     other.gameObject.GetComponentInChildren<SCR_DragDrop>().Lockout();
                 }
@@ -103,9 +105,10 @@ public class SCR_LevelTrigger : MonoBehaviour {
         }
         else if(ThisTrigger == TypeOfTrigger.StateChange)
         {
-            if (IsIn(other.tag, TagsOfTriggeringObject))
+            int Index = IsIn(other.gameObject.name, TriggerPairs);
+            if (Index != -1)
             {
-                SCR_EventManager.TriggerEvent("SceneStateTrigger", PuzzleNumber);
+                SCR_EventManager.TriggerEvent("SceneStateTrigger", TriggerPairs[Index].PuzzleNumber);
             }
         }
         else if(ThisTrigger == TypeOfTrigger.CharacterTransform)
@@ -121,7 +124,7 @@ public class SCR_LevelTrigger : MonoBehaviour {
         {
             for (int i = 0; i < StatesToChange.Length; ++i)
             {
-                if(other.tag == StatesToChange[i].Tag)
+                if(other.gameObject.name == StatesToChange[i].Name)
                     LevelData.PuzzleStates[StatesToChange[i].IndexToWrite] = StatesToChange[i].Value;
             }
         }

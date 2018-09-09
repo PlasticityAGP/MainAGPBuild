@@ -1,8 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+    using UnityEditor.SceneManagement;
+#endif
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
 
 [System.Serializable]
 public class PairObject
@@ -29,6 +32,7 @@ public class SCR_SceneLoader : MonoBehaviour {
     private UnityAction<int> LevelStateListener;
     [SerializeField]
     private SettingsArray[] LevelSettings;
+    private float GameTimer = 0.0f;
 
     private void Awake()
     {
@@ -52,6 +56,7 @@ public class SCR_SceneLoader : MonoBehaviour {
 
     private void LevelStateChange (int ID)
     {
+        SCR_EventManager.TriggerEvent("GameTimerResult", GameTimer);
         string[] PuzzleStates = LevelData.PuzzleStates;
         ActivateOnTrigger(LevelSettings[FindByName(PuzzleStates[ID])]);
     }
@@ -78,6 +83,11 @@ public class SCR_SceneLoader : MonoBehaviour {
                 SCR_EventManager.TriggerEvent("Timeline", Data.Settings[i].Flag);
                 SCR_EventManager.TriggerEvent("TimelineInstruction", "Resume");
             }
+            else if(Data.Settings[i].State == 3)
+            {
+                if (Data.Settings[i].Flag == "DisableBox") SCR_EventManager.TriggerEvent("DisableBox", Data.Settings[i].ObjToSet.name);
+                Data.Settings[i].ObjToSet.GetComponentInChildren<PlayableDirector>().Play();
+            }
         }
     }
 
@@ -92,16 +102,27 @@ public class SCR_SceneLoader : MonoBehaviour {
     }
 
     void Start () {
+#if UNITY_EDITOR
+        if (EditorSceneManager.loadedSceneCount > 1) {
+            foreach (var scene in EditorSceneManager.GetAllScenes()) {
+                if (!scene.name.Contains("Base")) {
+                    EditorSceneManager.UnloadSceneAsync(scene);
+                }
+            }
+        }
+#endif
+        
         //Grab the array from our saved data asset.
         LevelArray = LevelData.LevelArray;
         //Below is an example of how we can edit data asset at runtime.
         //LevelData.CurrentLevel = "NotCharacter";
+
         LoadScenes();
 	}
 	
 
 	void Update () {
-		
+        GameTimer += Time.deltaTime;
 	}
 
 

@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{8E1FE01F-0764-4209-BEE7-05C98684CACE}" SchemaVersion="89">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{8E1FE01F-0764-4209-BEE7-05C98684CACE}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{8E1FE01F-0764-4209-BEE7-05C98684CACE}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="Character" ID="{27302ED7-25A8-422F-9B3A-4FEE5217D903}" ShortID="592885148">
+					<ChildrenList>
+						<Event Name="Footstep" ID="{8612D582-F788-4FA0-9706-806E0BC2B28A}">
+							<ChildrenList>
+								<Action Name="" ID="{9B48C984-B709-459A-81C8-9FE4E464E432}" ShortID="249881593">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Footstep" ID="{9FC3A616-F4FC-4D1D-B1B4-D1B158CE6BEB}" WorkUnitID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

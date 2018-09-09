@@ -1,6 +1,340 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}" SchemaVersion="89">
 	<AudioObjects>
-		<WorkUnit Name="Default Work Unit" ID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{796E973C-E069-4E41-BB1F-89963B7E4B3E}" PersistMode="Standalone">
+			<ChildrenList>
+				<SwitchContainer Name="Footstep" ID="{9FC3A616-F4FC-4D1D-B1B4-D1B158CE6BEB}" ShortID="1015332295">
+					<PropertyList>
+						<Property Name="MaxSoundPerInstance" Type="int16">
+							<ValueList>
+								<Value>4</Value>
+							</ValueList>
+						</Property>
+						<Property Name="UseMaxSoundPerInstance" Type="bool">
+							<ValueList>
+								<Value>True</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+						</Reference>
+						<Reference Name="DefaultSwitchOrState">
+							<ObjectRef Name="Dirt" ID="{231C87B6-DFD6-4E67-BB43-668E18944528}" WorkUnitID="{3F551716-4540-4806-B835-3E1DFF334B47}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+						</Reference>
+						<Reference Name="SwitchGroupOrStateGroup">
+							<ObjectRef Name="Footstep" ID="{38C38B12-4358-414E-AA97-BF8FBDF83591}" WorkUnitID="{3F551716-4540-4806-B835-3E1DFF334B47}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<RandomSequenceContainer Name="Footstep_Dirt" ID="{5DB66F95-A497-4FCD-A28B-DEFE31D71528}" ShortID="16619459">
+							<PropertyList>
+								<Property Name="Lowpass" Type="int16">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{144A056E-04A6-4947-BDF9-069780490402}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="10"/>
+													<Property Name="Min" Type="Real64" Value="-10"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{D1F81F20-2641-45D1-B27F-C95543CDD4E6}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="500"/>
+													<Property Name="Min" Type="Real64" Value="-500"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549" ID="{8BE23BA6-64B2-487E-A7E2-32F4A904F914}" ShortID="30925707">
+									<PropertyList>
+										<Property Name="Lowpass" Type="int16">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{F1DA03CF-0663-4BF5-8C69-BEBCDC9C3043}"/>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+										<Property Name="Pitch" Type="int32">
+											<ValueList>
+												<Value>-400</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-5</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549" ID="{FB86E0CB-D795-4C1A-B9AD-3352578B93A9}" ShortID="219756915">
+											<PropertyList>
+												<Property Name="FadeInDuration" Type="Real64" Value="0.108458272197768"/>
+												<Property Name="TrimEnd" Type="Real64" Value="0.200256809794625"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549" ID="{FB86E0CB-D795-4C1A-B9AD-3352578B93A9}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot" ID="{00ED5787-054B-4F49-B295-786E04F05DE9}" ShortID="902791435">
+									<PropertyList>
+										<Property Name="Lowpass" Type="int16">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{AAE39E5E-3A8A-4A50-B0BC-45D40C68264F}"/>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot" ID="{40D35BE4-6A97-45A7-A114-16D9F67788AC}" ShortID="523568926">
+											<PropertyList>
+												<Property Name="FadeInDuration" Type="Real64" Value="0.0531859774212715"/>
+												<Property Name="TrimEnd" Type="Real64" Value="0.200323232323232"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot" ID="{40D35BE4-6A97-45A7-A114-16D9F67788AC}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="8bit_footsteps_forest_8" ID="{97D28226-BA47-45D4-B473-AEA84019BE11}" ShortID="635362369">
+									<PropertyList>
+										<Property Name="Lowpass" Type="int16">
+											<ValueList>
+												<Value>35</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-5</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="8bit_footsteps_forest_8" ID="{B17A31AF-2457-47E0-9659-5B0F308D237D}" ShortID="718523427">
+											<PropertyList>
+												<Property Name="FadeInDuration" Type="Real64" Value="0.143477124183007"/>
+												<Property Name="FadeOutDuration" Type="Real64" Value="0.118222222222222"/>
+												<Property Name="TrimBegin" Type="Real64" Value="0.0849150326797386"/>
+												<Property Name="TrimEnd" Type="Real64" Value="0.285124183006536"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>8bit_footsteps_forest_8.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="8bit_footsteps_forest_8" ID="{B17A31AF-2457-47E0-9659-5B0F308D237D}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="Footstep_Wood" ID="{8964E083-80F6-416F-A962-5422A2EBE89D}" ShortID="391357858">
+							<PropertyList>
+								<Property Name="Lowpass" Type="int16">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{AC41C27C-BF85-4126-9815-C7D8C0E3E04C}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="10"/>
+													<Property Name="Min" Type="Real64" Value="-10"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{D524242A-D4B4-4148-9410-86C5AA037100}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="500"/>
+													<Property Name="Min" Type="Real64" Value="-500"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Footsteps on carpet or rug in bare feet stepping heavily left" ID="{C6F4C142-126B-49D0-A454-5DFC4FF3DC9E}" ShortID="17269460">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-5</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Footsteps on carpet or rug in bare feet stepping heavily left" ID="{D1867D79-4C32-4AC6-83F0-CF7F4332944C}" ShortID="1037285715">
+											<Language>SFX</Language>
+											<AudioFile>Footsteps on carpet or rug in bare feet stepping heavily left.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Footsteps on carpet or rug in bare feet stepping heavily left" ID="{D1867D79-4C32-4AC6-83F0-CF7F4332944C}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Left Foot" ID="{6732EC05-11EB-4570-9778-FBDC82887733}" ShortID="684475667">
+									<PropertyList>
+										<Property Name="Pitch" Type="int32">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{9323B518-8407-4B97-8673-3E1B414600BE}"/>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-3</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Left Foot" ID="{59DAF3E7-39C2-432A-81C9-8083161E2BD2}" ShortID="769673357">
+											<PropertyList>
+												<Property Name="FadeOutDuration" Type="Real64" Value="0.0953632362035723"/>
+												<Property Name="TrimEnd" Type="Real64" Value="0.399995796298316"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Left Foot.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Left Foot" ID="{59DAF3E7-39C2-432A-81C9-8083161E2BD2}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Right Foot" ID="{C9D35E07-0CF5-4F8E-81C1-5998FCF9E815}" ShortID="704454273">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{17777C0E-8B4A-4B40-8EF0-1131F5038E5A}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5F946A4E-87B4-44A7-8A12-2E0EC8859C80}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Right Foot" ID="{B56E86FF-7669-4B56-AD89-B621417AF61E}" ShortID="875649668">
+											<PropertyList>
+												<Property Name="FadeOutDuration" Type="Real64" Value="0.0995126131260585"/>
+												<Property Name="TrimEnd" Type="Real64" Value="0.400492479820211"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Right Foot.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Right Foot" ID="{B56E86FF-7669-4B56-AD89-B621417AF61E}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+					</ChildrenList>
+					<GroupingInfo>
+						<GroupingBehaviorList>
+							<GroupingBehavior>
+								<ItemRef Name="Footstep_Wood" ID="{8964E083-80F6-416F-A962-5422A2EBE89D}"/>
+							</GroupingBehavior>
+							<GroupingBehavior>
+								<ItemRef Name="Footstep_Dirt" ID="{5DB66F95-A497-4FCD-A28B-DEFE31D71528}"/>
+							</GroupingBehavior>
+						</GroupingBehaviorList>
+						<GroupingList>
+							<Grouping>
+								<SwitchRef Name="Dirt" ID="{231C87B6-DFD6-4E67-BB43-668E18944528}"/>
+								<ItemList>
+									<ItemRef Name="Footstep_Dirt" ID="{5DB66F95-A497-4FCD-A28B-DEFE31D71528}"/>
+								</ItemList>
+							</Grouping>
+							<Grouping>
+								<SwitchRef Name="Wood" ID="{6B214AC6-DF4E-40E4-85A0-EAE96B5104FD}"/>
+								<ItemList>
+									<ItemRef Name="Footstep_Wood" ID="{8964E083-80F6-416F-A962-5422A2EBE89D}"/>
+								</ItemList>
+							</Grouping>
+						</GroupingList>
+					</GroupingInfo>
+				</SwitchContainer>
+			</ChildrenList>
+		</WorkUnit>
 	</AudioObjects>
 </WwiseDocument>

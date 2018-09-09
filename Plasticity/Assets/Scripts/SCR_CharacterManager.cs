@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
@@ -181,6 +182,15 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     private bool TurnOverride = false;
     private bool AmInHardFall = false;
     private bool ForcedAnim = false;
+    
+    //[HideInInspector]
+//    private string []
+
+    // Coyote
+    private float coyote_beginFallTime = 0;
+    [SerializeField]
+    private float coyote_duration = 0.5f;
+    private bool coyote_enabled = false;
 
     private void Awake()
     {
@@ -294,9 +304,17 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 				if (state == CharacterStates.Jumping) SetAnim("SwimmingToJumping");
 			}
 			if (state == CharacterStates.Paused) CharacterAnimator.speed = 0.0f;
+            
+            // Coyote
+            if (state == CharacterStates.Falling && PlayerState != CharacterStates.Jumping)
+            {
+                coyote_beginFallTime = Time.time;
+            }
+            
             PlayerState = state;
             ForcedAnim = false;
         }
+
     }
 
     private void ForcePlayerState(CharacterStates state)
@@ -422,11 +440,15 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //Make sure whoever is editing acceleration in the inspector uses a non negative value. At values higher 
         //than 100.0f, the acceleration is effectiviely instant
         Acceleration = Mathf.Clamp(Acceleration, 0.0f, 100.0f);
-        IkTools.LoadDraggingData();
     }
 
     private void FixedUpdate()
     {
+        //Coyote
+        if (Input.GetKey(KeyCode.C) && Input.GetKey(KeyCode.O) && 
+            Input.GetKey(KeyCode.Y) && Input.GetKey(KeyCode.T) &&
+            Input.GetKeyDown(KeyCode.E)) coyote_enabled = !coyote_enabled;
+
         if (PlayerState == CharacterStates.Swimming)
         {
             Grounded(); //still need to know if we're ground when we leave water (currently for testing, may not be necessary)
@@ -883,13 +905,27 @@ public class SCR_CharacterManager : SCR_GameplayStatics
 
     public void UnrestrictTurning()
     {
-        IsTurnRestricted = false;
-        if ((MoveDirAtRestricted == 1 && !MoveDir) || (MoveDirAtRestricted == 2 && MoveDir))
+        
+        if (MoveDirAtRestricted == 1 && !MoveDir)
         {
-            Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
-            RefToModel.transform.Rotate(TurnAround);
+            if (Left)
+            {
+                Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+                RefToModel.transform.Rotate(TurnAround);
+            }
+            else TurnCharacter();
+        }
+        else if(MoveDirAtRestricted == 2 && MoveDir)
+        {
+            if (Right)
+            {
+                Vector3 TurnAround = new Vector3(0.0f, 180.0f, 0.0f);
+                RefToModel.transform.Rotate(TurnAround);
+            }
+            else TurnCharacter();
         }
         MoveDirAtRestricted = 0;
+        IsTurnRestricted = false;
     }
 
     public void StopAnimationChange()
@@ -925,7 +961,11 @@ public class SCR_CharacterManager : SCR_GameplayStatics
     {
         VelocityAllowed = true;
         UnlockAnim();
-        if (LastKeypress != MoveDir) TurnCharacter();
+        if (LastKeypress != MoveDir)
+        {
+            if (!LastKeypress && Right) TurnCharacter();
+            else if (LastKeypress && Left) TurnCharacter();
+        }
         if ((Left || Right) && PlayerGrounded) ChangePlayerState(CharacterStates.Running);
         else if (PlayerGrounded) ChangePlayerState(CharacterStates.Idling);
         else ChangePlayerState(CharacterStates.Falling);
@@ -948,8 +988,10 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             CalculateMoveVec();
         }
 
+        bool coyote_canJump = (Time.time - coyote_beginFallTime) < coyote_duration && Up && coyote_enabled;
+
         //If the player has pressed an UP key and the player is currently standing on the ground
-        if (Up && PlayerGrounded && !StateChangeLocked)
+        if ((Up && PlayerGrounded && !StateChangeLocked) || coyote_canJump)
         {
             if (CanJump)
             {
@@ -1242,6 +1284,22 @@ public class SCR_CharacterManager : SCR_GameplayStatics
             //Dismount from ledge once we have make it on top
             DoLedgeLerp = false;
             LedgeDismount(true);
+        }
+    }
+
+    private static readonly string[] AUDIO_EVENT_NAMES = new string[] {"Footstep"};
+
+    /// <summary>
+    /// Plays audio dictated by animation event triggers.
+    /// Will only play sound if it matches one of the predefined event names. 
+    /// </summary>
+    /// <param name="eventName"></param>
+    public void HandleAudioEvent(string eventName) {
+        if (AUDIO_EVENT_NAMES.Contains(eventName)) {
+            AkSoundEngine.PostEvent(eventName, gameObject);
+        }
+        else {
+            Debug.LogWarning("CharacterManager cannot find audio event named " + eventName);
         }
     }
 }

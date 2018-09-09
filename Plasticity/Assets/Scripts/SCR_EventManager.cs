@@ -19,12 +19,19 @@ public class SceneEvent : UnityEvent<string>
 
 }
 
+[System.Serializable]
+public class MetricEvent : UnityEvent<float>
+{
+
+}
+
 
 public class SCR_EventManager : MonoBehaviour
 {
     //Event dictionary will associate a string name with a specific InputEvent object
     private Dictionary<string, InputEvent> InputDictionary;
     private Dictionary<string, SceneEvent> SceneDictionary;
+    private Dictionary<string, MetricEvent> MetricDictionary;
 
     //CurrentManager is an instance of the event manager script
     private static SCR_EventManager CurrentManager;
@@ -66,6 +73,11 @@ public class SCR_EventManager : MonoBehaviour
             //If we don't have a dictionary defined in EventDictionary, create a new one
             SceneDictionary = new Dictionary<string, SceneEvent>();
         }
+        if (MetricDictionary == null)
+        {
+            //If we don't have a dictionary defined in EventDictionary, create a new one
+            MetricDictionary = new Dictionary<string, MetricEvent>();
+        }
     }
 
     public static void StartListening(string EventName, UnityAction<int> Listener)
@@ -106,6 +118,25 @@ public class SCR_EventManager : MonoBehaviour
         }
     }
 
+    public static void StartListening(string EventName, UnityAction<float> Listener)
+    {
+        MetricEvent ThisEvent = null;
+        //If the we are looking for exists within our dictionary, put it in the variable ThisEvent
+        if (instance.MetricDictionary.TryGetValue(EventName, out ThisEvent))
+        {
+            //Add the new listener to the event
+            ThisEvent.AddListener(Listener);
+        }
+        //If the event we are looking for does not yet exist in our dictionary...
+        else
+        {
+            //Create a new event, add a listener, and place it in our EventDictionary
+            ThisEvent = new MetricEvent();
+            ThisEvent.AddListener(Listener);
+            instance.MetricDictionary.Add(EventName, ThisEvent);
+        }
+    }
+
     public static void StopListening(string EventName, UnityAction<int> Listener)
     {
         //If the current instance of the manager doesn't exist we don't need to do anything
@@ -130,6 +161,18 @@ public class SCR_EventManager : MonoBehaviour
         }
     }
 
+    public static void StopListening(string EventName, UnityAction<float> Listener)
+    {
+        //If the current instance of the manager doesn't exist we don't need to do anything
+        if (CurrentManager == null) return;
+        MetricEvent ThisEvent = null;
+        if (instance.MetricDictionary.TryGetValue(EventName, out ThisEvent))
+        {
+            //Need to remove listener from event in dictionary if we find it 
+            ThisEvent.RemoveListener(Listener);
+        }
+    }
+
     public static void TriggerEvent(string EventName, int value)
     {
         InputEvent ThisEvent = null;
@@ -144,6 +187,16 @@ public class SCR_EventManager : MonoBehaviour
     {
         SceneEvent ThisEvent = null;
         if (instance.SceneDictionary.TryGetValue(EventName, out ThisEvent))
+        {
+            //If the event exists in our dictionary, invoke it
+            ThisEvent.Invoke(value);
+        }
+    }
+
+    public static void TriggerEvent(string EventName, float value)
+    {
+        MetricEvent ThisEvent = null;
+        if (instance.MetricDictionary.TryGetValue(EventName, out ThisEvent))
         {
             //If the event exists in our dictionary, invoke it
             ThisEvent.Invoke(value);

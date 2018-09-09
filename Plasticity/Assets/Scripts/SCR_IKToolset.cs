@@ -60,6 +60,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         else Debug.LogError("We need a a FullBodyBipedIK component attached to one of the Character's child Game Objects");
         HandRungs = new int[2];
         FeetRungs = new int[2];
+        LoadDraggingData();
     }
 
     /// <summary>
