@@ -15,6 +15,14 @@ Plasticity/Assets/Plugins/Editor/JetBrains/
 JetBrains.meta
 
 # Wwise cache file
+Plasticity/Plasticity_WwiseProject/Plasticity_WwiseProject.crossover.validationcache
+Plasticity/Plasticity_WwiseProject/Plasticity_WwiseProject.crossover.wsettings
+Plasticity/Plasticity_WwiseProject/IncrementalSoundBankData.xml
+Plasticity/Plasticity_WwiseProject/.cache
+Plasticity/Plasticity_WwiseProject/.backup
+Plasticity/Plasticity_WwiseProject/Originals/*.akd
+Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/.../PluginInfo.xml
+Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/.../SoundbanksInfo.xml
 Plasticity/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset
 
 Plasticity/Metrics/*_metrics_.txt
