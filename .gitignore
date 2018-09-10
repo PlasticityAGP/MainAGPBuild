@@ -21,8 +21,8 @@ Plasticity/Plasticity_WwiseProject/IncrementalSoundBankData.xml
 Plasticity/Plasticity_WwiseProject/.cache
 Plasticity/Plasticity_WwiseProject/.backup
 Plasticity/Plasticity_WwiseProject/Originals/*.akd
-Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/.../PluginInfo.xml
-Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/.../SoundbanksInfo.xml
+Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/**/PluginInfo.xml
+Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/**/SoundbanksInfo.xml
 Plasticity/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset
 
 Plasticity/Metrics/*_metrics_.txt
