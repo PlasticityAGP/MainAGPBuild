@@ -10,6 +10,10 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
     private bool Left;
     private bool Interact;
     [SerializeField]
+    private AnimationCurve[] IKCurves;
+    [SerializeField]
+    private GameObject[] IKTargets;
+    [SerializeField]
     private float[] Timers;
     [SerializeField]
     private float SlowdownSpeed;
@@ -35,6 +39,8 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
     [SerializeField]
     [ShowIf("WriteToStateData")]
     private DataPair[] StatesToChange;
+    private SCR_IKToolset IKTools;
+    private bool IKBlocker = false;
 
     private void Awake()
     {
@@ -50,6 +56,7 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
             SCR_EventManager.StartListening("InteractKey", InteractListener);
             Character = other.gameObject;
             CharacterManager = Character.GetComponent<SCR_CharacterManager>();
+            IKTools = Character.GetComponentInChildren<SCR_IKToolset>();
         }
     }
 
@@ -89,16 +96,31 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
         if (value == 1)
         {
             Interact = true;
-            OriginalSpeed = CharacterManager.GetSpeed();
-            CharacterManager.SetSpeed(SlowdownSpeed);
-            CharacterManager.StartPushing();
-            DoIfBothPressed();
+            if ((CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject) && !Done)
+            {
+                CharacterManager.InteractingWith = gameObject;
+                IKTools.SetEffectorTarget("LeftHand", IKTargets[CurrentIndex]);
+                IKTools.SetEffectorTarget("RightHand", IKTargets[CurrentIndex]);
+                IKTools.StartEffectorLerp("LeftHand", IKCurves[0], 0.5f);
+                IKTools.StartEffectorLerp("RightHand", IKCurves[0], 0.5f);
+                IKBlocker = true;
+                OriginalSpeed = CharacterManager.GetSpeed();
+                CharacterManager.SetSpeed(SlowdownSpeed);
+                CharacterManager.StartPushing();
+                DoIfBothPressed();
+            }
         }
-        else
+        else if (!Done)
         {
             Interact = false;
             CharacterManager.SetSpeed(OriginalSpeed);
             CharacterManager.StopPushing();
+            StopAllCoroutines();
+            IKTools.StartEffectorLerp("LeftHand", IKCurves[1], 0.5f);
+            IKTools.StartEffectorLerp("RightHand", IKCurves[1], 0.5f);
+            IKBlocker = false;
+            CharacterManager.InteractingWith = null;
+            Timer(0.5f, NullHands);
             DoIfReleased();
         }
     }
@@ -129,8 +151,10 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
 
     private void DoIfReleased()
     {
-        StopAllCoroutines();
-        BoxAnimator.SetTrigger("Interrupted");
+        if (!Done)
+        {
+            BoxAnimator.SetTrigger("Interrupted");
+        }
     }
 
     // Use this for initialization
@@ -138,12 +162,33 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
         BoxAnimator = gameObject.GetComponent<Animator>();
 	}
 
+    private void NullHands()
+    {
+        if (!IKBlocker)
+        {
+            IKTools.ForceEffectorWeight("LeftHand", 0.0f);
+            IKTools.ForceEffectorWeight("RightHand", 0.0f);
+            IKTools.SetEffectorTarget("LeftHand", null);
+            IKTools.SetEffectorTarget("RightHand", null);
+        }
+    }
+
     IEnumerator InterruptableTimer()
     {
         float ThisTimer = Timers[CurrentIndex];
         float DeltaT = 0.0f;
+        bool DoIK = true;
         while (DeltaT < ThisTimer)
         {
+            if(DeltaT >= ThisTimer - 0.3f && DoIK)
+            {
+                DoIK = false;
+                IKTools.StartEffectorLerp("LeftHand", IKCurves[1], 0.5f);
+                IKTools.StartEffectorLerp("RightHand", IKCurves[1], 0.5f);
+                IKBlocker = false;
+                CharacterManager.InteractingWith = null;
+                Timer(0.5f, NullHands);
+            } 
             DeltaT += Time.deltaTime;
             yield return null;
         }

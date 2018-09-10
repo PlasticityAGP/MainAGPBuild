@@ -14,11 +14,11 @@ public class SCR_LadderCollider : MonoBehaviour {
 		
 	}
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
-        if (collision.collider.tag == "Character")
+        if (collision.gameObject.tag == "Character")
         {
-            collision.collider.gameObject.GetComponent<SCR_IKToolset>().DisableUp = true;
+            collision.gameObject.GetComponent<SCR_IKToolset>().DisableUp = true;
         }
     }
 }
