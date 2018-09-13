@@ -123,8 +123,6 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
         if (other.tag == "Character")
         {
             Inside = false;
-            IkTools.SetEffectorTarget("LeftHand", null);
-            IkTools.SetEffectorTarget("RightHand", null);
         }
     }
 
@@ -136,8 +134,8 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
             CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
             IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
             IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
-            IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f, false);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f, false);
         }
         LiftDoor = true;
 
@@ -148,8 +146,8 @@ public class SCR_TrapDoor : SCR_GameplayStatics {
     {
         if (WhoLifted == ThingLiftingTrapDoor.Character)
         {
-            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
-            IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f, true);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f, true);
             CharacterManager.InteractingWith = null;
             CharacterManager.UnfreezeVelocity();
         }

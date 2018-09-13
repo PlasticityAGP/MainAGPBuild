@@ -347,17 +347,17 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     /// <param name="ID">The effector who's weight will be changed</param>
     /// <param name="curve">The animation curve along which the effector's weight will be interpolated</param>
     /// <param name="duration">How long the interpolation will take</param>
-    public void StartEffectorLerp(string ID, AnimationCurve curve, float duration)
-    {
-        QueueObject InsertObject = new QueueObject();
-        InsertObject.duration = duration;
-        InsertObject.curve = curve;
-        if (ID == "LeftHand" || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand")) LatestLeftHand.StartIkCoroutine(ID, InsertObject);
-        else if (ID == "RightHand" || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand")) LatestRightHand.StartIkCoroutine(ID, InsertObject);
-        else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot.StartIkCoroutine(ID, InsertObject);
-        else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot.StartIkCoroutine(ID, InsertObject);
-        else if (ID == "Body" || ID.Equals("body")) LatestBody.StartIkCoroutine(ID, InsertObject);
-    }
+    //public void StartEffectorLerp(string ID, AnimationCurve curve, float duration)
+    //{
+    //    QueueObject InsertObject = new QueueObject();
+    //    InsertObject.duration = duration;
+    //    InsertObject.curve = curve;
+    //    if (ID == "LeftHand" || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand")) LatestLeftHand.StartIkCoroutine(ID, InsertObject);
+    //    else if (ID == "RightHand" || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand")) LatestRightHand.StartIkCoroutine(ID, InsertObject);
+    //    else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot.StartIkCoroutine(ID, InsertObject);
+    //    else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot.StartIkCoroutine(ID, InsertObject);
+    //    else if (ID == "Body" || ID.Equals("body")) LatestBody.StartIkCoroutine(ID, InsertObject);
+    //}
 
     public void StartEffectorLerp(string ID, AnimationCurve curve, float duration, bool exiting)
     {
@@ -687,7 +687,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                             Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                             LadderSlope = To - From;
                             StartCoroutine(LerpLocation(From, To, "RightHand"));
-                            StartEffectorLerp("RightHand", LadderTransition, Period);
+                            StartEffectorLerp("RightHand", LadderTransition, Period, false);
                         }
                     }
                     else
@@ -697,7 +697,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "RightHand"));
-                        StartEffectorLerp("RightHand", LadderTransition, Period);
+                        StartEffectorLerp("RightHand", LadderTransition, Period, false);
                       
                     }
                     break;
@@ -709,7 +709,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "RightFoot"));
-                        StartEffectorLerp("RightFoot", LadderTransition, Period);
+                        StartEffectorLerp("RightFoot", LadderTransition, Period, false);
                         DisableDown = false;
 
                     }
@@ -729,7 +729,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                             Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                             LadderSlope = To - From;
                             StartCoroutine(LerpLocation(From, To, "LeftHand"));
-                            StartEffectorLerp("Lefthand", LadderTransition, Period);
+                            StartEffectorLerp("LeftHand", LadderTransition, Period, false);
                         }
                     }
                     else
@@ -739,7 +739,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "LeftHand"));
-                        StartEffectorLerp("Lefthand", LadderTransition, Period);
+                        StartEffectorLerp("LeftHand", LadderTransition, Period, false);
 
                     }
                     break;
@@ -751,7 +751,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         LadderSlope = To - From;
                         StartCoroutine(LerpLocation(From, To, "LeftFoot"));
-                        StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                        StartEffectorLerp("LeftFoot", LadderTransition, Period, false);
                         DisableDown = false;
                     }
                     break;
@@ -771,7 +771,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[1]], false, false)[1];
                         LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "RightHand"));
-                        StartEffectorLerp("RightHand", LadderTransition, Period);
+                        StartEffectorLerp("RightHand", LadderTransition, Period, false);
                         DisableUp = false;
 
                     }
@@ -791,8 +791,8 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                             Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                             LadderSlope = From - To;
                             StartCoroutine(LerpLocation(From, To, "RightFoot"));
-                            StartEffectorLerp("RightFoot", LadderTransition, Period);
-                            StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                            StartEffectorLerp("RightFoot", LadderTransition, Period, false);
+                            StartEffectorLerp("LeftFoot", LadderTransition, Period, false);
                         }
                     }
                     else
@@ -802,8 +802,8 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[1]], true, false)[1];
                         LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "RightFoot"));
-                        StartEffectorLerp("RightFoot", LadderTransition, Period);
-                        StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                        StartEffectorLerp("RightFoot", LadderTransition, Period, false);
+                        StartEffectorLerp("LeftFoot", LadderTransition, Period, false);
                     }
                     break;
                 case 2:
@@ -814,7 +814,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[HandRungs[0]], false, false)[0];
                         LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "LeftHand"));
-                        StartEffectorLerp("Lefthand", LadderTransition, Period);
+                        StartEffectorLerp("LeftHand", LadderTransition, Period, false);
                         DisableUp = false;
 
                     }
@@ -834,7 +834,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                             Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                             LadderSlope = From - To;
                             StartCoroutine(LerpLocation(From, To, "LeftFoot"));
-                            StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                            StartEffectorLerp("LeftFoot", LadderTransition, Period, false);
                         }
                     }
                     else
@@ -844,7 +844,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                         Vector3 To = FindOffsetPoints(LadderRungs[FeetRungs[0]], true, false)[0];
                         LadderSlope = From - To;
                         StartCoroutine(LerpLocation(From, To, "LeftFoot"));
-                        StartEffectorLerp("LeftFoot", LadderTransition, Period);
+                        StartEffectorLerp("LeftFoot", LadderTransition, Period, false);
                     }
                     break;
                 default:

@@ -1268,8 +1268,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //Set effectors to new locations and begin lerping them to create that hanging visual
         IkTools.SetEffectorLocation("LeftHand", LeftHandPoint);
         IkTools.SetEffectorLocation("RightHand", RightHandPoint);
-        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.5f);
-        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.5f);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[0], 0.5f, false);
+        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[0], 0.5f, false);
         FreezeVelocity(CharacterStates.Idling);
     }
 
@@ -1282,8 +1282,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         //If our effectors have weight, need to lerp them from their current weights back down to zero
         if(!AtTop)
         {
-            IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[1], 0.5f);
-            IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[1], 0.5f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[1], 0.5f, true);
+            IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[1], 0.5f, true);
         }
 
     }
@@ -1298,8 +1298,8 @@ public class SCR_CharacterManager : SCR_GameplayStatics
         else
             LedgeXTarget = LedgingWall.transform.position.x - (LedgingWall.transform.lossyScale.x / 2.0f);
         //Slowly lerp effectors back to zero weight
-        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[2], 1.0f);
-        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[2], 1.0f);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandLedgingCurves[2], 1.0f, true);
+        IkTools.StartEffectorLerp("RightHand", RightHandLedgingCurves[2], 1.0f, true);
         DoLedgeLerp = true;
 
     }

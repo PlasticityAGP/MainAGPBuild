@@ -178,8 +178,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             CharacterManager.StopPushing();
             if (Inside && !LockedOut)
             {
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f, true);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f, true);
             }
             FreezeAll();
         }            
@@ -218,8 +218,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             if(!CharacterManager.InteractingWith == gameObject)
             {
                 SetXEffectors();
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
-                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[0], 0.75f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f, false);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[0], 0.75f, false);
             }
             CharacterManager.InteractingWith = gameObject;
             Lerping = true;
@@ -230,8 +230,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
 
     private void ReleaseHands()
     {
-        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-        IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f, false);
+        IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f, false);
     }
 
     private void CharacterTurned(int value)
@@ -239,8 +239,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         if (IsZ && Interact)
         {
             //Lerp effectors when the character is in the propper trigger and has pressed the interact key down while turning
-            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.75f);
-            IkTools.StartEffectorLerp("RightHand", RightHandCurves[3], 0.75f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.75f, false);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[3], 0.75f, false);
         }
     }
 
@@ -271,8 +271,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             {
                 if (!LockedOut)
                 {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
-                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f, false);
+                    IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f, false);
                 }
                 if(BoxGrounded) EnteredAndInteracted();
             }
@@ -331,7 +331,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     public void OnZTriggerExit()
     {
         //Reset effectors when the character leaves the dragable object zone
-        NullHands();
         FreezeAll();
 
     }
@@ -342,10 +341,6 @@ public class SCR_DragDrop : SCR_GameplayStatics {
         {
             
             Inside = false;
-            if (!Lerping && (CharacterManager.InteractingWith == null || CharacterManager.InteractingWith == gameObject))
-            {
-                NullHands();
-            }
             CharacterManager.InteractingWith = null;
             FreezeAll();
         }
@@ -369,21 +364,21 @@ public class SCR_DragDrop : SCR_GameplayStatics {
                     IkTools.SetEffectorTarget("RightHand", ZEffectorRight);
                     if (CharacterManager.MoveDir)
                     {
-                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
-                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f, false);
+                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f, false);
                     }
                     else
                     {
-                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f);
-                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f);
+                        IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.75f, false);
+                        IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.75f, false);
                     }
                 }
             }
             else
             {
                 SetXEffectors();
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.75f, false);
+                IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.75f, false);
             }
         }
     }
@@ -475,14 +470,13 @@ public class SCR_DragDrop : SCR_GameplayStatics {
     private void BoxStartFall()
     {
         CharacterManager.FreezeVelocity(SCR_CharacterManager.CharacterStates.Idling);
-        NullHands();
         StartCoroutine(Timer(0.75f, CharacterManager.UnfreezeVelocity));
         Interact = false;
         CharacterManager.StopPushing();
         if (Inside && !LockedOut)
         {
-            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-            IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f, true);
+            IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f, true);
         }
         Rigidbody MeshBody = MeshCollider.GetComponent<Rigidbody>();
         RBody.velocity = Vector3.zero;
@@ -548,16 +542,8 @@ public class SCR_DragDrop : SCR_GameplayStatics {
             if (IsZ)
             {
                 CharacterManager.InteractingWith = null;
-                if (CharacterManager.MoveDir)
-                {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                    IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
-                }
-                else
-                {
-                    IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f);
-                    IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f);
-                }
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[2], 0.75f, true);
+                IkTools.StartEffectorLerp("RightHand", LeftHandCurves[2], 0.75f, true);
             }
 
             //Freeze rigidbody via constraints, and return the player to their original speed

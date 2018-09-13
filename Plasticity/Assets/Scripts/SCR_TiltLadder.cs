@@ -172,7 +172,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 Lerping = true;
                 StartCoroutine(LerpVector(Character.transform.position, LeftTarget.transform.position));
                 IkTools.SetEffectorTarget("RightHand", RightHandMountEffector);
-                IkTools.StartEffectorLerp("RightHand", RightHandCurves[3], 0.25f);
+                IkTools.StartEffectorLerp("RightHand", RightHandCurves[3], 0.25f, false);
                 if (!CharacterManager.MoveDir) StartCoroutine(Timer(0.10f, TurnTheCharacter));
             }
             if (ObjectWithHingeJoint.transform.up.x < 0.0f)
@@ -181,7 +181,7 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
                 Lerping = true;
                 StartCoroutine(LerpVector(Character.transform.position, RightTarget.transform.position));
                 IkTools.SetEffectorTarget("LeftHand", LeftHandMountEffector);
-                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.25f);
+                IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[3], 0.25f, false);
                 if (CharacterManager.MoveDir) StartCoroutine(Timer(0.10f, TurnTheCharacter));
             }
         }
@@ -263,8 +263,8 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         {
             IkTools.SetEffectorTarget("LeftHand", LeftHandEffector);
             IkTools.SetEffectorTarget("RightHand", RightHandEffector);
-            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f);
-            IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f);
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[0], 0.5f, false);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[0], 0.5f, false);
             CharacterManager.SetSpeed(SlowDownSpeed);
             CharacterManager.InteractingWith = gameObject;
             PushEnabled = true;
@@ -276,23 +276,12 @@ public class SCR_TiltLadder : SCR_GameplayStatics {
         //Interpolate hands back from their weighted locations and free the character to interact with other objects
         if (CharacterManager.InteractingWith == gameObject)
         {
-            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f);
-            IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f);
-            StartCoroutine(Timer(0.5f, NullHands));
+            IkTools.StartEffectorLerp("LeftHand", LeftHandCurves[1], 0.5f, true);
+            IkTools.StartEffectorLerp("RightHand", RightHandCurves[1], 0.5f, true);
             CharacterManager.SetSpeed(InitialSpeed);
             CharacterManager.InteractingWith = null;
             PushEnabled = false;
         }
-    }
-    
-    private void NullHands()
-    {
-        CharacterManager.SetSpeed(InitialSpeed);
-        IkTools.ForceEffectorWeight("LeftHand", 0.0f);
-        IkTools.ForceEffectorWeight("RightHand", 0.0f);
-        IkTools.SetEffectorTarget("LeftHand", null);
-        IkTools.SetEffectorTarget("RightHand", null);
-        PushEnabled = false;
     }
 
     private void EndLerp()
