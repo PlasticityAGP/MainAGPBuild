@@ -149,7 +149,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private bool LadderMounted;
     private int[] HandRungs;
     private int[] FeetRungs;
-    private float Period = 0.2f;
+    private float Period = 0.34f;
     private bool SideOfLadder;
     [HideInInspector]
     public bool DisableDown;
@@ -612,7 +612,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
                 MoveHands();
 
             }
-            yield return new WaitForSeconds(Period);
+            yield return new WaitForSeconds(Period/1.6f);
         }
     }
 
@@ -664,6 +664,35 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         Ik.solver.rightLegChain.push = Data.RightLegPush;
         Ik.solver.rightLegChain.pushParent = Data.RightLegPushParent;
         Ik.solver.rightLegMapping.maintainRotationWeight = Data.RightLegMaintainRelativeRot;
+    }
+
+    private Vector3 FindControlPoint(Vector3 From, Vector3 To)
+    {
+        Vector3 Output = new Vector3();
+        float Magnifier = 0.1f;
+        if (Direction)
+        {
+            if (SideOfLadder) Output.x = From.x - Magnifier;
+            else Output.x = From.x + Magnifier;
+            Output.y = To.y + Magnifier;
+            Output.z = To.z;
+        }
+        else
+        {
+            if (SideOfLadder) Output.x = To.x - Magnifier;
+            else Output.x = To.x + Magnifier;
+            Output.y = From.y + Magnifier;
+            Output.z = To.z;
+        }
+        return Output;
+    }
+
+    private Vector3 BezierPoint (float t, Vector3 PZero, Vector3 POne, Vector3 PTwo)
+    {
+        //(1-t)[(1-t)P0 + tP1] + t[(1-t)P1 + tP2]
+        Vector3 FirstTerm = (1.0f - t) * (((1.0f - t) * PZero) + (t * POne));
+        Vector3 SecondTerm = t * (((1.0f - t) * POne) + (t * PTwo));
+        return FirstTerm + SecondTerm;
     }
 
     private void MoveHands()
@@ -853,14 +882,14 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         }
     }
 
-    IEnumerator LerpLocation(Vector3 PointA, Vector3 PointB, string Effector)
+    IEnumerator LerpLocation(Vector3 From, Vector3 To, string Effector)
     {
         float CurrentTime = 0.0f;
         while (CurrentTime <= Period)
         {
             CurrentTime += Time.deltaTime;
             float Modifier = CurrentTime * (1.0f / Period);
-            Vector3 OutputPos = Vector3.Lerp(PointA, PointB, Modifier);
+            Vector3 OutputPos = BezierPoint(Modifier, From, FindControlPoint(From, To), To);
             SetEffectorLocation(Effector, OutputPos);
             yield return null;
         }
