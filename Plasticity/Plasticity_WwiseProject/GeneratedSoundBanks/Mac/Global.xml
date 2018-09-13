@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Mac" BasePlatform="Mac" SchemaVersion="11" SoundbankVersion="132">
+	<RootPaths>
+		<ProjectRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/</ProjectRoot>
+		<SourceFilesRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/.cache/Mac/</SourceFilesRoot>
+		<SoundBanksRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/Mac/</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/Mac</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<SoundBanks>
+		<SoundBank Id="1465331116" GUID="{AAC8E971-EDD8-4C98-8B68-B5B1896C1390}" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Global</ObjectPath>
+			<ShortName>Global</ShortName>
+			<Path>Global.bnk</Path>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

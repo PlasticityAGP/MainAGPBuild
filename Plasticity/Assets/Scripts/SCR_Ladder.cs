@@ -126,8 +126,8 @@ public class SCR_Ladder : SCR_GameplayStatics {
                 IkTools.SetEffectorTarget("LeftHand", EffectorTargets[2]);
                 IkTools.SetEffectorTarget("RightHand", EffectorTargets[3]);
             }
-            IkTools.StartEffectorLerp("LeftHand", CurveOfEffectors[0], 1.0f);
-            IkTools.StartEffectorLerp("RightHand", CurveOfEffectors[0], 1.0f);
+            IkTools.StartEffectorLerp("LeftHand", CurveOfEffectors[0], 1.0f, true);
+            IkTools.StartEffectorLerp("RightHand", CurveOfEffectors[0], 1.0f, true);
             AmLerpingCharacter = true;
         }
         else
@@ -238,8 +238,6 @@ public class SCR_Ladder : SCR_GameplayStatics {
         ReleaseTrigger();
         CharacterManager.InteractingWith = null;
         reaching = false;
-        IkTools.SetEffectorTarget("LeftHand", null);
-        IkTools.SetEffectorTarget("RightHand", null);
         CharacterManager.UnfreezeVelocity();
         CharacterManager.AmClambering = false;
         AmLerpingCharacter = false;

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Mac" BasePlatform="Mac" SchemaVersion="11" SoundbankVersion="132">
+	<RootPaths>
+		<ProjectRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/</ProjectRoot>
+		<SourceFilesRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/.cache/Mac/</SourceFilesRoot>
+		<SoundBanksRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/Mac/</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>/Users/ziwoyth/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/PlasticityMainAGPBuild/Plasticity/Plasticity_WwiseProject/GeneratedSoundBanks/Mac</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<SoundBanks>
+		<SoundBank Id="436743010" GUID="{8BB749FA-BB72-4553-9545-EA1E3F37A692}" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Character</ObjectPath>
+			<ShortName>Character</ShortName>
+			<Path>Character.bnk</Path>
+			<IncludedEvents>
+				<Event Id="1866025847" Name="Footstep" ObjectPath="\Events\Default Work Unit\Character\Footstep" GUID="{8612D582-F788-4FA0-9706-806E0BC2B28A}"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="219756915" Language="SFX">
+					<ShortName>Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549.wav</ShortName>
+					<Path>SFX/Tennis shoe footsteps on single step right on earth mix_BLASTWAVEFX_02549_E9EB4046.wem</Path>
+				</File>
+				<File Id="523568926" Language="SFX">
+					<ShortName>Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot.wav</ShortName>
+					<Path>SFX/Feet_Footsteps_Sand_Dry_Barefoot_Run_Right Foot_737D4EC8.wem</Path>
+				</File>
+				<File Id="718523427" Language="SFX">
+					<ShortName>8bit_footsteps_forest_8.wav</ShortName>
+					<Path>SFX/8bit_footsteps_forest_8_E4B7AD6C.wem</Path>
+				</File>
+				<File Id="769673357" Language="SFX">
+					<ShortName>Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Left Foot.wav</ShortName>
+					<Path>SFX/Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Left Foot_588B722A.wem</Path>
+				</File>
+				<File Id="875649668" Language="SFX">
+					<ShortName>Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Right Foot.wav</ShortName>
+					<Path>SFX/Feet-Footsteps-Wood-Parquet-Boots-Rubber Sole-Blundstones-Right Foot_649E2055.wem</Path>
+				</File>
+				<File Id="1037285715" Language="SFX">
+					<ShortName>Footsteps on carpet or rug in bare feet stepping heavily left.wav</ShortName>
+					<Path>SFX/Footsteps on carpet or rug in bare feet stepping heavily left_56D34C19.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

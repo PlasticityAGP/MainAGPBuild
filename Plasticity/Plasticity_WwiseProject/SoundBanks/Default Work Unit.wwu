@@ -4,9 +4,7 @@
 		<WorkUnit Name="Default Work Unit" ID="{C969F62E-B9C0-4DA2-9534-835518743C2A}" PersistMode="Standalone">
 			<ChildrenList>
 				<SoundBank Name="Global" ID="{AAC8E971-EDD8-4C98-8B68-B5B1896C1390}">
-					<ObjectInclusionList>
-						<ObjectRef Name="Plasticity - Ambient Track (v1)" ID="{3BB527AA-E3E9-4596-B3C0-BE3CDDAAA3B7}" WorkUnitID="{070E9921-BE6B-4F0C-B021-98DFA0387A44}" Filter="7" Origin="Manual"/>
-					</ObjectInclusionList>
+					<ObjectInclusionList/>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>
 				</SoundBank>
