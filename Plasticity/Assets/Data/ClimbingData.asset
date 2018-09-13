@@ -11,35 +11,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70eef4d94c604274987370731593ca59, type: 3}
   m_Name: ClimbingData
   m_EditorClassIdentifier: 
-  BodyEffectorPositionWeight: 0.2
+  BodyEffectorPositionWeight: 0.3
   SpineStifness: 1
   BodyPullVertical: 0.3
-  BodyPullHorizontal: 0.2
+  BodyPullHorizontal: 0.5
   SpineTwistWeight: 1
   HeadMaintainRot: 1
   LeftHandMaintainRelativePos: 1
-  LeftArmPull: 0.25
+  LeftArmPull: 0.5
   LeftArmReach: 0
-  LeftArmPush: 0.75
+  LeftArmPush: 0.65
   LeftArmPushParent: 0.75
   LeftArmMaintainRelativeRot: 0
-  LeftArmBendGoal: 0.6
+  LeftArmBendGoal: 0.4
   RightHandMaintainRelativePos: 1
-  RightArmPull: 0.25
+  RightArmPull: 0.5
   RightArmReach: 0
-  RightArmPush: 0.75
+  RightArmPush: 0.65
   RightArmPushParent: 0.75
   RightArmMaintainRelativeRot: 0
-  RightArmBendGoal: 0.6
+  RightArmBendGoal: 0.4
   LeftFootMaintainRelativePos: 0
-  LeftLegPull: 0.8
-  LeftLegReach: 0.5
+  LeftLegPull: 0.85
+  LeftLegReach: 0.65
   LeftLegPush: 1
   LeftLegPushParent: 1
   LeftLegMaintainRelativeRot: 1
   RightFootMaintainRelativePos: 0
-  RightLegPull: 0.8
-  RightLegReach: 0.5
+  RightLegPull: 0.85
+  RightLegReach: 0.65
   RightLegPush: 1
   RightLegPushParent: 1
   RightLegMaintainRelativeRot: 1

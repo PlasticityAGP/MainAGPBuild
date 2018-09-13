@@ -669,7 +669,7 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     private Vector3 FindControlPoint(Vector3 From, Vector3 To)
     {
         Vector3 Output = new Vector3();
-        float Magnifier = 0.1f;
+        float Magnifier = 0.17f;
         if (Direction)
         {
             if (SideOfLadder) Output.x = From.x - Magnifier;
