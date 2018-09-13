@@ -40,7 +40,6 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
     [ShowIf("WriteToStateData")]
     private DataPair[] StatesToChange;
     private SCR_IKToolset IKTools;
-    private bool IKBlocker = false;
 
     private void Awake()
     {
@@ -101,9 +100,8 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
                 CharacterManager.InteractingWith = gameObject;
                 IKTools.SetEffectorTarget("LeftHand", IKTargets[CurrentIndex]);
                 IKTools.SetEffectorTarget("RightHand", IKTargets[CurrentIndex]);
-                IKTools.StartEffectorLerp("LeftHand", IKCurves[0], 0.5f);
-                IKTools.StartEffectorLerp("RightHand", IKCurves[0], 0.5f);
-                IKBlocker = true;
+                IKTools.StartEffectorLerp("LeftHand", IKCurves[0], 0.5f, false);
+                IKTools.StartEffectorLerp("RightHand", IKCurves[0], 0.5f, false);
                 OriginalSpeed = CharacterManager.GetSpeed();
                 CharacterManager.SetSpeed(SlowdownSpeed);
                 CharacterManager.StartPushing();
@@ -116,11 +114,9 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
             CharacterManager.SetSpeed(OriginalSpeed);
             CharacterManager.StopPushing();
             StopAllCoroutines();
-            IKTools.StartEffectorLerp("LeftHand", IKCurves[1], 0.5f);
-            IKTools.StartEffectorLerp("RightHand", IKCurves[1], 0.5f);
-            IKBlocker = false;
+            IKTools.StartEffectorLerp("LeftHand", IKCurves[1], 0.5f, true);
+            IKTools.StartEffectorLerp("RightHand", IKCurves[1], 0.5f, true);
             CharacterManager.InteractingWith = null;
-            Timer(0.5f, NullHands);
             DoIfReleased();
         }
     }
@@ -162,17 +158,6 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
         BoxAnimator = gameObject.GetComponent<Animator>();
 	}
 
-    private void NullHands()
-    {
-        if (!IKBlocker)
-        {
-            IKTools.ForceEffectorWeight("LeftHand", 0.0f);
-            IKTools.ForceEffectorWeight("RightHand", 0.0f);
-            IKTools.SetEffectorTarget("LeftHand", null);
-            IKTools.SetEffectorTarget("RightHand", null);
-        }
-    }
-
     IEnumerator InterruptableTimer()
     {
         float ThisTimer = Timers[CurrentIndex];
@@ -183,11 +168,9 @@ public class SCR_BadFishBox : SCR_GameplayStatics {
             if(DeltaT >= ThisTimer - 0.3f && DoIK)
             {
                 DoIK = false;
-                IKTools.StartEffectorLerp("LeftHand", IKCurves[1], 0.5f);
-                IKTools.StartEffectorLerp("RightHand", IKCurves[1], 0.5f);
-                IKBlocker = false;
+                IKTools.StartEffectorLerp("LeftHand", IKCurves[1], 0.5f, true);
+                IKTools.StartEffectorLerp("RightHand", IKCurves[1], 0.5f, true);
                 CharacterManager.InteractingWith = null;
-                Timer(0.5f, NullHands);
             } 
             DeltaT += Time.deltaTime;
             yield return null;

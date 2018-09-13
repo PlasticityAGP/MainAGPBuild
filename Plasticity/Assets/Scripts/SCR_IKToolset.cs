@@ -5,10 +5,124 @@ using RootMotion.FinalIK;
 
 //The purpose of this script is to provide tools for lerping effector weights in FinalIK. Currently only supports left and right hand effectors
 
-struct QueueObject
+public struct QueueObject
 {
     public float duration;
     public AnimationCurve curve;
+}
+
+public class ToolsetCoroutine : SCR_GameplayStatics
+{
+    public float IkTimer;
+    private bool Done;
+    private FullBodyBipedIK Ik;
+    private SCR_IKToolset IkTools;
+    private string EffectorName;
+    private QueueObject ObjectRef;
+    private bool DoExit;
+
+    public void Initialize(FullBodyBipedIK Passed, SCR_IKToolset Tools)
+    {
+        Done = true;
+        DoExit = false;
+        Ik = Passed;
+        IkTimer = 0.0f;
+        IkTools = Tools;
+    }
+
+    public void StartIkCoroutine(string Effector, QueueObject obj)
+    {
+        DoExit = false;
+        if(Done)
+        {
+            EffectorName = Effector;
+            ObjectRef = obj;
+            StartCoroutine(IKCoroutine());
+        }   
+        else
+        {
+            float OldHeight = ObjectRef.curve.Evaluate(IkTimer);
+            EffectorName = Effector;
+            ObjectRef = obj;
+            GetTimeAtHeight(OldHeight);
+        }
+    }
+
+    private void GetTimeAtHeight(float HeightValue)
+    { 
+        float Dif = 100.0f;
+        float TempTime = 0.0f;
+        for (float i = 0.0f; i < ObjectRef.duration; i += 0.01f)
+        {
+            if (Mathf.Abs(ObjectRef.curve.Evaluate(i) - HeightValue) < Dif)
+            {
+                Dif = Mathf.Abs(ObjectRef.curve.Evaluate(i) - HeightValue);
+                TempTime = i;
+            }
+        }
+        IkTimer = TempTime;
+    }
+
+    public void Exiting(string EffectorName, float TimeLength)
+    {
+        DoExit = true;
+        Timer(TimeLength, EffectorName, NullEffector);
+    }
+
+    private void NullEffector(string EffectorName)
+    {
+        if(DoExit)
+        {
+            IkTools.ForceEffectorWeight(EffectorName, 0.0f);
+            IkTools.SetEffectorTarget(EffectorName, null);
+        }
+    }
+
+    public void HaltRoutine()
+    {
+        StopAllCoroutines();
+        Done = true;
+        IkTimer = 0.0f;
+    }
+
+
+    IEnumerator IKCoroutine()
+    {
+        Done = false;
+        while (IkTimer < ObjectRef.duration)
+        {
+            IkTimer += Time.deltaTime;
+            if (EffectorName == "LeftHand")
+            {
+                Ik.solver.leftHandEffector.positionWeight = ObjectRef.curve.Evaluate(IkTimer);
+                Ik.solver.leftHandEffector.rotationWeight = ObjectRef.curve.Evaluate(IkTimer);
+            }
+            else if (EffectorName == "RightHand")
+            {
+                Ik.solver.rightHandEffector.positionWeight = ObjectRef.curve.Evaluate(IkTimer);
+                Ik.solver.rightHandEffector.rotationWeight = ObjectRef.curve.Evaluate(IkTimer);
+            }
+            else if (EffectorName == "LeftFoot")
+            {
+                Ik.solver.leftFootEffector.positionWeight = ObjectRef.curve.Evaluate(IkTimer);
+                Ik.solver.leftFootEffector.rotationWeight = ObjectRef.curve.Evaluate(IkTimer);
+            }
+            else if (EffectorName == "RightFoot")
+            {
+                Ik.solver.rightFootEffector.positionWeight = ObjectRef.curve.Evaluate(IkTimer);
+                Ik.solver.rightFootEffector.rotationWeight = ObjectRef.curve.Evaluate(IkTimer);
+            }
+            else if (EffectorName == "Body")
+            {
+                Ik.solver.bodyEffector.positionWeight = ObjectRef.curve.Evaluate(IkTimer);
+                Ik.solver.bodyEffector.rotationWeight = ObjectRef.curve.Evaluate(IkTimer);
+            }
+            else Debug.LogError("We could not find the specified effector!");
+            yield return null;
+        }
+        Done = true;
+        IkTimer = 0.0f;
+    }
 }
 
 public class SCR_IKToolset : SCR_GameplayStatics {
@@ -21,11 +135,11 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     [SerializeField]
     private AnimationCurve LadderTransition;
     private FullBodyBipedIK Ik;
-    private Coroutine LatestLeftHand;
-    private Coroutine LatestRightHand;
-    private Coroutine LatestLeftFoot;
-    private Coroutine LatestRightFoot;
-    private Coroutine LatestBody;
+    private ToolsetCoroutine LatestLeftHand;
+    private ToolsetCoroutine LatestRightHand;
+    private ToolsetCoroutine LatestLeftFoot;
+    private ToolsetCoroutine LatestRightFoot;
+    private ToolsetCoroutine LatestBody;
     private Coroutine LadderCycle;
     private GameObject[] LadderRungs;
     private int ClimbState;
@@ -59,6 +173,17 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         //Find the instance of the IK component attached to our character
         if (gameObject.GetComponentInChildren<FullBodyBipedIK>()) Ik = gameObject.GetComponentInChildren<FullBodyBipedIK>();
         else Debug.LogError("We need a a FullBodyBipedIK component attached to one of the Character's child Game Objects");
+        gameObject.AddComponent<ToolsetCoroutine>();
+        LatestLeftHand = gameObject.AddComponent<ToolsetCoroutine>();
+        LatestRightHand = gameObject.AddComponent<ToolsetCoroutine>(); 
+        LatestLeftFoot = gameObject.AddComponent<ToolsetCoroutine>();
+        LatestRightFoot = gameObject.AddComponent<ToolsetCoroutine>();
+        LatestBody = gameObject.AddComponent<ToolsetCoroutine>();
+        LatestLeftHand.Initialize(Ik, this);
+        LatestRightHand.Initialize(Ik, this);
+        LatestLeftFoot.Initialize(Ik, this);
+        LatestRightFoot.Initialize(Ik, this);
+        LatestBody.Initialize(Ik, this);
         HandRungs = new int[2];
         FeetRungs = new int[2];
         LoadDraggingData();
@@ -183,34 +308,34 @@ public class SCR_IKToolset : SCR_GameplayStatics {
     {
         if (ID.Equals("LeftHand") || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
         {
-            if (LatestLeftHand != null) StopCoroutine(LatestLeftHand);
+            LatestLeftHand.HaltRoutine();
             Ik.solver.leftHandEffector.positionWeight = weight;
             Ik.solver.leftHandEffector.rotationWeight = weight;
         }
 
         else if (ID.Equals("RightHand") || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
         {
-            if (LatestRightHand != null) StopCoroutine(LatestRightHand);
+            LatestRightHand.HaltRoutine();
             Ik.solver.rightHandEffector.positionWeight = weight;
             Ik.solver.rightHandEffector.rotationWeight = weight;
         }
 
         else if (ID.Equals("LeftFoot") || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot"))
         {
-            if (LatestLeftFoot != null) StopCoroutine(LatestLeftFoot);
+            LatestLeftFoot.HaltRoutine();
             Ik.solver.leftFootEffector.positionWeight = weight;
             Ik.solver.leftFootEffector.rotationWeight = weight;
         }
 
         else if (ID.Equals("RightFoot") || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot"))
         {
-            if (LatestRightFoot != null) StopCoroutine(LatestRightFoot);
+            LatestRightFoot.HaltRoutine();
             Ik.solver.rightFootEffector.positionWeight = weight;
             Ik.solver.rightFootEffector.rotationWeight = weight;
         }
         else if (ID.Equals("Body") || ID.Equals("body"))
         {
-            if (LatestBody != null) StopCoroutine(LatestBody);
+            LatestBody.HaltRoutine();
             Ik.solver.bodyEffector.positionWeight = weight;
         }
         else Debug.LogError("We could not find the specified effector!");
@@ -227,16 +352,47 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         QueueObject InsertObject = new QueueObject();
         InsertObject.duration = duration;
         InsertObject.curve = curve;
-        if (ID == "LeftHand" || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand")) LatestLeftHand = StartCoroutine(IKCoroutine(ID, InsertObject));
-        else if (ID == "RightHand" || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand")) LatestRightHand = StartCoroutine(IKCoroutine(ID, InsertObject));
-        else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
-        else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot = StartCoroutine(IKCoroutine(ID, InsertObject));
-        else if (ID == "Body" || ID.Equals("body")) LatestBody = StartCoroutine(IKCoroutine(ID, InsertObject));
+        if (ID == "LeftHand" || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand")) LatestLeftHand.StartIkCoroutine(ID, InsertObject);
+        else if (ID == "RightHand" || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand")) LatestRightHand.StartIkCoroutine(ID, InsertObject);
+        else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot")) LatestLeftFoot.StartIkCoroutine(ID, InsertObject);
+        else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot")) LatestRightFoot.StartIkCoroutine(ID, InsertObject);
+        else if (ID == "Body" || ID.Equals("body")) LatestBody.StartIkCoroutine(ID, InsertObject);
     }
 
-    public void ReverseEffectorLerp(string ID, AnimationCurve curve, float duration)
+    public void StartEffectorLerp(string ID, AnimationCurve curve, float duration, bool exiting)
     {
-
+        QueueObject InsertObject = new QueueObject();
+        InsertObject.duration = duration;
+        InsertObject.curve = curve;
+        if (ID == "LeftHand" || ID.Equals("lefthand") || ID.Equals("Left Hand") || ID.Equals("left hand"))
+        {
+            LatestLeftHand.StartIkCoroutine(ID, InsertObject);
+            if(exiting) LatestLeftHand.Exiting(ID, duration);
+        }
+        else if (ID == "RightHand" || ID.Equals("righthand") || ID.Equals("Right Hand") || ID.Equals("right hand"))
+        {
+            LatestRightHand.StartIkCoroutine(ID, InsertObject);
+            if (exiting) LatestRightHand.Exiting(ID, duration);
+        }
+        else if (ID == "LeftFoot" || ID.Equals("leftfoot") || ID.Equals("Left Foot") || ID.Equals("left foot"))
+        {
+            LatestLeftFoot.StartIkCoroutine(ID, InsertObject);
+            if (exiting) LatestLeftFoot.Exiting(ID, duration);
+        }
+        else if (ID == "RightFoot" || ID.Equals("rightfoot") || ID.Equals("Right Foot") || ID.Equals("right foot"))
+        {
+            LatestRightFoot.StartIkCoroutine(ID, InsertObject);
+            if (exiting) LatestRightFoot.Exiting(ID, duration);
+        }
+        else if (ID == "Body" || ID.Equals("body"))
+        {
+            LatestBody.StartIkCoroutine(ID, InsertObject);
+            if (exiting) LatestBody.Exiting(ID, duration);
+        }
+        else
+        {
+            Debug.LogError("We could not find the specified effector!");
+        }
     }
 
     /// <summary>
@@ -260,42 +416,6 @@ public class SCR_IKToolset : SCR_GameplayStatics {
         {
             Debug.LogError("We could not find the specified effector!");
             return 0.0f;
-        }
-    }
-
-    IEnumerator IKCoroutine(string Effector, QueueObject obj)
-    {
-        float IkTimer = 0.0f;
-        while (IkTimer < obj.duration)
-        {
-            IkTimer += Time.deltaTime;
-            if (Effector == "LeftHand")
-            {
-                Ik.solver.leftHandEffector.positionWeight = obj.curve.Evaluate(IkTimer);
-                Ik.solver.leftHandEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
-            }
-            else if (Effector == "RightHand")
-            {
-                Ik.solver.rightHandEffector.positionWeight = obj.curve.Evaluate(IkTimer);
-                Ik.solver.rightHandEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
-            }
-            else if (Effector == "LeftFoot")
-            {
-                Ik.solver.leftFootEffector.positionWeight = obj.curve.Evaluate(IkTimer);
-                Ik.solver.leftFootEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
-            }
-            else if (Effector == "RightFoot")
-            {
-                Ik.solver.rightFootEffector.positionWeight = obj.curve.Evaluate(IkTimer);
-                Ik.solver.rightFootEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
-            }
-            else if (Effector == "Body")
-            {
-                Ik.solver.bodyEffector.positionWeight = obj.curve.Evaluate(IkTimer);
-                Ik.solver.bodyEffector.rotationWeight = obj.curve.Evaluate(IkTimer);
-            }
-            else Debug.LogError("We could not find the specified effector!");
-            yield return null;
         }
     }
 
